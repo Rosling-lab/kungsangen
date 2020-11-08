@@ -123,10 +123,14 @@ rule laa:
     shell:
         """
         laa {input}\\
-            --maxReads 10000\\
-            --maxClusteringReads 10000\\
+            --ignoreBc\\
+            --maxReads 100000\\
+            --maxClusteringReads 20000\\
             --minLength 1000\\
             --minClusterSize 3\\
+            --maxPhasingReads 20000\\
+            --minSplitReads 3\\
+            --minSplitFraction 0.01\\
             --resultFile {output.result}\\
             --junkFile {output.junk}\\
             --reportFile {output.report}\\
