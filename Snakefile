@@ -13,7 +13,7 @@ from snakemake.utils import listfiles
 #import yaml
 #with open("config/config.yaml", 'r') as ymlfile: config = yaml.safe_load(ymlfile)
 
-configfile: "config/config.yaml"
+#configfile: "config/config.yaml"
 
 # Find the maximum number of cores available to a single node on SLURM,
 # or if we aren't in a SLURM environment, how many we have on the local machine.
@@ -34,7 +34,8 @@ moviefiles = [re.sub(r"\.bas\.h5", "", os.path.basename(m))
 # endpoint target: convert all pacbio movies to Sequel format
 localrules: convertmovies
 rule convertmovies:
-    input: expand("process/{movie}.{type}.bam",
+    input:
+        expand("process/{movie}.{type}.bam",
                movie = moviefiles,
                type = ['subreads', 'scraps'])
 
@@ -68,7 +69,7 @@ rule mergebam:
     output: temp("process/pb_363.subreads.bam")
     input:
         expand("process/{movie}.subreads.bam",
-               movie = moviefiles[wildcards.seqplate])
+               movie = moviefiles)
     shadow: "shallow"
     conda: "conda/samtools.yaml"
     envmodules:
@@ -89,9 +90,10 @@ rule lima:
         tags = "tags/its1_lr5_barcodes.fasta"
     shadow: "shallow"
     conda: "conda/pacbiodemux.yaml"
+    threads: maxthreads
     envmodules:
         "bioinfo-tools",
-        "SMRT/5.0.1"
+        "SMRT/7.0.1"
     group: "pacbio"
     resources:
         walltime=20
@@ -112,11 +114,12 @@ rule laa:
         "bioinfo-tools",
         "SMRT/5.0.1"
     group: "pacbio"
+    threads: maxthreads
     params:
         prefix="process/pb_363"
     resources:
         walltime=240
-    log: "logs/laa_{{seqplate}}.log".format_map(config)
+    log: "logs/laa.log"
     shell:
         """
         laa {input}\\
@@ -128,13 +131,13 @@ rule laa:
             --junkFile {output.junk}\\
             --reportFile {output.report}\\
             --inputReportFile {output.pcr}\\
-            --subreadsReportPrefix {output.prefix}
+            --subreadsReportPrefix {params.prefix}
         """
         
 
 # generate a circular consensus sequence from raw PacBio reads
 rule ccs:
-    output: temp("process/pb_363.ccs.bam")
+    output: "process/pb_363.ccs.bam"
     input: "process/pb_363.demux.subreads.bam"
     resources:
         walltime=120
@@ -144,7 +147,7 @@ rule ccs:
         "bioinfo-tools",
         "SMRT/5.0.1"
     group: "pacbio"
-    threads: 4
+    threads: maxthreads
     log: "logs/ccs.log"
     shell:
          "ccs --numThreads {threads} {input} {output} &>{log}"
