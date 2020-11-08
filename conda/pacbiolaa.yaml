@@ -1,0 +1,7 @@
+name: pblaa
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - pblaa=2.4.2.0

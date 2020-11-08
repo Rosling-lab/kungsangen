@@ -1,0 +1,7 @@
+name: pacbiodemux
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - lima=2.0
