@@ -369,7 +369,8 @@ rule consensus:
          # duplicate each line based on ";size=" from the header
          gawk '{c=gensub(/.+;size=([0-9]+).*/, "\\1", 1, $1); c=int(c); while (c--) {print $1; print $2;}}' |
          # calculate the consensus
-         cons -filter -sformat fasta -osformat fasta -plurality 0.3 -name swarm{wildcards.num} >{output} 2>{log}
+         cons -filter -sformat fasta -osformat fasta -plurality 0.3 -name swarm{wildcards.num} |
+         sed '/^>/!s/n//g' >{output} 2>{log}
          """
 
 #
