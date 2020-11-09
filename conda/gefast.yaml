@@ -1,0 +1,7 @@
+name: gefast
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - gefast=1.0.0
