@@ -317,9 +317,6 @@ rule extractswarm:
     threads: 1
     log: "logs/extractswarm_{seqrun}_{num}.log"
     conda: "conda/vsearch.yaml"
-    envmodules:
-        "bioinfo-tools",
-        "vsearch/2.14.1"
     shell:
         """
         tr " " "\\n" <{input.swarm} |
