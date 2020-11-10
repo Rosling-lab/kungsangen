@@ -322,7 +322,7 @@ rule extractswarm:
         tr " " "\\n" <{input.swarm} |
         vsearch --fastx_getseqs {input.fasta} \\
             --labels -\\
-            --fastaout {output}
+            --fastaout {output} &>{log}
         
         """
 
@@ -340,7 +340,7 @@ rule align:
     envmodules:
         "bioinfo-tools",
         "muscle/3.8.1551"
-    shell: "muscle -in {input} -out {output} -maxiters 1 -diags -gapopen -0.5"
+    shell: "muscle -in {input} -out {output} -maxiters 1 -diags -gapopen -0.5 &>{log}"
 
 # Calculate the consensus sequence for each swarm cluster
 # First we need to re-replicate the file
