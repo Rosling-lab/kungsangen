@@ -291,96 +291,23 @@ rule gefast:
             --swarm-num-threads-per-check {threads} &>{log}
          """
 
-# split the swarm file up into a separate file for each cluster
-# these files give the headers of the sequences which belong to each cluster
-checkpoint splitswarm:
-    output: directory("process/swarm/{seqrun}")
-    input: "process/{seqrun}.ccs.swarm"
-    resources:
-             walltime=5
-    threads: 1
-    log: "logs/splitswarm_{seqrun}.log"
-    shell:
-        """
-        [ -d {output} ] || mkdir -p {output} &&
-        split -l 1 -a 5 --numeric-suffixes {input} {output}/swarm_ &>{log}
-        """
-
-# extract the sequences which belong to a cluster from the dereplicated fasta file
-# this step is very inefficient; most of the CPU usage is in loading conda environments.
-# If run again, it would be better to use xargs or gnu parallel or something.
-rule extractswarm:
-    output: "process/swarm/{seqrun}/swarm_{num}.fasta"
+# split the swarm file up
+rule swarmconsensus:
+    output:
+        consensus="process/{seqrun}.ccs.swarm.cons.fasta",
+        swarmdir=directory("process/swarm/{seqrun}")
     input:
-        swarm="process/swarm/{seqrun}/swarm_{num}",
+        swarm="process/{seqrun}.ccs.swarm",
+        script="scripts/swarm_consensus.sh",
         fasta="process/{seqrun}.ccs.derep.fasta"
     resources:
-        walltime=1
-    threads: 1
-    log: "logs/extractswarm_{seqrun}_{num}.log"
-    conda: "conda/vsearch.yaml"
-    shell:
-        """
-        tr " " "\\n" <{input.swarm} |
-        vsearch --fastx_getseqs {input.fasta} \\
-            --labels -\\
-            --fastaout {output} &>{log}
-        
-        """
-
-# align the sequences in each swarm cluster
-# this makes a fast alignment in MUSCLE, because the sequences are all VERY similar
-# The gap penalty is small, because PacBio has lots of small indel errors.
-rule align:
-    output: "process/swarm/{seqrun}/swarm_{num}.aln.fasta"
-    input: "process/swarm/{seqrun}/swarm_{num}.fasta"
-    resources:
-        walltime=30
-    threads: 1
-    log: "logs/alignswarm_{seqrun}_{num}.log"
-    conda: "conda/muscle.yaml"
-    envmodules:
-        "bioinfo-tools",
-        "muscle/3.8.1551"
-    shell: "muscle -in {input} -out {output} -maxiters 1 -diags -gapopen -0.5 &>{log}"
-
-# Calculate the consensus sequence for each swarm cluster
-# First we need to re-replicate the file
-# tools like VSEARCH and fastx_toolkit won't accept sequences with gaps, so we
-# do this with sed, tr, and awk
-rule consensus:
-    output: "process/swarm/{seqrun}/swarm_{num}.cons.fasta"
-    input: "process/swarm/{seqrun}/swarm_{num}.aln.fasta"
-    threads: 1
-    log: "logs/consensus_{seqrun}_{num}.log"
+             walltime=240
+    threads: maxthreads
     conda: "conda/cons.yaml"
-    envmodules:
-        "bioinfo-tools",
-        "emboss/6.6.0"
     shell:
-         """         
-         # linearize the fasta; i.e. put each sequence on one line, with tab
-         # between header and seq.
-         sed '/^>/s/$/@/; s/^>/#>/' {input} |
-         tr -d "\\n" |
-         tr "#" "\\n" |
-         tr "@" "\\t" |
-         # duplicate each line based on ";size=" from the header
-         gawk '{{c=gensub(/.+;size=([0-9]+).*/, "\\\\1", 1, $1); c=int(c); while (c--) {{print $1; print $2;}}}}' |
-         # calculate the consensus
-         cons -filter -sformat fasta -osformat fasta -plurality 0.3 -name swarm{wildcards.num} |
-         sed '/^>/!s/n//g' >{output} 2>{log}
-         """
-
-#
-def gather_swarm(wildcards):
-    checkpoint_output = checkpoints.splitswarm.get(**wildcards).output[0]
-    return expand("process/swarm/{seqrun}/swarm_{i}.cons.fasta",
-                  seqrun = wildcards.seqrun,
-                  i=glob_wildcards(os.path.join(checkpoint_output, "swarm_{i,\d+}")).i)
-
-# Gather the consensuses from all the clusters into one fasta file
-rule gather:
-    output: "process/{seqrun}.ccs.swarm.cons.fasta"
-    input: gather_swarm
-    shell: "cat {input} >{output}"
+        """
+        [ -d {output.swarmdir} ] || mkdir -p {output.swarmdir}
+        cat {input.swarm} |
+        parallel --pipe -j{threads} -N1 {input.script} {input.fasta} {output.swarmdir} {{#}} {wildcards.seqrun}
+        ls {output.swarmdir}/swarm_*.cons.fasta | xargs cat >{output.consensus}
+        """

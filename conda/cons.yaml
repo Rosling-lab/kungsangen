@@ -4,5 +4,8 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - parallel=20200922
+  - muscle=3.8.1551
+  - vsearch=2.15.1
   - emboss=6.6.0
-  - gawk
+  - gawk=5.1.0
