@@ -39,5 +39,5 @@ sed '/^>/c >'"$samplename" "$swarmfasta" >"$consfasta" ||
   muscle -maxiters 1 -diags -gapopen -0.5 -out "$alignfasta" 2>"$alignlog" &&
   cat "$alignfasta" |
   cons -filter -sformat fasta -osformat fasta -name "$samplename" 2>>"$conslog" |
-  sed -n '/^>/{p;n;h;d}; s/n//g; H; ${x;s/\n//g;p}' >"$consfasta" 2>"$conslog"
+  sed -n '/^>/{p;n;h;d}; H; ${x;s/[n\n]//g;p}' >"$consfasta" 2>>"$conslog"
 }
