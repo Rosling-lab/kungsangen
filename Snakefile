@@ -307,6 +307,8 @@ checkpoint splitswarm:
         """
 
 # extract the sequences which belong to a cluster from the dereplicated fasta file
+# this step is very inefficient; most of the CPU usage is in loading conda environments.
+# If run again, it would be better to use xargs or gnu parallel or something.
 rule extractswarm:
     output: "process/swarm/{seqrun}/swarm_{num}.fasta"
     input:
@@ -360,11 +362,11 @@ rule consensus:
          # linearize the fasta; i.e. put each sequence on one line, with tab
          # between header and seq.
          sed '/^>/s/$/@/; s/^>/#>/' {input} |
-         tr -d "\n" |
-         tr "#" "\n" |
-         tr "@" "\t" |
+         tr -d "\\n" |
+         tr "#" "\\n" |
+         tr "@" "\\t" |
          # duplicate each line based on ";size=" from the header
-         gawk '{c=gensub(/.+;size=([0-9]+).*/, "\\1", 1, $1); c=int(c); while (c--) {print $1; print $2;}}' |
+         gawk '{{c=gensub(/.+;size=([0-9]+).*/, "\\\\1", 1, $1); c=int(c); while (c--) {{print $1; print $2;}}}}' |
          # calculate the consensus
          cons -filter -sformat fasta -osformat fasta -plurality 0.3 -name swarm{wildcards.num} |
          sed '/^>/!s/n//g' >{output} 2>{log}
