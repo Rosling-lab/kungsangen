@@ -250,7 +250,7 @@ rule derep:
         "vsearch/2.14.1"
     shell:
         """
-         vsearch --fastq-filter {input}\\
+         vsearch --fastq_filter {input}\\
             --fastq_maxee 15 \\
             --fastq_qmax 93 \\
             --fastq_minlen 1000 \\
