@@ -341,7 +341,7 @@ rule align:
     log: "logs/alignswarm_{seqrun}_{num}.log"
     conda: "conda/muscle.yaml"
     envmodules:
-        "bioinfo.tools",
+        "bioinfo-tools",
         "muscle/3.8.1551"
     shell: "muscle -in {input} -out {output} -maxiters 1 -diags -gapopen -0.5"
 

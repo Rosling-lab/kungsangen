@@ -4,4 +4,4 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - muscle=3.8.1551.5
+  - muscle=3.8.1551

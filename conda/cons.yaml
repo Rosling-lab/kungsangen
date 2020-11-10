@@ -4,5 +4,5 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - emboss=6.6.0.3
+  - emboss=6.6.0
   - gawk
