@@ -288,7 +288,7 @@ rule gefast:
             --swarm-no-otu-breaking\\
             --swarm-num-explorers {threads}\\
             --swarm-num-grafters {threads}\\
-            --swarm-num-threads-per-check {threads}
+            --swarm-num-threads-per-check {threads} &>{log}
          """
 
 # split the swarm file up into a separate file for each cluster
@@ -322,7 +322,7 @@ rule extractswarm:
         "vsearch/2.14.1"
     shell:
         """
-        tr " " "\\n" {input.swarm} |
+        tr " " "\\n" <{input.swarm} |
         vsearch --fastx_getseqs {input.fasta} \\
             --labels -\\
             --fastaout {output}
