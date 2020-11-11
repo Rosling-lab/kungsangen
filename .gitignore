@@ -2,3 +2,4 @@ logs
 process
 .snakemake
 raw
+.idea
