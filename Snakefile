@@ -109,7 +109,7 @@ rule lima:
     envmodules:
         "bioinfo-tools",
         "SMRT/7.0.1"
-    shell: "lima {input.bam} {input.tags} --different --peek-guess -j {threads} --keep-tag-idx-order {output} &>{log}"
+    shell: "lima {input.bam} {input.tags} --different --peek-guess -j {threads} {output} &>{log}"
 
 # filter out the samples which are not being used in this project.
 rule sieve:
