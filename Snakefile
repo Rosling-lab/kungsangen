@@ -114,9 +114,9 @@ rule lima:
 # filter out the samples which are not being used in this project.
 rule sieve:
     output:
-          "process/{movie}.ccs.demux.sieve.bam"
+          "process/{movie}.subreads.demux.sieve.bam"
     input:
-         bam="process/{movie}.ccs.demux.bam",
+         bam="process/{movie}.subreads.demux.bam",
          samples = "tags/which_tags.txt"
     shadow: "shallow"
     threads: 1
@@ -132,13 +132,13 @@ rule sieve:
 # endpoint target: demultiplex and sieve all movies
 rule sievemovies:
     input:
-        expand("process/{movie}.ccs.demux.sieve.bam",
+        expand("process/{movie}.subreads.demux.sieve.bam",
                movie = moviefiles)
 
 # generate circular consensus sequences from subreads
 rule ccs:
     output: "process/{movie}.ccs.bam"
-    input: "process/{movie}.subreads.bam"
+    input: "process/{movie}.subreads.demux.sieve.bam"
     resources:
         walltime=120
     shadow: "shallow"
@@ -153,8 +153,8 @@ rule ccs:
 # convert a ccs BAM to a fastq
 # this loses a lot of PacBio-specific information, but it is useful for other software.
 rule bam2fastq:
-    output: temp("process/{movie}.ccs.demux.sieve.fastq.gz")
-    input: "process/{movie}.ccs.demux.sieve.bam"
+    output: temp("process/{movie}.ccs.fastq.gz")
+    input: "process/{movie}.ccs.bam"
     resources:
              walltime=10
     threads: 1
@@ -172,9 +172,9 @@ rule bam2fastq:
 # "n" gives the number of times the sequence appears.
 rule derep:
     output:
-        fasta="process/pb_363.ccs.demux.sieve.derep.fasta",
-        uc="process/pb_363.ccs.demux.sieve.derep.uc"
-    input: expand("process/{movie}.ccs.demux.sieve.fastq.gz", movie = moviefiles)
+        fasta="process/pb_363.ccs.derep.fasta",
+        uc="process/pb_363.ccs.derep.uc"
+    input: expand("process/{movie}.ccs.fastq.gz", movie = moviefiles)
     resources:
         walltime=10
     shadow: "shallow"
