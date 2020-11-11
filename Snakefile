@@ -325,7 +325,7 @@ rule swarmselect:
     input:
         swarm="process/{seqrun}.ccs.swarm",
         uc=   "process/{seqrun}.ccs.derep.uc",
-        bam=  expand("process/{movie}.demux.sieve.bam", movie = moviefiles),
+        bam=  expand("process/{movie}.subreads.demux.sieve.bam", movie = moviefiles),
         script="scripts/swarm_laa.sh"
     conda: "conda/swarmextract.yaml"
     envmodules:
