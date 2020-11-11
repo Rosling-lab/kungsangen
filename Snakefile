@@ -114,8 +114,7 @@ rule lima:
         temp("process/{movie}.ccs.demux.bam")
     input:
         bam = "process/{movie}.ccs.bam",
-        tags = "tags/its1_lr5_barcodes2.fasta",
-        samples = "tags/which_tags.txt"
+        tags = "tags/its1_lr5_barcodes2.fasta"
     shadow: "shallow"
     threads: moviethreads
     resources:
@@ -154,8 +153,8 @@ rule sievemovies:
 # convert a ccs BAM to a fastq
 # this loses a lot of PacBio-specific information, but it is useful for other software.
 rule bam2fastq:
-    output: temp("process/{movie}.ccs.fastq.gz")
-    input: "process/{movie}.ccs.bam"
+    output: temp("process/{movie}.ccs.demux.sieve.fastq.gz")
+    input: "process/{movie}.ccs.demux.sieve.bam"
     resources:
              walltime=10
     threads: 1
@@ -173,9 +172,9 @@ rule bam2fastq:
 # "n" gives the number of times the sequence appears.
 rule derep:
     output:
-        fasta="process/pb_363.ccs.derep.fasta",
-        uc="process/pb_363.ccs.derep.uc"
-    input: expand("process/{movie}.ccs.fastq.gz", movie = moviefiles)
+        fasta="process/pb_363.ccs.demux.sieve.derep.fasta",
+        uc="process/pb_363.ccs.demux.sieve.derep.uc"
+    input: expand("process/{movie}.ccs.demux.sieve.fastq.gz", movie = moviefiles)
     resources:
         walltime=10
     shadow: "shallow"
@@ -207,7 +206,7 @@ rule derep:
 # should end up in the same cluster.
 rule gefast:
     output: "process/{seqrun}.ccs.swarm"
-    input: "process/{seqrun}.ccs.derep.fasta"
+    input: "process/{seqrun}.ccs.demux.sieve.derep.fasta"
     resources:
              walltime=120
     shadow: "shallow"
