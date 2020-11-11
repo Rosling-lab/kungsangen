@@ -137,11 +137,11 @@ rule sieve:
     shell:
         """
         sed 's/^/bc:B:s,/' {input.samples} > {params.samples}
-        {
+        {{
             samtools view -H {input.bam}
             samtools view {input.bam} |
             grep -f {params.samples}
-        } |
+        }} |
         samtools view - -o {output}
         rm {params}
         """
