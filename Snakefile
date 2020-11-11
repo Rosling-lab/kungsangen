@@ -206,7 +206,7 @@ rule derep:
 # should end up in the same cluster.
 rule gefast:
     output: "process/{seqrun}.ccs.swarm"
-    input: "process/{seqrun}.ccs.demux.sieve.derep.fasta"
+    input: "process/{seqrun}.ccs.derep.fasta"
     resources:
              walltime=120
     shadow: "shallow"
