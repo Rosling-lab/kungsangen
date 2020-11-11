@@ -91,14 +91,29 @@ wildcard_constraints:
     seqrun = "p[bs]_\d{3}(_\d{3})?",
     movie = "m\d{6}_.*"
 
+# generate circular consensus sequences from subreads
+rule ccs:
+    output: "process/{movie}.ccs.bam"
+    input: "process/{movie}.subreads.bam"
+    resources:
+        walltime=120
+    shadow: "shallow"
+    threads: moviethreads
+    log: "logs/ccs_{movie}.log"
+    conda: "conda/pacbio.yaml"
+    envmodules:
+        "bioinfo-tools",
+        "SMRT/5.0.1"
+    shell: "ccs --numThreads {threads} {input} {output} &>{log}"
+
 # demultiplex pacbio subreads using lima
 # the output is still a single BAM file, but it has the barcode assignments
 # in the headers for each sequence
 rule lima:
     output:
-        temp("process/{movie}.subreads.demux.bam")
+        temp("process/{movie}.ccs.demux.bam")
     input:
-        bam = "process/{movie}.subreads.bam",
+        bam = "process/{movie}.ccs.bam",
         tags = "tags/its1_lr5_barcodes2.fasta",
         samples = "tags/which_tags.txt"
     shadow: "shallow"
@@ -115,9 +130,9 @@ rule lima:
 # filter out the samples which are not being used in this project.
 rule sieve:
     output:
-          "process/{movie}.subreads.demux.sieve.bam"
+          "process/{movie}.ccs.demux.sieve.bam"
     input:
-         bam="process/{movie}.subreads.demux.bam",
+         bam="process/{movie}.ccs.demux.bam",
          samples = "tags/which_tags.txt"
     shadow: "shallow"
     threads: 1
@@ -133,24 +148,8 @@ rule sieve:
 # endpoint target: demultiplex and sieve all movies
 rule sievemovies:
     input:
-        expand("process/{movie}.subreads.demux.sieve.bam",
+        expand("process/{movie}.ccs.demux.sieve.bam",
                movie = moviefiles)
-
-# generate circular consensus sequences from subreads
-# this preserves the demultiplexing info in the headers
-rule ccs:
-    output: "process/{movie}.ccs.bam"
-    input: "process/{movie}.subreads.demux.sieve.bam"
-    resources:
-        walltime=120
-    shadow: "shallow"
-    threads: moviethreads
-    log: "logs/ccs_{movie}.log"
-    conda: "conda/pacbio.yaml"
-    envmodules:
-        "bioinfo-tools",
-        "SMRT/5.0.1"
-    shell: "ccs --numThreads {threads} {input} {output} &>{log}"
 
 # convert a ccs BAM to a fastq
 # this loses a lot of PacBio-specific information, but it is useful for other software.
