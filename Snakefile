@@ -228,21 +228,24 @@ rule gefast:
             --swarm-num-threads-per-check {threads} &>{log}
          """
 
+# for each of the swarm clusters, make a BAM file containing the source subreads
 rule swarmselect:
     output: directory("process/swarm/{seqrun}")
     input:
         swarm="process/{seqrun}.ccs.swarm",
         uc=   "process/{seqrun}.ccs.derep.uc",
-        bam=  "process/{seqrun}.ccs.bam"
-    conda: "conda/samtools.yaml"
+        bam=  expand("process/{movie}.demux.sieve.bam", movie = moviefiles),
+        script="scripts/swarm_laa.sh"
+    conda: "conda/swarmextract.yaml"
     envmodules:
         "bioinfo-tools",
-        "samtools"
+        "samtools",
+        "SMRT/7.0.1",
+        "gnuparallel/20180822"
     shell:
         """
         cat {input.swarm} |
-          parallel --pipe -N1 \\
-          "tr 
+          parallel --pipe -N1 {script} {{}} {input.uc} process .demux.sieve.bam {output}
         """
 
 
