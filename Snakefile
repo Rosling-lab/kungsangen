@@ -123,7 +123,6 @@ rule sieve:
          bam="process/{movie}.subreads.demux.bam",
          samples = "tags/which_tags.txt"
     params:
-        samples = "{movie}.tags.txt",
         temp = "{movie}.temp.bam"
     shadow: "shallow"
     threads: 1
@@ -136,13 +135,13 @@ rule sieve:
         "samtools"
     shell:
         """
-        sed 's/^/bc:B:s,/' {input.samples} > {params.samples}
+        sed 's/^/bc:B:s,/' {input.samples} > {params.samples} 2>{log}
         {{
             samtools view -H {input.bam}
             samtools view {input.bam} |
             grep -f {params.samples}
         }} |
-        samtools view - -o {output}
+        samtools view - -o {output} 2>>{log}
         rm {params}
         """
 
