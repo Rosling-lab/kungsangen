@@ -91,30 +91,15 @@ wildcard_constraints:
     seqrun = "p[bs]_\d{3}(_\d{3})?",
     movie = "m\d{6}_.*"
 
-# generate circular consensus sequences from subreads
-rule ccs:
-    output: "process/{movie}.ccs.bam"
-    input: "process/{movie}.subreads.bam"
-    resources:
-        walltime=120
-    shadow: "shallow"
-    threads: moviethreads
-    log: "logs/ccs_{movie}.log"
-    conda: "conda/pacbio.yaml"
-    envmodules:
-        "bioinfo-tools",
-        "SMRT/5.0.1"
-    shell: "ccs --numThreads {threads} {input} {output} &>{log}"
-
 # demultiplex pacbio subreads using lima
 # the output is still a single BAM file, but it has the barcode assignments
 # in the headers for each sequence
 rule lima:
     output:
-        temp("process/{movie}.ccs.demux.bam")
+        temp("process/{movie}.subreads.demux.bam")
     input:
-        bam = "process/{movie}.ccs.bam",
-        tags = "tags/its1_lr5_barcodes2.fasta"
+        bam = "process/{movie}.subreads.bam",
+        tags = "tags/its1_lr5_barcodes.fasta"
     shadow: "shallow"
     threads: moviethreads
     resources:
@@ -124,7 +109,7 @@ rule lima:
     envmodules:
         "bioinfo-tools",
         "SMRT/7.0.1"
-    shell: "lima {input.bam} {input.tags} --different --peek-guess --isoseq -j {threads} {output} &>{log}"
+    shell: "lima {input.bam} {input.tags} --different --peek-guess -j {threads} --keep-tag-idx-order {output} &>{log}"
 
 # filter out the samples which are not being used in this project.
 rule sieve:
@@ -149,6 +134,21 @@ rule sievemovies:
     input:
         expand("process/{movie}.ccs.demux.sieve.bam",
                movie = moviefiles)
+
+# generate circular consensus sequences from subreads
+rule ccs:
+    output: "process/{movie}.ccs.bam"
+    input: "process/{movie}.subreads.bam"
+    resources:
+        walltime=120
+    shadow: "shallow"
+    threads: moviethreads
+    log: "logs/ccs_{movie}.log"
+    conda: "conda/pacbio.yaml"
+    envmodules:
+        "bioinfo-tools",
+        "SMRT/5.0.1"
+    shell: "ccs --numThreads {threads} {input} {output} &>{log}"
 
 # convert a ccs BAM to a fastq
 # this loses a lot of PacBio-specific information, but it is useful for other software.
