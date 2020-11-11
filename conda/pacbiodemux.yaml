@@ -5,3 +5,4 @@ channels:
   - defaults
 dependencies:
   - lima=2.0
+  - pbcoretools=0.8.1

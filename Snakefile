@@ -6,6 +6,7 @@ import os.path
 from glob import glob
 import re
 import subprocess
+from math import gcd
 
 # For testing, parse the yaml file (this is automatically done by Snakemake)
 #import yaml
@@ -20,14 +21,13 @@ try:
 except FileNotFoundError:
     maxthreads = int(subprocess.check_output("nproc").decode())
 
-# load the dataset and region definitions
-#datasets = pd.read_csv(config['dataset']).set_index('seq_run', drop = False)
-#regions = pd.read_csv(config['regions']).set_index('region')
-
-#### PacBio conversions ####
 # find the PacBio movie files
 moviefiles = [re.sub(r"\.bas\.h5", "", os.path.basename(m))
               for m in glob("raw/**/*.bas.h5", recursive = True)]
+
+# figure out how to distribute the movie files equally over the cores we have available.
+moviejobs = gcd(maxthreads, len(moviefiles))
+moviethreads = maxthreads/moviejobs
 
 localrules: all
 rule all:
@@ -36,13 +36,6 @@ rule all:
         "process/pb_363.laa.fastq.gz",
         "process/pb_363.laagc.fastq.gz",
         "process/pb_363.ccs.swarm.cons.fasta"
-
-# endpoint target: convert all pacbio movies to Sequel format
-rule convertmovies:
-    input:
-        expand("process/{movie}.{type}.bam",
-               movie = moviefiles,
-               type = ['subreads', 'scraps'])
 
 # convert a raw RSII-format (.h5) movie to the Sequel format (.bam)
 # these files are pretty large, so they are marked as temporary.
@@ -68,6 +61,13 @@ rule bax2bam:
         "bioinfo-tools",
         "SMRT/5.0.1"
     shell: "bax2bam {input} -o {params.prefix} &> {log}"
+
+# endpoint target: convert all pacbio movies to Sequel format
+rule convertmovies:
+    input:
+        expand("process/{movie}.{type}.bam",
+               movie = moviefiles,
+               type = ['subreads', 'scraps'])
 
 # merge all the movies which belong to the same plate
 rule mergebam:
@@ -96,20 +96,178 @@ wildcard_constraints:
 # in the headers for each sequence
 rule lima:
     output:
-        temp("process/{seqrun}.demux.subreads.bam")
+        temp("process/{movie}.subreads.demux.bam")
     input:
-        bam = "process/{seqrun}.subreads.bam",
-        tags = "tags/its1_lr5_barcodes.fasta"
+        bam = "process/{movie}.subreads.bam",
+        tags = "tags/its1_lr5_barcodes2.fasta",
+        samples = "tags/which_tags.txt"
     shadow: "shallow"
-    threads: maxthreads
+    threads: moviethreads
     resources:
         walltime=20
-    log: "logs/lima_{seqrun}.log"
+    log: "logs/lima_{movie}.log"
     conda: "conda/pacbiodemux.yaml"
     envmodules:
         "bioinfo-tools",
         "SMRT/7.0.1"
-    shell: "lima {input.bam} {input.tags} {output} --different --peek-guess &>{log} -j {threads}"
+    shell: "lima {input.bam} {input.tags} --different --peek-guess --isoseq -j {threads} {output}"
+
+# filter out the samples which are not being used in this project.
+rule sieve:
+    output:
+          "process/{movie}.subreads.demux.sieve.bam"
+    input:
+         bam="process/{movie}.subreads.demux.bam",
+         samples = "tags/which_tags.txt"
+    shadow: "shallow"
+    threads: 1
+    resources:
+        walltime=5
+    log: "logs/sieve_{movie}.log"
+    conda: "conda/pacbiodemux.yaml"
+    envmodules:
+        "bioinfo-tools",
+        "SMRT/7.0.1"
+    shell: "bamsieve --barcodes --whitelist {input.samples} {input.bam} {output} &>{log}"
+
+# endpoint target: demultiplex and sieve all movies
+rule sievemovies:
+    input:
+        expand("process/{movie}.subreads.demux.sieve.bam",
+               movie = moviefiles)
+
+# generate circular consensus sequences from subreads
+# this preserves the demultiplexing info in the headers
+rule ccs:
+    output: "process/{movie}.ccs.bam"
+    input: "process/{movie}.subreads.demux.pick.bam"
+    resources:
+        walltime=120
+    shadow: "shallow"
+    threads: moviethreads
+    log: "logs/ccs_{movie}.log"
+    conda: "conda/pacbio.yaml"
+    envmodules:
+        "bioinfo-tools",
+        "SMRT/5.0.1"
+    shell: "ccs --numThreads {threads} {input} {output} &>{log}"
+
+# convert a ccs BAM to a fastq
+# this loses a lot of PacBio-specific information, but it is useful for other software.
+rule bam2fastq:
+    output: temp("process/{movie}.ccs.fastq.gz")
+    input: "process/{movie}.ccs.bam"
+    resources:
+             walltime=10
+    threads: 1
+    log: "logs/bam2fastq_{movie}.log"
+    conda: "conda/pacbio.yaml"
+    envmodules:
+        "bioinfo-tools",
+        "smrt/5.0.1"
+    shell: "bam2fastq -o process/{wildcards.movie}.ccs {input} &>{log}"
+
+# quality filter the ccs and dereplicate
+# allow up to 15 expected errors (about 1%) and minimum length 1000
+# the output has only one entry for each unique sequence
+# the label is the ZMW name of one of the first appearance, followed by ";size=n"
+# "n" gives the number of times the sequence appears.
+rule derep:
+    output:
+        fasta="process/pb_363.ccs.derep.fasta",
+        uc="process/pb_363.ccs.derep.uc"
+    input: expand("process/{movie}.ccs.fastq.gz", movie = moviefiles)
+    resources:
+        walltime=10
+    shadow: "shallow"
+    threads: 2
+    log: "logs/derep_pb_363.log"
+    conda: "conda/vsearch.yaml"
+    envmodules:
+        "bioinfo-tools",
+        "vsearch/2.14.1"
+    shell:
+        """
+         zcat {input} |
+         vsearch --fastq_filter - \\
+            --fastq_maxee 15 \\
+            --fastq_qmax 93 \\
+            --fastq_minlen 1000 \\
+            --fastaout - |
+         vsearch --derep_fulllength - \\
+            --sizeout \\
+            --fasta_width 0\\
+            --output {output.fasta}\\
+            --uc {output.uc}    
+        """
+
+# Swarm-cluster the CCS reads
+# this is basically the same thing as single-linkage clustering
+# we use a maximum distance of 30, which is double the max ee
+# so theoretically, every sequence which came from a single biological variant
+# should end up in the same cluster.
+rule gefast:
+    output: "process/{seqrun}.ccs.swarm"
+    input: "process/{seqrun}.ccs.derep.fasta"
+    resources:
+             walltime=120
+    shadow: "shallow"
+    group: "pacbio"
+    threads: 8
+    log: "logs/gefast_{seqrun}.log"
+    conda: "conda/gefast.yaml"
+    # not available as a module on UPPMAX
+    shell:
+         """
+         GeFaST {input} \\
+            --threshold 30\\
+            --sep-abundance ";size="\\
+            --swarm-output {output}\\
+            --swarm-fastidious\\
+            --swarm-no-otu-breaking\\
+            --swarm-num-explorers {threads}\\
+            --swarm-num-grafters {threads}\\
+            --swarm-num-threads-per-check {threads} &>{log}
+         """
+
+rule swarmselect:
+    output: directory("process/swarm/{seqrun}")
+    input:
+        swarm="process/{seqrun}.ccs.swarm",
+        uc=   "process/{seqrun}.ccs.derep.uc",
+        bam=  "process/{seqrun}.ccs.bam"
+    conda: "conda/samtools.yaml"
+    envmodules:
+        "bioinfo-tools",
+        "samtools"
+    shell:
+        """
+        cat {input.swarm} |
+          parallel --pipe -N1 \\
+          "tr 
+        """
+
+
+# split the swarm file up
+rule swarmconsensus:
+    output:
+        consensus="process/{seqrun}.ccs.swarm.cons.fasta",
+        swarmdir=directory("process/swarm/{seqrun}")
+    input:
+        swarm="process/{seqrun}.ccs.swarm",
+        script="scripts/swarm_consensus.sh",
+        fasta="process/{seqrun}.ccs.derep.fasta"
+    resources:
+             walltime=240
+    threads: maxthreads
+    conda: "conda/cons.yaml"
+    shell:
+        """
+        [ -d {output.swarmdir} ] || mkdir -p {output.swarmdir}
+        cat {input.swarm} |
+        parallel --pipe -j{threads} -N1 {input.script} {input.fasta} {output.swarmdir} {{#}} {wildcards.seqrun}
+        ls {output.swarmdir}/swarm_*.cons.fasta | xargs cat >{output.consensus}
+        """
 
 # find haplotypes (ASVs) from pacbio subreads using gefast cluster consensus as guides
 rule laagc:
@@ -197,117 +355,4 @@ rule laa:
             --subreadsReportPrefix {params.prefix} >&{log} && 
         gzip {params.result_prefix} >&{log} &&
         gzip {params.junk_prefix} >&{log}
-        """
-
-# generate circular consensus sequences from raw PacBio reads
-# this preserves the demultiplexing info in the headers
-rule ccs:
-    output: "process/{seqrun}.ccs.bam"
-    input: "process/{seqrun}.demux.subreads.bam"
-    resources:
-        walltime=120
-    shadow: "shallow"
-    threads: maxthreads
-    log: "logs/ccs_{seqrun}.log"
-    conda: "conda/pacbio.yaml"
-    envmodules:
-        "bioinfo-tools",
-        "SMRT/5.0.1"
-    shell: "ccs --numThreads {threads} {input} {output} &>{log}"
-
-# convert a ccs BAM to a fastq
-# this loses a lot of PacBio-specific information, but it is useful for other software.
-rule bam2fastq:
-    output: "process/{seqrun}.ccs.fastq.gz"
-    input: "process/{seqrun}.ccs.bam"
-    resources:
-             walltime=10
-    shadow: "shallow"
-    threads: 1
-    log: "logs/bam2fastq_{seqrun}.log"
-    conda: "conda/pacbio.yaml"
-    envmodules:
-        "bioinfo-tools",
-        "smrt/5.0.1"
-    shell: "bam2fastq -o process/{wildcards.seqrun}.ccs -p ccs {input} &>{log}"
-
-# quality filter the fastq and dereplicate it
-# allow up to 15 expected errors (about 1%) and minimum length 1000
-# the output has only one entry for each unique sequence
-# the label is the md5 hash of the sequence, followed by ";size=n"
-# "n" gives the number of times the sequence appears.
-rule derep:
-    output: "process/{seqrun}.ccs.derep.fasta"
-    input: "process/{seqrun}.ccs.fastq.gz"
-    resources:
-        walltime=10
-    shadow: "shallow"
-    threads: 2
-    log: "logs/derep_{seqrun}.log"
-    conda: "conda/vsearch.yaml"
-    envmodules:
-        "bioinfo-tools",
-        "vsearch/2.14.1"
-    shell:
-        """
-         vsearch --fastq_filter {input}\\
-            --fastq_maxee 15 \\
-            --fastq_qmax 93 \\
-            --fastq_minlen 1000 \\
-            --fastaout - |
-         vsearch --derep_fulllength - \\
-            --relabel_md5 \\
-            --sizeout \\
-            --fasta_width 0\\
-            --output {output}    
-        """
-
-# Swarm-cluster the CCS reads
-# this is basically the same thing as single-linkage clustering
-# we use a maximum distance of 30, which is double the max ee
-# so theoretically, every sequence which came from a single biological variant
-# should end up in the same cluster.
-rule gefast:
-    output: "process/{seqrun}.ccs.swarm"
-    input: "process/{seqrun}.ccs.derep.fasta"
-    resources:
-             walltime=120
-    shadow: "shallow"
-    group: "pacbio"
-    threads: 8
-    log: "logs/gefast_{seqrun}.log"
-    conda: "conda/gefast.yaml"
-    # not available as a module on UPPMAX
-    shell:
-         """
-         GeFaST {input} \\
-            --threshold 30\\
-            --sep-abundance ";size="\\
-            --swarm-output {output}\\
-            --swarm-fastidious\\
-            --swarm-no-otu-breaking\\
-            --swarm-num-explorers {threads}\\
-            --swarm-num-grafters {threads}\\
-            --swarm-num-threads-per-check {threads} &>{log}
-         """
-
-# split the swarm file up
-rule swarmconsensus:
-    output:
-        consensus="process/{seqrun}.ccs.swarm.cons.fasta",
-        swarmdir=directory("process/swarm/{seqrun}")
-    input:
-        swarm="process/{seqrun}.ccs.swarm",
-        script="scripts/swarm_consensus.sh",
-        fasta="process/{seqrun}.ccs.derep.fasta"
-    resources:
-             walltime=240
-    threads: maxthreads
-    conda: "conda/cons.yaml"
-    shell:
-        """
-        [ -d {output.swarmdir} ] || mkdir -p {output.swarmdir}
-        cat {input.swarm} |
-        parallel --pipe -j{threads} -N1 {input.script} {input.fasta} {output.swarmdir} {{#}} {wildcards.seqrun}
-        ls {output.swarmdir}/swarm_*.cons.fasta | xargs cat >{output.consensus}
         """
