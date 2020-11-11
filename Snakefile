@@ -140,7 +140,7 @@ rule sievemovies:
 # this preserves the demultiplexing info in the headers
 rule ccs:
     output: "process/{movie}.ccs.bam"
-    input: "process/{movie}.subreads.demux.pick.bam"
+    input: "process/{movie}.subreads.demux.sieve.bam"
     resources:
         walltime=120
     shadow: "shallow"
