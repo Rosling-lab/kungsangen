@@ -220,7 +220,7 @@ rule orient:
             --cpu {threads}\\
              {params.tempfasta}  >>{log}
         # create list of all sequences
-        awk '!/^#/[{print $1}]' >{params.tempall}
+        awk '!/^#/{{print $1}}' >{params.tempall}
         # sequences which are present multiple times
         sort <{params.tempall} | uniq -d  >{params.tempmulti}
         # sequences which are present only once
