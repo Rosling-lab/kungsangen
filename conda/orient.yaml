@@ -1,0 +1,9 @@
+name: vsearch
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - vsearch=2.15.1
+  - infernal=1.1.3
+  - fastx_toolkit=0.0.14

@@ -59,7 +59,7 @@ rule bax2bam:
     conda: "conda/pacbio.yaml"
     envmodules:
         "bioinfo-tools",
-        "SMRT/5.0.1"
+        "SMRT/5.0.1" # no bax2bam in newer versions
     shell: "bax2bam {input} -o {params.prefix} &> {log}"
 
 # endpoint target: convert all pacbio movies to Sequel format
@@ -109,7 +109,7 @@ rule lima:
     envmodules:
         "bioinfo-tools",
         "SMRT/7.0.1"
-    shell: "lima {input.bam} {input.tags} --different --peek-guess -j {threads} --keep-tag-idx-order {output} &>{log}"
+    shell: "lima {input.bam} {input.tags} --different --peek-guess -j {threads} {output} &>{log}"
 
 # filter out the samples which are not being used in this project.
 rule sieve:
@@ -147,7 +147,7 @@ rule ccs:
     conda: "conda/pacbio.yaml"
     envmodules:
         "bioinfo-tools",
-        "SMRT/5.0.1"
+        "SMRT/5.0.1" # ccs from newer versions doesn't accept RSII data
     shell: "ccs --numThreads {threads} {input} {output} &>{log}"
 
 # convert a ccs BAM to a fastq
@@ -162,8 +162,82 @@ rule bam2fastq:
     conda: "conda/pacbio.yaml"
     envmodules:
         "bioinfo-tools",
-        "smrt/5.0.1"
+        "smrt/7.0.1"
     shell: "bam2fastq -o process/{wildcards.movie}.ccs {input} &>{log}"
+
+# lima doesn't store any information about orientation when run on subreads,
+# and the primers are already gone, so we can't orient using primers.
+# instead, search for 5.8S.
+rule orient:
+    output:
+        orient = temp("process/{movie}.ccs.orient.fastq.gz"),
+        no58S = "process/{movie}.ccs.no58S.fastq.gz",
+        multi58S = "process/{movie}.ccs.multi58S.fastq.gz"
+    input:
+        ccs = "process/{movie}.ccs.fastq.gz",
+        cm = "reference/RF00002.cm"
+    params:
+        tempfasta = "process/{movie}.ccs.orient.fasta",
+        temptable = "{movie}_58S_hits.tsv",
+        tempall = "{movie}_all",
+        tempmulti = "{movie}_multi",
+        tempfwd = "{movie}_fwd",
+        temprev = "{movie}_rev",
+        temprevfq = "{movie}_rev.fastq"
+    threads: moviethreads
+    log: "logs/{movie}_orient.log"
+    conda: "conda/orient.yaml"
+    envmodules:
+        "bioinfo-tools",
+        "Fastx/0.0.14",
+        "infernal/1.1.2",
+        "vsearch/2.14.1"
+    shell:
+        """
+        # convert to fasta
+        fastq_to_fasta -i {input.ccs} -o {params.tempfasta} >{log}
+        # search for 5.8S
+        cmsearch --hmmonly\\
+            --noalign\\
+            --tblout {params.temptable}\\
+            --notrunc\\
+            --cpu {threads}\\
+             {params.tempfasta}  >>{log}
+        # create list of all sequences
+        awk '!/^#/[{print $1}]' >{params.tempall}
+        # sequences which are present multiple times
+        sort <{params.tempall} | uniq -d  >{params.tempmulti}
+        # sequences which are present only once
+        grep -v -f {params.tempmulti} {params.tempall} |
+        grep -f - {params.temptable} |
+        # column 9 is the orientation of the 5.8S hit: + or -
+        awk '$9 == "+" {{print $1 >{params.tempfwd}}}; $9 == "-" {{print $1 >{params.temprev}}}'
+        
+        vsearch --fastx_getseqs {input.ccs}\\
+            --labels {params.tempmulti}\\
+            --fastqout {output.multi58S}\\
+            --notmatchedfq - |
+        vsearch --fastx_getseqs -\\
+            --labels {params.tempfwd}\\
+            --fastqout {output.orient}\\
+            --notmatchedfq - |
+        vsearch --fastx_getseqs -\\
+            --labels {params.temprev}\\
+            --fastqout {params.temprevfq}\\
+            --notmatchedfq {output.no58S} 2>>{log}
+        fastx_reverse_complement -i {params.temprevfq} -z >>{output.orient}
+        
+        n=$(grep -c "^@" {input.ccs})
+        nfwd=$(wc -l {params.tempfwd})
+        nrev=$(wc -l {params.temprev})
+        nmulti=$(wc -l {params.tempmulti})
+        nnone=$(grep -c "^@" {output.no58S})
+        
+        echo "\n$nfwd/$n sequences have forward 5.8S hit" >>{log}
+        echo "$nrev/$n sequences have reverse 5.8S hit" >>{log}
+        echo "$nmulti/$n sequences have multiple 5.8s hits (see {output.multi58S})" >>{log}
+        echo "$nnone/$n sequences have no 5.8S hit (see {output.no58S})" >>{log}        
+        """
 
 # quality filter the ccs and dereplicate
 # allow up to 15 expected errors (about 1%) and minimum length 1000
@@ -174,7 +248,7 @@ rule derep:
     output:
         fasta="process/pb_363.ccs.derep.fasta",
         uc="process/pb_363.ccs.derep.uc"
-    input: expand("process/{movie}.ccs.fastq.gz", movie = moviefiles)
+    input: expand("process/{movie}.ccs.orient.fastq.gz", movie = moviefiles)
     resources:
         walltime=10
     shadow: "shallow"
@@ -228,21 +302,24 @@ rule gefast:
             --swarm-num-threads-per-check {threads} &>{log}
          """
 
+# for each of the swarm clusters, make a BAM file containing the source subreads
 rule swarmselect:
     output: directory("process/swarm/{seqrun}")
     input:
         swarm="process/{seqrun}.ccs.swarm",
         uc=   "process/{seqrun}.ccs.derep.uc",
-        bam=  "process/{seqrun}.ccs.bam"
-    conda: "conda/samtools.yaml"
+        bam=  expand("process/{movie}.demux.sieve.bam", movie = moviefiles),
+        script="scripts/swarm_laa.sh"
+    conda: "conda/swarmextract.yaml"
     envmodules:
         "bioinfo-tools",
-        "samtools"
+        "samtools",
+        "SMRT/7.0.1",
+        "gnuparallel/20180822"
     shell:
         """
         cat {input.swarm} |
-          parallel --pipe -N1 \\
-          "tr 
+          parallel --pipe -N1 {script} {{}} {input.uc} process .demux.sieve.bam {output}
         """
 
 
@@ -289,7 +366,7 @@ rule laagc:
     conda: "conda/pacbiolaa.yaml"
     envmodules:
         "bioinfo-tools",
-        "SMRT/5.0.1"
+        "SMRT/5.0.1" #laa from later versions doesn't accept RSII data
     shell:
         """
         laa {input.subreads}\\
@@ -333,7 +410,7 @@ rule laa:
     conda: "conda/pacbiolaa.yaml"
     envmodules:
         "bioinfo-tools",
-        "SMRT/5.0.1"
+        "SMRT/5.0.1" #laa from newer versions doesn't accept RSII data
     shell:
         """
         laa {input.subreads}\\

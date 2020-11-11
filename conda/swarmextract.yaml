@@ -1,0 +1,9 @@
+name: swarmextract
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - samtools=1.11
+  - pbcoretools=0.8.1
+  - parallel=20200922
