@@ -253,7 +253,8 @@ rule orient:
         echo "\n$nfwd/$n sequences have forward 5.8S hit" >>{log}
         echo "$nrev/$n sequences have reverse 5.8S hit" >>{log}
         echo "$nmulti/$n sequences have multiple 5.8s hits (see {output.multi58S})" >>{log}
-        echo "$nnone/$n sequences have no 5.8S hit (see {output.no58S})" >>{log}        
+        echo "$nnone/$n sequences have no 5.8S hit (see {output.no58S})" >>{log}
+        rm {params}      
         """
 
 # quality filter the ccs and dereplicate
