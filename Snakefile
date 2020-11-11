@@ -125,9 +125,9 @@ rule sieve:
     params:
         samples = "{movie}.tags.txt"
     shadow: "shallow"
-    threads: 1
+    threads: 4
     resources:
-        walltime=5
+        walltime=20
     log: "logs/sieve_{movie}.log"
     conda: "conda/samtools.yaml"
     envmodules:
@@ -135,13 +135,13 @@ rule sieve:
         "samtools"
     shell:
         """
-        sed 's/^/bc:B:s,/' {input.samples} > {params.samples} 2>{log}
+        sed 's/^/bc:B:S,/' {input.samples} > {params.samples} 2>{log}
         {{
             samtools view -H {input.bam}
-            samtools view {input.bam} |
+            samtools view -@1 {input.bam} |
             grep -f {params.samples}
         }} |
-        samtools view - -o {output} 2>>{log}
+        samtools view -@1 - -o {output} 2>>{log}
         rm {params}
         """
 
