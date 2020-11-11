@@ -110,7 +110,7 @@ rule lima:
     envmodules:
         "bioinfo-tools",
         "SMRT/7.0.1"
-    shell: "lima {input.bam} {input.tags} --different --peek-guess --isoseq -j {threads} {output}"
+    shell: "lima {input.bam} {input.tags} --different --peek-guess --isoseq -j {threads} {output} &>{log}"
 
 # filter out the samples which are not being used in this project.
 rule sieve:
