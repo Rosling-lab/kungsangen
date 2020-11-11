@@ -112,22 +112,39 @@ rule lima:
     shell: "lima {input.bam} {input.tags} --different --peek-guess -j {threads} {output} &>{log}"
 
 # filter out the samples which are not being used in this project.
+# bamsieve from pacbio looked like it would be a good way to do this,
+# but it doesn't let you supply two barcodes for asymmetric barcoding
+# samtools view doesn't filter by the bc: tag
+# so grep to the rescue!
 rule sieve:
     output:
           "process/{movie}.subreads.demux.sieve.bam"
     input:
          bam="process/{movie}.subreads.demux.bam",
          samples = "tags/which_tags.txt"
+    params:
+        samples = "{movie}.tags.txt",
+        temp = "{movie}.temp.bam"
     shadow: "shallow"
     threads: 1
     resources:
         walltime=5
     log: "logs/sieve_{movie}.log"
-    conda: "conda/pacbiodemux.yaml"
+    conda: "conda/samtools.yaml"
     envmodules:
         "bioinfo-tools",
-        "SMRT/7.0.1"
-    shell: "bamsieve --barcodes --whitelist {input.samples} {input.bam} {output} &>{log}"
+        "samtools"
+    shell:
+        """
+        sed 's/^/bc:B:s,/' {input.samples} > {params.samples}
+        {
+            samtools view -H {input.bam}
+            samtools view {input.bam} |
+            grep -f {params.samples}
+        } |
+        samtools view - -o {output}
+        rm {params}
+        """
 
 # endpoint target: demultiplex and sieve all movies
 rule sievemovies:
