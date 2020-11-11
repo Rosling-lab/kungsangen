@@ -123,7 +123,7 @@ rule sieve:
          bam="process/{movie}.subreads.demux.bam",
          samples = "tags/which_tags.txt"
     params:
-        temp = "{movie}.temp.bam"
+        samples = "{movie}.tags.txt"
     shadow: "shallow"
     threads: 1
     resources:
