@@ -178,7 +178,7 @@ rule bam2fastq:
     conda: "conda/pacbio.yaml"
     envmodules:
         "bioinfo-tools",
-        "smrt/7.0.1"
+        "SMRT/7.0.1"
     shell: "bam2fastq -o process/{wildcards.movie}.ccs {input} &>{log}"
 
 # lima doesn't store any information about orientation when run on subreads,
