@@ -1,0 +1,250 @@
+
+cd /Users/kerri/Desktop/Shadi/
+
+mkdir ./processReads/
+
+mkdir ./processReads/demultiplex/
+
+cd ./processReads/demultiplex/
+
+mkdir ./orient/
+
+mkdir ./orient/fwd/
+
+mkdir ./orient/rev/
+
+mkdir ./orient/cat_files/
+
+mkdir ./detectSiameras/
+
+cp ../.././start_files/pb_363_001/pb_363_001.reads_of_insert.fastq.gz ./orient/
+
+cd ./orient/
+
+
+####### before beginning, relabel the sequences in the fastq file
+
+gunzip pb_363_001.reads_of_insert.fastq.gz
+
+usearch11 -fastx_relabel pb_363_001.reads_of_insert.fastq -prefix rawseq_ -fastqout pb_363_relabelled.fastq
+
+
+## cleanup
+
+rm -i pb_363_001.reads_of_insert.fastq
+
+
+
+
+
+
+####### first, orient reads by detecting ITS1 in 5'-3' direction.take files with no detection, reverse complement and search again. cat files together. Also check for the presence of the reverse primer ########
+
+## will detect primerhits. (its1 5'-3' direction)
+
+
+cutadapt -e 0.15 -O 10 --action=none -g "TCCGTAGGTGAACCTGC" --untrimmed-output "./fwd/fwd_reads-unknown.fastq" -o "./fwd/fwd_reads-its1.fastq" pb_363_relabelled.fastq
+
+
+
+
+## copy the reads with forward detection to ./catfiles/
+
+cp ./fwd/fwd_reads-its1.fastq ./cat_files/
+
+cd ./rev/
+
+## take the unknown fasta, RC, and and search for fwd primer again.
+
+usearch11 -fastx_revcomp ../fwd/fwd_reads-unknown.fastq -fastqout rc_fwd_reads-unknown.fastq
+
+
+cutadapt -e 0.15 -O 10 --action=none -g "TCCGTAGGTGAACCTGC" --untrimmed-output "no_fwd_primer_found.fastq" -o "rev_reads-RC_its1.fastq" rc_fwd_reads-unknown.fastq
+
+cd ../cat_files/
+
+
+## copy the detected forward direction in the RC'ed reads too ./cat_files/ and then concatenate them to get one fasta file with reads oriented in 5'-3' direction
+
+cp ../rev/rev_reads-RC_its1.fastq .
+
+cat fwd_reads-its1.fastq rev_reads-RC_its1.fastq > sub_oriented_reads.fastq
+
+
+
+
+## check for presence of reverse primer (rcLR5)
+
+cutadapt -e 0.15 -O 10 --action=none -a "CGAAGTTTCCCTCAGGA" --untrimmed-output "no_rev_primer_found.fastq" -o "oriented_reads.fastq" sub_oriented_reads.fastq
+
+
+
+
+
+
+#######################################
+
+#### Detect siameras  NOTE:  Must be cutadapt v2.2 or greater
+## check the reads with PacBio type chimera
+
+
+## copy the oriented_reads to the ./detectSiameras/ folder
+
+cd ../../detectSiameras/
+
+cp ../orient/cat_files/oriented_reads.fastq .
+
+
+
+
+## look for reads starting with ITS1 and ending with rcITS1
+
+cutadapt --action=none -O 10 -a "TCCGTAGGTGAACCTGC;required;e=0.15...GCAGGTTCACCTACGGA;required;e=0.15" --untrimmed-output "noSiam1good.fastq" -o "siam1_its1_detected.fastq" oriented_reads.fastq
+
+
+
+
+## look for reads starting with LR5 and ending with rcLR5
+
+cutadapt --action=none -O 10 -a "TCCTGAGGGAAACTTCG;required;e=0.15...CGAAGTTTCCCTCAGGA;required;e=0.15" --untrimmed-output "noSiam1good.fastq" -o "siam2_LR5_detected.fastq" oriented_reads.fastq
+
+
+
+
+## look for reads starting with ITS1 and "ending" with ITS1
+
+cutadapt --action=none -O 10 -a "TCCGTAGGTGAACCTGC;required;e=0.15...TCCGTAGGTGAACCTGC;required;e=0.15" --untrimmed-output "noSiam1good.fastq" -o "siam3_its1_F2x_detected.fastq" oriented_reads.fastq
+
+
+
+
+## now, get list of seq names for each of these.  remove from oriented reads fastq.
+
+usearch11 -fastx_getlabels siam1_its1_detected.fastq -output siam1_names.txt
+
+usearch11 -fastx_getlabels siam2_LR5_detected.fastq -output siam2_names.txt
+
+usearch11 -fastx_getlabels siam3_its1_F2x_detected.fastq -output siam3_names.txt
+
+cat siam1_names.txt siam2_names.txt siam3_names.txt > all_siam_names.txt
+
+usearch11 -fastx_getseqs oriented_reads.fastq -labels all_siam_names.txt -fastqout siam_reads.fastq -notmatchedfq oriented_noSiam.fastq
+
+
+
+
+
+
+
+
+## remove any reads with LR5 or rcITS1 that may have slipped through
+
+cutadapt -e 0.15 --action=none -O 10 -b "GCAGGTTCACCTACGGA" --untrimmed-output "nowrongwayPgood.fastq" -o "siam4ww_rcITS1_detected.fastq" oriented_noSiam.fastq
+
+cutadapt -e 0.15 --action=none -O 10 -b "TCCTGAGGGAAACTTCG" --untrimmed-output "nowrongwayPgood.fastq" -o "siam5ww_LR5_detected.fastq" oriented_noSiam.fastq
+
+
+
+
+
+## now, get list of seq names for each of these.  remove from oriented_noSiam fastq.
+
+usearch11 -fastx_getlabels siam4ww_rcITS1_detected.fastq -output siam4_names.txt
+
+usearch11 -fastx_getlabels siam5ww_LR5_detected.fastq -output siam5_names.txt
+
+cat siam4_names.txt siam5_names.txt > all_wrongwayPs_names.txt
+
+usearch11 -fastx_getseqs oriented_noSiam.fastq -labels all_wrongwayPs_names.txt -fastqout wwP_reads.fastq -notmatchedfq pre_demult_reads.fastq
+
+
+
+
+## cleanup 
+
+rm -i noSiam1good.fastq
+
+rm -i nowrongwayPgood.fastq
+
+rm -i oriented_noSiam.fastq
+
+
+
+#####################################
+## now, demultiplex!
+
+## demultiplex in two steps.  first, search forward primers of interest (only its1_1-its1_3)
+#######then, demult each of those three into the reverse primer barcodes. 
+
+
+cd ..
+
+mkdir ./demult/
+
+mkdir ./demult/results/
+
+cp ./detectSiameras/pre_demult_reads.fastq ./demult/results/
+
+cp ../../start_files/its1_barcodes.fasta ./demult/results/
+
+cp ../../start_files/rc_lr5_barcodes.fasta ./demult/results/
+
+cp ../../start_files/new_fqNames.txt ./demult/results/
+
+cd ./demult/results/
+
+
+## demult by ITS1_ forward barcode
+
+
+cutadapt -e 0.15 -O 5 -g file:its1_barcodes.fasta -o "demult-{name}.fastq" pre_demult_reads.fastq
+
+
+## then, demultiplex each file containing anything of interest
+
+
+cutadapt -e 0.15 -O 5 -a file:rc_lr5_barcodes.fasta -o "ITS1_1-{name}.fastq" demult-its1_1.fastq
+
+cutadapt -e 0.15 -O 5 -a file:rc_lr5_barcodes.fasta -o "ITS1_2-{name}.fastq" demult-its1_2.fastq
+
+cutadapt -e 0.15 -O 5 -a file:rc_lr5_barcodes.fasta -o "ITS1_3-{name}.fastq" demult-its1_3.fastq
+
+
+## then, rename and move soil samples to a new folder
+## make sure names are listed in separate .txt file...
+
+while IFS=, read -r f c; do mv -v $f $c; done < new_fqNames.txt
+
+mkdir ../soilSamplesFastq/
+
+mkdir ../soilSamplesFastq/noPrimers/
+
+cp -v Wet* ../soilSamplesFastq/
+
+cp -v Dry* ../soilSamplesFastq/
+
+cd ../soilSamplesFastq/
+
+
+
+
+## remove primers for each
+
+for fq in *.fastq
+do
+    cutadapt -a "TCCGTAGGTGAACCTGC;e=0.15...CGAAGTTTCCCTCAGGA;required;e=0.15" -o "./noPrimers/$fq" -m 1 -O 10 --discard-untrimmed "$fq"
+done
+
+
+## copy the ./soilSamplesFastq/noPrimers/ folder to a new folder 
+
+cd ../../../..
+
+mkdir ./soilSamplesFastq_demult_noPrimers_unfilt/
+
+cp -r ./processReads/demultiplex/demult/soilSamplesFastq/noPrimers/ ./soilSamplesFastq_demult_noPrimers_unfilt/
+
+## now reads are demultiplexed and primers+barcodes+pads are removed. Reads are not filtered
+
+
+##############################

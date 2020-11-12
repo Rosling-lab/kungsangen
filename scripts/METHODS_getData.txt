@@ -1,0 +1,52 @@
+
+## download data from UPPMAX
+
+scp -r kerri@rackham.uppmax.uu.se:/proj/uppstore2017203/b2013211/community/raw-data/pb_363/readsofinsert/pb_363_001 /Users/kerri/Desktop/Shadi/start_files/
+
+
+
+
+
+####### download reference datasets of interest from UNITE DATABASE (version 8.0) to ./ref_dbs/ folder
+
+
+## UTAX/UCHIME, fungi dataset for SINTAX (71,042 seq):
+	https://data.datacite.org/application/zip/10.15156/BIO/786345
+	utax_reference_dataset_02.02.2019.fasta
+
+## UTAX/UCHIME, all eukaryotes dataset for SINTAX (122,187 seq):
+	https://data.datacite.org/application/zip/10.15156/BIO/786346
+	utax_reference_dataset_all_02.02.2019.fasta
+
+## GENERAL RELEASE, fungi only (35,667 seq): 
+   (** recommended for blasting against the fungal SHs)
+	https://dx.doi.org/10.15156/BIO/786343
+	sh_general_release_dynamic_02.02.2019.fasta
+
+## GENERAL RELEASE, all eukaryotes (122,187 seq):
+	https://data.datacite.org/application/zip/10.15156/BIO/786354
+	sh_general_release_dynamic_s_all_02.02.2019.fasta
+
+## UNITE+INSD, fungi (887,395 seq):
+	https://data.datacite.org/application/zip/10.15156/BIO/786347
+	UNITE_public_02.02.2019.fasta
+
+## UNITE+INSD, all eukaryotes (1,464,820 seq):
+	https://data.datacite.org/application/zip/10.15156/BIO/786348
+	UNITE_public_all_02.02.2019.fasta
+
+
+
+## some illegal characters exist in the NCBI fasta files... so fix with this 
+
+sed 's/ë/e/g' UNITE_public_02.02.2019.fasta > altUNITE_public_02.02.2019.fasta
+
+sed 's/ë/e/g' UNITE_public_all_02.02.2019.fasta > altUNITE_public_all_02.02.2019.fasta
+
+
+
+## get lr5_barcodes.fasta into reverse complement 
+
+cd ./Desktop/Shadi/
+
+usearch11 -fastx_revcomp ./start_files/lr5_barcodes.fasta -fastaout ./start_files/rc_lr5_barcodes.fasta
