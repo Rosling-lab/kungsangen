@@ -211,14 +211,15 @@ rule orient:
     shell:
         """
         # convert to fasta
-        fastq_to_fasta -i {input.ccs} -o {params.tempfasta} >{log}
+        zcat {input.ccs} | fastq_to_fasta -o {params.tempfasta} >{log}
         # search for 5.8S
         cmsearch --hmmonly\\
-            --noalign\\
+            --noali\\
             --tblout {params.temptable}\\
             --notrunc\\
             --cpu {threads}\\
-             {params.tempfasta}  >>{log}
+            {input.cm}\\
+            {params.tempfasta} >>{log}
         # create list of all sequences
         awk '!/^#/{{print $1}}' >{params.tempall}
         # sequences which are present multiple times
