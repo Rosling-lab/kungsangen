@@ -3,3 +3,13 @@ process
 .snakemake
 raw
 .idea
+.Rproj.user
+start_files/pb_363_001
+processReads/demultiplex/orient
+processReads/demultiplex/detectSiameras
+processReads/demultiplex/demult/results
+
+
+.Rhistory
+
+kungsangen.Rproj

@@ -1,0 +1,268 @@
+
+## now reads have already been demultiplexed with primers+barcodes+pads removed, but are not quality filtered.  In directory: ./soilSamplesFastq_demult_noPrimers_unfilt/
+
+
+## copy the ./soilSamplesFastq_demult_noPrimers_unfilt/ folder to a new folder for OTU clustering
+
+cd /Users/kerri/Desktop/Shadi/
+
+mkdir ./processReads/clusterOTUs/
+
+mkdir ./processReads/clusterOTUs/qualityFilter/
+
+mkdir ./processReads/clusterOTUs/qualityFilter/demult_reads/
+
+cp -r ./soilSamplesFastq_demult_noPrimers_unfilt/ ./processReads/clusterOTUs/qualityFilter/demult_reads/
+
+
+
+##############################
+
+cd ./processReads/clusterOTUs/qualityFilter/demult_reads/
+
+## first, add sample name to each label
+
+for fq in *.fastq
+do
+    usearch11 -fastq_filter $fq -sample "${fq%.fastq}" -fastq_eeout -fastaout "${fq%.fastq}wSampName.fasta" -fastqout "${fq%.fastq}wSampName.fastq"
+done
+
+cat *wSampName.fasta > ../all20samp_unfiltReads.fasta
+
+cat *wSampName.fastq > ../all20samp_unfiltReads.fastq
+
+cd ..
+
+
+
+
+## cleanup
+
+rm -rf ./demult_reads/
+
+
+
+
+####### quality filter reads
+
+## first, quality filter (max EE rate 0.01) and add sample name to label
+
+usearch11 -fastq_filter all20samp_unfiltReads.fastq -fastq_maxee_rate 0.01 -fastqout all20samp_QsubFiltReads.fastq
+
+
+
+## then, filter by length (reads min 1000bp and max 2000bp)
+
+cutadapt -m 1000 -M 2000 -o "filteredReads_all20samp.fastq" --too-short-output "tooShort_all20samp.fastq" --too-long-output "tooLong_all20samp.fastq" all20samp_QsubFiltReads.fastq
+
+
+
+
+mkdir ../cluster/
+
+cd ../cluster/
+
+
+
+###### get OTUS
+
+## dereplicate to unique sequences and add the number of reads to label
+
+usearch11 -fastx_uniques ../qualityFilter/filteredReads_all20samp.fastq -fastqout uniques_filteredReads_all20samp.fastq -fastaout uniques_filteredReads_all20samp.fasta -sizeout -relabel uniqseq -uc all.uniques.uc -log all.uniques.log  -minuniquesize 2
+
+
+
+
+## cluster otus at 97% 
+
+usearch11 -sortbysize uniques_filteredReads_all20samp.fastq -fastqout uniques_filteredReads_all20samp_sorted.fastq
+
+usearch11 -cluster_otus uniques_filteredReads_all20samp_sorted.fastq -otus otus_all20samp.fasta -uparseout uparse_results_97.txt -relabel OTU -minsize 2
+
+
+
+
+## map reads to otus and get otu table
+## -id 0.97
+
+
+## using all demultiplexed (with primers trimmed) but unfiltered (maxEE rate, length) as recommended 
+usearch11 -otutab ../qualityFilter/all20samp_unfiltReads.fastq -otus otus_all20samp.fasta -otutabout otutab_all20samp.txt -mapout map_all20samp.txt -notmatchedfq reads_notOTUmapped.fastq
+
+
+###### extract ITS2 and do taxonomy assignment
+
+
+mkdir ../ITSx97percOTUs/
+cp otus_all20samp.fasta ../ITSx97percOTUs/
+cd ../ITSx97percOTUs/
+
+
+## extract ITS2 region
+
+ITSx -i otus_all20samp.fasta -o all20samp_OTU_out --table T --results T
+
+
+
+## reformat the positions table to be used for its2 extraction by bp position
+
+cut -f 1,4,6,7 all20samp_OTU_out.positions.txt | grep -v 'Not found' | cut -f 1,3 | sed 's/ITS2: /':'/g' | tr '\t' ' ' | sed 's/ //g' > all20samp_ITS2pos.txt
+
+
+## get a list of OTUs with detectable ITS2 positions
+
+sed 's/:.*$//g' all20samp_ITS2pos.txt > otus_wITS2_list.txt
+
+
+
+## filter the fasta file to include only OTUs with detectable ITS2 positions
+
+usearch11 -fastx_getseqs otus_all20samp.fasta -labels otus_wITS2_list.txt -fastaout otus_all20samp_hasITS2_fullSeq.fasta
+
+
+
+## first index the fasta file to allow for region extraction, then extract regions
+
+samtools faidx otus_all20samp_hasITS2_fullSeq.fasta
+
+samtools faidx otus_all20samp_hasITS2_fullSeq.fasta -r all20samp_ITS2pos.txt -o otus_all20samp_hasITS2_ITS2onlyWcoords.fasta --length 400
+
+
+
+## its2 bp positions will be printed to the headers.  Remove with this:
+
+sed 's/:.*$//g' otus_all20samp_hasITS2_ITS2onlyWcoords.fasta > otus_all20samp_hasITS2_ITS2only.fasta
+
+
+
+
+
+### get taxonomy 
+
+
+mkdir ../OTUtaxonomy/
+
+cp otus_all20samp_hasITS2_ITS2only.fasta ../OTUtaxonomy/
+
+cd ../OTUtaxonomy/
+
+####### taxonomy prediction
+
+### SINTAX, utax reference database from UNITE, fungi only (71,042 seqs)
+# 		https://data.datacite.org/application/zip/10.15156/BIO/786345
+
+vsearch --sintax otus_all20samp_hasITS2_ITS2only.fasta --db ../../../ref_dbs/utax_reference_dataset_02.02.2019.fasta --strand plus --tabbedout tax_all20samp_OTU.sintaxFUNG --sintax_cutoff 0.8
+
+
+### SINTAX, utax reference database from UNITE, all Eukaryotes (122,187 seqs)
+# 		https://data.datacite.org/application/zip/10.15156/BIO/786346
+
+vsearch --sintax otus_all20samp_hasITS2_ITS2only.fasta --db ../../../ref_dbs/utax_reference_dataset_all_02.02.2019.fasta --strand plus --tabbedout tax_all20samp_OTU.sintaxwEUK --sintax_cutoff 0.8
+
+
+
+
+### BLAST method
+
+## blast against utax reference database from UNITE (71,042 seqs, same as above)
+# 		https://data.datacite.org/application/zip/10.15156/BIO/786345
+
+
+vsearch --usearch_global otus_all20samp_hasITS2_ITS2only.fasta --db ../../../ref_dbs/utax_reference_dataset_02.02.2019.fasta --top_hits_only --output_no_hits --maxaccepts 0 --maxrejects 0 --id 0.6 --blast6out tax_all20samp_OTU.UTAXblast --alnout tax_all20samp_OTU.UTAXblastAln
+
+
+
+## blast against utax reference database from UNITE , all Eukaryotes (122,187 seqs, same as above)
+# 		https://data.datacite.org/application/zip/10.15156/BIO/786346
+
+
+vsearch --usearch_global otus_all20samp_hasITS2_ITS2only.fasta --db ../../../ref_dbs/utax_reference_dataset_all_02.02.2019.fasta --top_hits_only --output_no_hits --maxaccepts 0 --maxrejects 0 --id 0.6 --blast6out tax_all20samp_OTU.UTAXwEUKblast --alnout tax_all20samp_OTU.UTAXwEUKblastAln
+
+
+
+
+
+## blast against GENERAL RELEASE from UNITE, fungi only (35,667; recommended for blasting agains SHs) 
+# 		https://dx.doi.org/10.15156/BIO/786343
+
+vsearch --usearch_global otus_all20samp_hasITS2_ITS2only.fasta --db ../../../ref_dbs/sh_general_release_dynamic_02.02.2019.fasta --top_hits_only --output_no_hits --maxaccepts 0 --maxrejects 0 --id 0.6 --blast6out tax_all20samp_OTU.GRblast --alnout tax_all20samp_OTU.GRblastAln
+
+
+
+## blast against GENERAL RELEASE from UNITE, all eukaryotes (with singletons, etc.  122,187 seqs). 
+# 		https://data.datacite.org/application/zip/10.15156/BIO/786354
+
+vsearch --usearch_global otus_all20samp_hasITS2_ITS2only.fasta --db ../../../ref_dbs/sh_general_release_dynamic_s_all_02.02.2019.fasta --top_hits_only --output_no_hits --maxaccepts 0 --maxrejects 0 --id 0.6 --blast6out tax_all20samp_OTU.GRwEUKblast --alnout tax_all20samp_OTU.GRwEUKblastAln
+
+
+
+
+## get a list of fungal OTUs
+
+grep -e 'k__Fungi' tax_all20samp_OTU.GRwEUKblast | cut -f 1 | uniq > otus_wITS2_fungi_list.GRwEUKblast.txt
+
+
+## print a list of OTUs with multiple best hits
+
+cut -f 1 tax_all20samp_OTU.GRwEUKblast | uniq -c | sort -r > OTUTopHits.GRwEUKblast_TopHitsCounts.txt
+
+
+## subset otu table to include only outs with ITS2 region
+
+mkdir ../pareOTUtable/
+
+cd ../pareOTUtable/
+
+usearch11 -otutab_otu_subset ../cluster/otutab_all20samp.txt -labels ../ITSx97percOTUs/otus_wITS2_list.txt -output otutab_all20samp_OTUswITS2.txt
+
+usearch11 -otutab_otu_subset ../cluster/otutab_all20samp.txt -labels ../OTUtaxonomy/otus_wITS2_fungi_list.GRwEUKblast.txt -output otutab_all20samp_OTUswITS2_GRwEUKFungi.txt
+
+
+cd ../../..
+
+mkdir ./OTU_results/
+
+mkdir ./OTU_results/other/
+
+mkdir ./OTU_results/taxonomy/
+
+
+## copy results to new folder
+
+cp ./processReads/clusterOTUs/qualityFilter/all20samp_unfiltReads.fasta ./OTU_results/other/
+cp ./processReads/clusterOTUs/qualityFilter/all20samp_unfiltReads.fastq ./OTU_results/other/
+cp ./processReads/clusterOTUs/qualityFilter/filteredReads_all20samp.fastq ./OTU_results/other/
+cp ./processReads/clusterOTUs/qualityFilter/tooLong_all20samp.fastq ./OTU_results/other/
+cp ./processReads/clusterOTUs/qualityFilter/tooShort_all20samp.fastq ./OTU_results/other/
+
+cp ./processReads/clusterOTUs/cluster/map_all20samp.txt ./OTU_results/other/
+cp ./processReads/clusterOTUs/cluster/otus_all20samp.fasta ./OTU_results/
+cp ./processReads/clusterOTUs/cluster/otutab_all20samp.txt ./OTU_results/
+cp ./processReads/clusterOTUs/cluster/reads_notOTUmapped.fastq ./OTU_results/other/
+cp ./processReads/clusterOTUs/cluster/uniques_filteredReads_all20samp.fastq ./OTU_results/other/
+cp ./processReads/clusterOTUs/cluster/uniques_filteredReads_all20samp.fasta ./OTU_results/other/
+cp ./processReads/clusterOTUs/cluster/uparse_results_97.txt ./OTU_results/other/
+
+cp ./processReads/clusterOTUs/OTUtaxonomy/tax_all20samp_OTU.sintaxFUNG ./OTU_results/taxonomy/
+cp ./processReads/clusterOTUs/OTUtaxonomy/tax_all20samp_OTU.sintaxwEUK ./OTU_results/taxonomy/
+cp ./processReads/clusterOTUs/OTUtaxonomy/tax_all20samp_OTU.UTAXblast ./OTU_results/taxonomy/
+cp ./processReads/clusterOTUs/OTUtaxonomy/tax_all20samp_OTU.UTAXblastAln ./OTU_results/taxonomy/
+cp ./processReads/clusterOTUs/OTUtaxonomy/tax_all20samp_OTU.UTAXwEUKblast ./OTU_results/taxonomy/
+cp ./processReads/clusterOTUs/OTUtaxonomy/tax_all20samp_OTU.UTAXwEUKblastAln ./OTU_results/taxonomy/
+cp ./processReads/clusterOTUs/OTUtaxonomy/tax_all20samp_OTU.GRblast ./OTU_results/taxonomy/
+cp ./processReads/clusterOTUs/OTUtaxonomy/tax_all20samp_OTU.GRblastAln ./OTU_results/taxonomy/
+cp ./processReads/clusterOTUs/OTUtaxonomy/tax_all20samp_OTU.GRwEUKblast ./OTU_results/taxonomy/
+cp ./processReads/clusterOTUs/OTUtaxonomy/tax_all20samp_OTU.GRwEUKblastAln ./OTU_results/taxonomy/
+cp ./processReads/clusterOTUs/OTUtaxonomy/otus_wITS2_fungi_list.GRwEUKblast.txt ./OTU_results/taxonomy/
+cp ./processReads/clusterOTUs/OTUtaxonomy/OTUTopHits.GRwEUKblast_TopHitsCounts.txt ./OTU_results/taxonomy/
+
+cp ./processReads/clusterOTUs/ITSx97percOTUs/otus_all20samp_hasITS2_ITS2only.fasta ./OTU_results/
+cp ./processReads/clusterOTUs/ITSx97percOTUs/otus_all20samp_hasITS2_fullSeq.fasta ./OTU_results/
+cp ./processReads/clusterOTUs/ITSx97percOTUs/all20samp_OTU_out.positions.txt ./OTU_results/
+
+cp ./processReads/clusterOTUs/pareOTUtable/otutab_all20samp_OTUswITS2.txt ./OTU_results/
+cp ./processReads/clusterOTUs/pareOTUtable/otutab_all20samp_OTUswITS2_GRwEUKFungi.txt ./OTU_results/
+
+
+
+
