@@ -198,7 +198,7 @@ rule bam2fastq:
 
 rule nodemux_combine:
     output: "process/pb_363.nodemux.ccs.fastq.gz"
-    input: "process/{movie}.nodemux.ccs.fastq.gz"
+    input: expand("process/{movie}.nodemux.ccs.fastq.gz", movie = moviefiles)
     resources:
              walltime=10
     threads: 1
