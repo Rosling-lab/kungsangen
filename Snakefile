@@ -194,7 +194,7 @@ rule bam2fastq:
     envmodules:
         "bioinfo-tools",
         "SMRT/7.0.1"
-    shell: "bam2fastq -o process/{wildcards.movie}.ccs {input} &>{log}"
+    shell: "bam2fastq -o process/{wildcards.name} {input} &>{log}"
 
 rule nodemux_combine:
     output: "process/nodemux/pb_363.ccs.fastq.gz"
