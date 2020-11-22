@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # n uc bamdir bamsuffix outdir ...
 printf -v n "%05d" $1
+echo "cluster $n"
 shift
 uc="$1"
 shift
@@ -34,4 +35,5 @@ done
 
 # put everything together in one bam
 [ -d "$outdir" ] || mkdir -p "$outdir"
-samtools merge "$outdir/swarm_$n.bam" $allbams
+pbmerge -o "$outdir/swarm_$n.bam" $allbams
+rm -r "$temp"

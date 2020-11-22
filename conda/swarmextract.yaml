@@ -4,6 +4,6 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - samtools=1.11
+  - pbbam=1.6.0
   - pbcoretools=0.8.1
   - parallel=20200922

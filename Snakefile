@@ -186,9 +186,9 @@ rule bam2fastq:
 # instead, search for 5.8S.
 rule orient:
     output:
-        orient = temp("process/{movie}.ccs.orient.fastq.gz"),
-        no58S = "process/{movie}.ccs.no58S.fastq.gz",
-        multi58S = "process/{movie}.ccs.multi58S.fastq.gz"
+        orient = temp("process/{movie}.ccs.orient.fastq"),
+        no58S = "process/{movie}.ccs.no58S.fastq",
+        multi58S = "process/{movie}.ccs.multi58S.fastq"
     input:
         ccs = "process/{movie}.ccs.fastq.gz",
         cm = "reference/RF00002.cm"
@@ -221,14 +221,14 @@ rule orient:
             {input.cm}\\
             {params.tempfasta} >>{log}
         # create list of all sequences
-        awk '!/^#/{{print $1}}' >{params.tempall}
+        awk '!/^#/{{print $1}}' {params.temptable} >{params.tempall}
         # sequences which are present multiple times
         sort <{params.tempall} | uniq -d  >{params.tempmulti}
         # sequences which are present only once
         grep -v -f {params.tempmulti} {params.tempall} |
         grep -f - {params.temptable} |
-        # column 9 is the orientation of the 5.8S hit: + or -
-        awk '$9 == "+" {{print $1 >{params.tempfwd}}}; $9 == "-" {{print $1 >{params.temprev}}}'
+        # column 10 is the orientation of the 5.8S hit: + or -
+        awk '$10 == "+" {{print $1 >"{params.tempfwd}"}}; $10 == "-" {{print $1 >"{params.temprev}"}}'
         
         vsearch --fastx_getseqs {input.ccs}\\
             --labels {params.tempmulti}\\
@@ -242,7 +242,7 @@ rule orient:
             --labels {params.temprev}\\
             --fastqout {params.temprevfq}\\
             --notmatchedfq {output.no58S} 2>>{log}
-        fastx_reverse_complement -i {params.temprevfq} -z >>{output.orient}
+        fastx_reverse_complement -i {params.temprevfq} >>{output.orient}
         
         n=$(grep -c "^@" {input.ccs})
         nfwd=$(wc -l {params.tempfwd})
@@ -266,7 +266,7 @@ rule derep:
     output:
         fasta="process/pb_363.ccs.derep.fasta",
         uc="process/pb_363.ccs.derep.uc"
-    input: expand("process/{movie}.ccs.orient.fastq.gz", movie = moviefiles)
+    input: expand("process/{movie}.ccs.orient.fastq", movie = moviefiles)
     resources:
         walltime=10
     shadow: "shallow"
@@ -278,7 +278,7 @@ rule derep:
         "vsearch/2.14.1"
     shell:
         """
-         zcat {input} |
+         cat {input} |
          vsearch --fastq_filter - \\
             --fastq_maxee 15 \\
             --fastq_qmax 93 \\
@@ -288,7 +288,7 @@ rule derep:
             --sizeout \\
             --fasta_width 0\\
             --output {output.fasta}\\
-            --uc {output.uc}    
+            --uc {output.uc}
         """
 
 # Swarm-cluster the CCS reads
@@ -320,6 +320,16 @@ rule gefast:
             --swarm-num-threads-per-check {threads} &>{log}
          """
 
+# index a pacbio bam file
+rule index:
+    output: "{basename}.bam.pbi"
+    input: "{basename}.bam"
+    conda: "conda/swarmextract.yaml"
+    envmodules:
+        "bioinfo-tools",
+        "SMRT/7.0.1"
+    shell: "pbindex {input}"
+
 # for each of the swarm clusters, make a BAM file containing the source subreads
 rule swarmselect:
     output: directory("process/swarm/{seqrun}")
@@ -327,17 +337,22 @@ rule swarmselect:
         swarm="process/{seqrun}.ccs.swarm",
         uc=   "process/{seqrun}.ccs.derep.uc",
         bam=  expand("process/{movie}.subreads.demux.sieve.bam", movie = moviefiles),
+        pbi= expand("process/{movie}.subreads.demux.sieve.bam.pbi", movie = moviefiles),
         script="scripts/swarm_laa.sh"
+    log: "logs/swarmselect_{seqrun}.log"
+    threads: maxthreads
     conda: "conda/swarmextract.yaml"
-    envmodules:
-        "bioinfo-tools",
-        "samtools",
-        "SMRT/7.0.1",
-        "gnuparallel/20180822"
+    #bamsieve in the env module gives mysterious errors
+    #envmodules:
+    #    "bioinfo-tools",
+    #    "samtools",
+    #    "SMRT/7.0.1",
+    #    "gnuparallel/20180822"
     shell:
         """
+	[ -d {output} ] || mkdir -p {output}
         cat {input.swarm} |
-          parallel --pipe -N1 {script} {{}} {input.uc} process .demux.sieve.bam {output}
+          parallel --pipe -N1 -j {threads} {input.script} {{#}} {input.uc} process .subreads.demux.sieve {output} > {log}
         """
 
 # find haplotypes (ASVs) from pacbio subreads using gefast cluster consensus as guides
