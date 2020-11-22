@@ -166,6 +166,21 @@ rule ccs:
         "SMRT/5.0.1" # ccs from newer versions doesn't accept RSII data
     shell: "ccs --numThreads {threads} {input} {output} &>{log}"
 
+rule ccs2:
+    output: "process/{movie}.nodemux.ccs.bam"
+    input: "process/{movie}.subreads.bam"
+    resources:
+        walltime=120
+    shadow: "shallow"
+    threads: moviethreads
+    log: "logs/nodemux_ccs_{movie}.log"
+    conda: "conda/pacbio.yaml"
+    envmodules:
+        "bioinfo-tools",
+        "SMRT/5.0.1" # ccs from newer versions doesn't accept RSII data
+    shell: "ccs --numThreads {threads} {input} {output} &>{log}"
+
+
 # convert a ccs BAM to a fastq
 # this loses a lot of PacBio-specific information, but it is useful for other software.
 rule bam2fastq:
@@ -180,6 +195,15 @@ rule bam2fastq:
         "bioinfo-tools",
         "SMRT/7.0.1"
     shell: "bam2fastq -o process/{wildcards.movie}.ccs {input} &>{log}"
+
+rule nodemux_combine:
+    output: "process/pb_363.nodemux.ccs.fastq.gz"
+    input: expand("process/{movie}.nodemux.ccs.fastq.gz", movie = moviefiles)
+    resources:
+             walltime=10
+    threads: 1
+    log: "logs/nodemux_ccs_pb_363.log"
+    shell: "cat {input} >{output} 2>{log}"
 
 # lima doesn't store any information about orientation when run on subreads,
 # and the primers are already gone, so we can't orient using primers.
