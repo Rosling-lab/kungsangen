@@ -167,7 +167,7 @@ rule ccs:
     shell: "ccs --numThreads {threads} {input} {output} &>{log}"
 
 rule ccs2:
-    output: "process/{movie}.nodemux.ccs.bam"
+    output: "process/nodemux/{movie}.ccs.bam"
     input: "process/{movie}.subreads.bam"
     resources:
         walltime=120
@@ -178,18 +178,18 @@ rule ccs2:
     envmodules:
         "bioinfo-tools",
         "SMRT/5.0.1" # ccs from newer versions doesn't accept RSII data
-    shell: "ccs --numThreads {threads} {input} {output} &>{log}"
+    shell: "[ -d process/nodemux ] || mkdir -p process/nodemux && ccs --numThreads {threads} {input} {output} &>{log}"
 
 
 # convert a ccs BAM to a fastq
 # this loses a lot of PacBio-specific information, but it is useful for other software.
 rule bam2fastq:
-    output: temp("process/{movie}.ccs.fastq.gz")
-    input: "process/{movie}.ccs.bam"
+    output: temp("process/{name}.fastq.gz")
+    input: "process/{name}.bam"
     resources:
              walltime=10
     threads: 1
-    log: "logs/bam2fastq_{movie}.log"
+    log: "logs/bam2fastq_{name}.log"
     conda: "conda/pacbio.yaml"
     envmodules:
         "bioinfo-tools",
@@ -197,8 +197,8 @@ rule bam2fastq:
     shell: "bam2fastq -o process/{wildcards.movie}.ccs {input} &>{log}"
 
 rule nodemux_combine:
-    output: "process/pb_363.nodemux.ccs.fastq.gz"
-    input: expand("process/{movie}.nodemux.ccs.fastq.gz", movie = moviefiles)
+    output: "process/nodemux/nodemux.ccs.fastq.gz"
+    input: expand("process/nodemux/{movie}.ccs.fastq.gz", movie = moviefiles)
     resources:
              walltime=10
     threads: 1
