@@ -197,7 +197,7 @@ rule bam2fastq:
     shell: "bam2fastq -o process/{wildcards.movie}.ccs {input} &>{log}"
 
 rule nodemux_combine:
-    output: "process/nodemux/nodemux.ccs.fastq.gz"
+    output: "process/nodemux/pb_363.ccs.fastq.gz"
     input: expand("process/nodemux/{movie}.ccs.fastq.gz", movie = moviefiles)
     resources:
              walltime=10
