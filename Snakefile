@@ -7,6 +7,7 @@ from glob import glob
 import re
 import subprocess
 from math import gcd
+from snakemake.io import glob_wildcards
 
 # For testing, parse the yaml file (this is automatically done by Snakemake)
 #import yaml
@@ -379,24 +380,27 @@ rule swarmselect:
           {{ parallel --pipe -N1 -j {threads} {input.script} {{#}} {input.uc} process .subreads.demux.sieve {output}; }} &>{log}
         """
 
-# find haplotypes (ASVs) from pacbio subreads using gefast cluster consensus as guides
+# find haplotypes (ASVs) from pacbio subreads in each gefast cluster
 rule laa:
     output:
-        result="process/{seqrun}.laa.fastq.gz",
-        junk="process/{seqrun}.chimera_noise.fastq.gz",
-        report="process/{seqrun}.report.csv",
-        pcr="process/{seqrun}.pcr.csv"
+        result="process/swarm/{seqrun}/swarm_{clust}.laa.fastq.gz",
+        junk="process/swarm/{seqrun}/swarm_{clust}.junk.fastq.gz",
+        report="process/swarm/{seqrun}/swarm_{clust}.report.csv",
+        subreadsreport="process/swarm/{seqrun}/swarm_{clust}.subreads.csv",
+        pcr="process/swarm/{seqrun}/swarm_{clust}.pcr.csv"
     input:
-        subreads="process/{seqrun}.demux.subreads.bam"
+        subreads="process/swarm/{seqrun}/swarm_{clust}.bam"
     shadow: "shallow"
-    threads: maxthreads
+    # although each invocation of laa can run in parallel, this is probably quite inefficient for the
+    # majority of clusters, which are small.  So just do single threads, with multiple clusters running in parallel.
+    threads: 1
     params:
-        prefix="process/pb_363",
-        result_prefix = "process/pb_363.laa.fastq",
-        junk_prefix = "process/pb_363.chimera_noise.fastq"
+        prefix="process/swarm/{seqrun}/swarm_{clust}",
+        result_prefix = "process/swarm/{seqrun}/swarm_{clust}.laa.fastq",
+        junk_prefix = "process/swarm/{seqrun}/swarm_{clust}.junk.fastq"
     resources:
         walltime=240
-    log: "logs/laa_{seqrun}.log"
+    log: "logs/laa_{seqrun}_{clust}.log"
     conda: "conda/pacbiolaa.yaml"
     envmodules:
         "bioinfo-tools",
@@ -405,14 +409,24 @@ rule laa:
         """
         laa {input.subreads}\\
             --numThreads {threads}\\
+        # pool all samples
             --ignoreBc\\
+        # this is the number of subreads, not the number of CCS reads
+        # in testing, the largest swarm cluster had about 66000
             --maxReads 100000\\
-            --maxClusteringReads 20000\\
+        # this should still take more than one subread per ZMW
+            --maxClusteringReads 10000\\
             --minLength 1000\\
-            --minClusterSize 3\\
-            --maxPhasingReads 20000\\
-            --minSplitReads 3\\
-            --minSplitFraction 0.01\\
+            --maxLength 2500\\
+        # allow small clusters; 20 is approxmately the number of subreads in one ZMW
+            --minClusterSize 50\\
+        # phase all the reads together
+        # this could probably be reduced for speed, but we would like to be able to discover
+        # rare ASVs which are variants of common ASVs
+        # for a cluster of 66000 reads, this would be 66 reads
+            --maxPhasingReads 100000\\
+            --minSplitReads 50\\
+            --minSplitFraction 0.001\\
             --resultFile {params.result_prefix}\\
             --junkFile {params.junk_prefix}\\
             --reportFile {output.report}\\
@@ -421,3 +435,11 @@ rule laa:
         gzip {params.result_prefix} >&{log} &&
         gzip {params.junk_prefix} >&{log}
         """
+
+def swarmfiles(wildcards):
+    swarmdir = checkpoints.swarmselect.get(seqrun = wildcards.seqrun).output
+    clusters = glob_wildcards(os.path.join(swarmdir, "swarm_{cluster}.bam"))
+    expand("{swarmdir}/swarm_{cluster}.{ext}", swarmdir = swarmdir, cluster = clusters,
+           ext = ["laa.fastq.gz", "junk.fastq.gz", "report.csv", "subreads.csv", "pcr.csv"])
+rule all_laa:
+    input: swarmfiles([seqrun = "pb_363"])
