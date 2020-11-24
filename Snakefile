@@ -356,7 +356,7 @@ rule index:
     shell: "pbindex {input}"
 
 # for each of the swarm clusters, make a BAM file containing the source subreads
-rule swarmselect:
+checkpoint swarmselect:
     output: directory("process/swarm/{seqrun}")
     input:
         swarm="process/{seqrun}.ccs.swarm",
@@ -386,7 +386,7 @@ rule laa:
         result="process/swarm/{seqrun}/swarm_{clust}.laa.fastq.gz",
         junk="process/swarm/{seqrun}/swarm_{clust}.junk.fastq.gz",
         report="process/swarm/{seqrun}/swarm_{clust}.report.csv",
-        subreadsreport="process/swarm/{seqrun}/swarm_{clust}.subreads.csv",
+        subreads="process/swarm/{seqrun}/swarm_{clust}.subreads.csv",
         pcr="process/swarm/{seqrun}/swarm_{clust}.pcr.csv"
     input:
         subreads="process/swarm/{seqrun}/swarm_{clust}.bam"
@@ -394,10 +394,6 @@ rule laa:
     # although each invocation of laa can run in parallel, this is probably quite inefficient for the
     # majority of clusters, which are small.  So just do single threads, with multiple clusters running in parallel.
     threads: 1
-    params:
-        prefix="process/swarm/{seqrun}/swarm_{clust}",
-        result_prefix = "process/swarm/{seqrun}/swarm_{clust}.laa.fastq",
-        junk_prefix = "process/swarm/{seqrun}/swarm_{clust}.junk.fastq"
     resources:
         walltime=240
     log: "logs/laa_{seqrun}_{clust}.log"
@@ -409,37 +405,32 @@ rule laa:
         """
         laa {input.subreads}\\
             --numThreads {threads}\\
-        # pool all samples
             --ignoreBc\\
-        # this is the number of subreads, not the number of CCS reads
-        # in testing, the largest swarm cluster had about 66000
             --maxReads 100000\\
-        # this should still take more than one subread per ZMW
             --maxClusteringReads 10000\\
             --minLength 1000\\
             --maxLength 2500\\
-        # allow small clusters; 20 is approxmately the number of subreads in one ZMW
             --minClusterSize 50\\
-        # phase all the reads together
-        # this could probably be reduced for speed, but we would like to be able to discover
-        # rare ASVs which are variants of common ASVs
-        # for a cluster of 66000 reads, this would be 66 reads
             --maxPhasingReads 100000\\
             --minSplitReads 50\\
-            --minSplitFraction 0.001\\
-            --resultFile {params.result_prefix}\\
-            --junkFile {params.junk_prefix}\\
-            --reportFile {output.report}\\
-            --inputReportFile {output.pcr}\\
-            --subreadsReportPrefix {params.prefix} >&{log} && 
-        gzip {params.result_prefix} >&{log} &&
-        gzip {params.junk_prefix} >&{log}
+            --minSplitFraction 0.001\\ >&{log} && 
+        touch amplicon_analysis.fastq &&
+        touch amplicon_analysis_chimeras_noise.fastq &&
+        touch amplicon_analysis_summary.csv &&
+        touch amplicon_analysis_input.csv &&
+        touch amplicon_analysis_subreads.csv &&
+        gzip -c amplicon_analysis.fastq >{output.result} 2>>{log} &&
+        gzip -c amplicon_analysis_chimeras_noise.fastq >{output.junk} 2>>{log} &&
+        mv amplicon_analysis_summary.csv {output.report} &>>{log} &&
+        mv amplicon_analysis_input.csv {output.pcr} &>>{log} &&
+        mv amplicon_analysis_subreads.csv {output.subreads} &>>{log}
         """
 
 def swarmfiles(wildcards):
-    swarmdir = checkpoints.swarmselect.get(seqrun = wildcards.seqrun).output
+    swarmdir = checkpoints.swarmselect.get(seqrun = wildcards.seqrun).output[0]
     clusters = glob_wildcards(os.path.join(swarmdir, "swarm_{cluster}.bam"))
-    expand("{swarmdir}/swarm_{cluster}.{ext}", swarmdir = swarmdir, cluster = clusters,
-           ext = ["laa.fastq.gz", "junk.fastq.gz", "report.csv", "subreads.csv", "pcr.csv"])
+    return expand("{swarmdir}/swarm_{cluster}.{ext}", swarmdir = swarmdir, cluster = clusters.cluster,
+                  ext = ["laa.fastq.gz", "junk.fastq.gz", "report.csv", "subreads.csv", "pcr.csv"])
 rule all_laa:
-    input: swarmfiles([seqrun = "pb_363"])
+    output: touch("process/all_laa_{seqrun}")
+    input: swarmfiles
