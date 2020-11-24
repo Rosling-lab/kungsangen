@@ -117,6 +117,7 @@ err <- dada2::learnErrors(
     verbose = TRUE,
     HOMOPOLYMER_GAP_PENALTY = 0,
     BAND_SIZE = 32,
+    DETECT_SINGLETONS = TRUE,
     pool = TRUE
 )
 
@@ -132,7 +133,8 @@ for (r in regions) {
         multithread = ncpu,
         verbose = TRUE,
         HOMOPOLYMER_GAP_PENALTY = 0,
-        BAND_SIZE = 32
+        BAND_SIZE = 32,
+        DETECT_SINGLETONS = TRUE
     )
     seqtab[[r]] <- dada2::makeSequenceTable(dada[[r]])
     cat(ncol(seqtab[[r]]), "ASVs in", sum(seqtab[[r]]), "sequences\n")
