@@ -203,10 +203,10 @@ for (r in c(regions, "full")) {
     )
 }
 
-asvtab <- seqtab$ITS2[,as.character(consensus$ITS2)]
+asvtab <- seqtab[[keycol]][,as.character(consensus[[keycol]])]
 cat("Calculated", ncol(asvtab), "consensus ASVs covering", sum(asvtab),
     "reads.\n")
-colnames(asvtab) <- names(consensus$ITS2)
+colnames(asvtab) <- names(consensus[[keycol]])
 rownames(asvtab) <- sub(".fastq.gz", "", rownames(asvtab), fixed = TRUE)
 saveRDS(asvtab, file.path(tzara_dir, "asv_table.rds"))
 readr::write_csv(
