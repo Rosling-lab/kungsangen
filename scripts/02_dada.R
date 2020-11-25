@@ -1,6 +1,9 @@
 # use the positions found by LSUx to extract regions from the raw reads and
 # run dada2 on each region independently.
 
+# TODO: make this more flexible to run different scenarios (arrow vs quiver CCS,
+# DETECT_SINGLETONS=TRUE vs FALSE
+
 if (!exists("ncpu")) ncpu <- 8 # change if using more or less
 
 # load positions from LSUx
@@ -117,6 +120,7 @@ err <- dada2::learnErrors(
     verbose = TRUE,
     HOMOPOLYMER_GAP_PENALTY = 0,
     BAND_SIZE = 32,
+    DETECT_SINGLETONS = TRUE,
     pool = TRUE
 )
 
@@ -132,7 +136,8 @@ for (r in regions) {
         multithread = ncpu,
         verbose = TRUE,
         HOMOPOLYMER_GAP_PENALTY = 0,
-        BAND_SIZE = 32
+        BAND_SIZE = 32,
+        DETECT_SINGLETONS = TRUE
     )
     seqtab[[r]] <- dada2::makeSequenceTable(dada[[r]])
     cat(ncol(seqtab[[r]]), "ASVs in", sum(seqtab[[r]]), "sequences\n")
