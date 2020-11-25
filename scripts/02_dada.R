@@ -156,7 +156,7 @@ allseqs <- dplyr::group_by_at(allseqs, dplyr::vars(ITS1:LSU4))
 allseqs <- dplyr::summarize(allseqs, nread = dplyr::n())
 #### get the consensus for non-ITS2 regions ####
 library(magrittr)
-keycol <- "ITS2"
+keycol <- "V3"
 othercols <- setdiff(regions, keycol)
 
 preconseqs <-
