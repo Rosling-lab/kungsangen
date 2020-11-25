@@ -210,7 +210,7 @@ colnames(asvtab) <- names(consensus[[keycol]])
 rownames(asvtab) <- sub(".fastq.gz", "", rownames(asvtab), fixed = TRUE)
 saveRDS(asvtab, file.path(tzara_dir, "asv_table.rds"))
 readr::write_csv(
-    tibble::as_tibble(asvtab, rownames = "sample"),
+    tibble::as_tibble(t(asvtab), rownames = "ASV"),
     file.path(tzara_dir, "asv_table.csv")
 )
 
