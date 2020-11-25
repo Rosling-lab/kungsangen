@@ -355,14 +355,14 @@ rule index:
         "SMRT/7.0.1"
     shell: "pbindex {input}"
 
-# for each of the swarm clusters, make a BAM file containing the source subreads
+# for each of the swarm clusters, make a BAM file containing the source CCS
 checkpoint swarmselect:
     output: directory("process/swarm/{seqrun}")
     input:
         swarm="process/{seqrun}.ccs.swarm",
         uc=   "process/{seqrun}.ccs.derep.uc",
-        bam=  expand("process/{movie}.subreads.demux.sieve.bam", movie = moviefiles),
-        pbi= expand("process/{movie}.subreads.demux.sieve.bam.pbi", movie = moviefiles),
+        bam=  expand("process/{movie}.ccs.bam", movie = moviefiles),
+        pbi= expand("process/{movie}.ccs.bam.pbi", movie = moviefiles),
         script="scripts/swarm_laa.sh"
     log: "logs/swarmselect_{seqrun}.log"
     threads: maxthreads
@@ -410,9 +410,9 @@ rule laa:
             --maxClusteringReads 10000\\
             --minLength 1000\\
             --maxLength 2500\\
-            --minClusterSize 50\\
+            --minClusterSize 3\\
             --maxPhasingReads 100000\\
-            --minSplitReads 50\\
+            --minSplitReads 3\\
             --minSplitFraction 0.001\\ >&{log} && 
         touch amplicon_analysis.fastq &&
         touch amplicon_analysis_chimeras_noise.fastq &&
