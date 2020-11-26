@@ -10,9 +10,7 @@ mkdir ./processReads/clusterOTUs/
 
 mkdir ./processReads/clusterOTUs/qualityFilter/
 
-mkdir ./processReads/clusterOTUs/qualityFilter/demult_reads/
-
-cp -r ./soilSamplesFastq_demult_noPrimers_unfilt/ ./processReads/clusterOTUs/qualityFilter/demult_reads/
+cp -r ./processReads/demultiplex/demult/soilSamplesFastq ./processReads/clusterOTUs/qualityFilter/demult_reads
 
 
 
@@ -24,7 +22,8 @@ cd ./processReads/clusterOTUs/qualityFilter/demult_reads/
 
 for fq in *.fastq
 do
-    usearch11 -fastq_filter $fq -sample "${fq%.fastq}" -fastq_eeout -fastaout "${fq%.fastq}wSampName.fasta" -fastqout "${fq%.fastq}wSampName.fastq"
+  sed 's/@rawseq_[0-9]*/&;sample='"${fq%.fastq}"'/' $fq |
+  vsearch -fastq_filter - -fastq_qmax 93 -fastq_eeout -fastaout "${fq%.fastq}wSampName.fasta" -fastqout "${fq%.fastq}wSampName.fastq"
 done
 
 cat *wSampName.fasta > ../all20samp_unfiltReads.fasta
@@ -47,7 +46,7 @@ rm -rf ./demult_reads/
 
 ## first, quality filter (max EE rate 0.01) and add sample name to label
 
-usearch11 -fastq_filter all20samp_unfiltReads.fastq -fastq_maxee_rate 0.01 -fastqout all20samp_QsubFiltReads.fastq
+vsearch -fastq_filter all20samp_unfiltReads.fastq -fastq_qmax 93 -fastq_maxee_rate 0.01 -fastqout all20samp_QsubFiltReads.fastq
 
 
 
@@ -68,22 +67,18 @@ cd ../cluster/
 
 ## dereplicate to unique sequences and add the number of reads to label
 
-usearch11 -fastx_uniques ../qualityFilter/filteredReads_all20samp.fastq -fastqout uniques_filteredReads_all20samp.fastq -fastaout uniques_filteredReads_all20samp.fasta -sizeout -relabel uniqseq -uc all.uniques.uc -log all.uniques.log  -minuniquesize 2
+vsearch -derep_fulllength ../qualityFilter/filteredReads_all20samp.fastq -output uniques_filteredReads_all20samp.fasta -sizeout -relabel uniqseq -uc all.uniques.uc -log all.uniques.log
 
 
+## cluster otus at 99% 
 
-
-## cluster otus at 97% 
-
-usearch11 -sortbysize uniques_filteredReads_all20samp.fastq -fastqout uniques_filteredReads_all20samp_sorted.fastq
-
-usearch11 -cluster_otus uniques_filteredReads_all20samp_sorted.fastq -otus otus_all20samp.fasta -uparseout uparse_results_97.txt -relabel OTU -minsize 2
+vsearch -cluster_size uniques_filteredReads_all20samp.fasta -consout otus_all20samp.fasta -uc uparse_results_99.txt -otutabout otu_table.txt -relabel OTU -id 0.99 -clusterout_id
 
 
 
 
 ## map reads to otus and get otu table
-## -id 0.97
+## -id 0.99
 
 
 ## using all demultiplexed (with primers trimmed) but unfiltered (maxEE rate, length) as recommended 
