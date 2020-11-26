@@ -290,6 +290,7 @@ rule orient:
 rule derep:
     output:
         fasta="process/pb_363.ccs.derep.fasta",
+        fastq="process/pb_363.ccs.fastq.gz",
         uc="process/pb_363.ccs.derep.uc"
     input: expand("process/{movie}.ccs.orient.fastq", movie = moviefiles)
     resources:
@@ -308,6 +309,7 @@ rule derep:
             --fastq_maxee 15 \\
             --fastq_qmax 93 \\
             --fastq_minlen 1000 \\
+            --fastq_out {output.fastq} \\
             --fastaout - |
          vsearch --derep_fulllength - \\
             --sizeout \\
@@ -378,6 +380,27 @@ checkpoint swarmselect:
 	[ -d {output} ] || mkdir -p {output}
         cat {input.swarm} |
           {{ parallel --pipe -N1 -j {threads} {input.script} {{#}} {input.uc} process .ccs {output}; }} &>{log}
+        """
+
+rule swarm_consensus:
+    output: "process/{seqrun}.swarm.cons.fasta"
+    input:
+        swarm="process/{seqrun}.ccs.swarm",
+        uc=   "process/{seqrun}.ccs.derep.uc",
+        fastq=  "process/{seqrun}.ccs.fastq",
+        script="scripts/swarm_consensus.sh",
+        c3s= "bin/c3s"
+    log: "logs/swarm_consensus_{seqrun}.log"
+    threads: maxthreads
+    conda: "vsearch.yaml"
+    envmodules:
+        "bioinfo-tools",
+        "vsearch/2.14.1"
+        "gnuparallel/20180822"
+    shell:
+        """
+        cat {input.swarm} |
+        {{ parallel --pipe -N1 -j {threads} {input.script} {wildcards.seqrun} {{#}} {input.uc} {input.fastq} }} >{output}
         """
 
 # find haplotypes (ASVs) from pacbio subreads in each gefast cluster
