@@ -377,7 +377,7 @@ checkpoint swarmselect:
         """
 	[ -d {output} ] || mkdir -p {output}
         cat {input.swarm} |
-          {{ parallel --pipe -N1 -j {threads} {input.script} {{#}} {input.uc} process .subreads.demux.sieve {output}; }} &>{log}
+          {{ parallel --pipe -N1 -j {threads} {input.script} {{#}} {input.uc} process .ccs {output}; }} &>{log}
         """
 
 # find haplotypes (ASVs) from pacbio subreads in each gefast cluster
