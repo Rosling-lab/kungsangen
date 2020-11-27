@@ -304,18 +304,21 @@ rule derep:
         "vsearch/2.14.1"
     shell:
         """
+         fastq=$(mktemp --suffix .fastq)
+         trap 'rm ${fastq}' EXIT
          cat {input} |
          vsearch --fastq_filter - \\
             --fastq_maxee 15 \\
             --fastq_qmax 93 \\
             --fastq_minlen 1000 \\
-            --fastqout {output.fastq} \\
+            --fastqout ${{fastq}}\\
             --fastaout - |
          vsearch --derep_fulllength - \\
             --sizeout \\
             --fasta_width 0\\
             --output {output.fasta}\\
             --uc {output.uc}
+         gzip -c ${{fastq}} >{output.fastq}
         """
 
 # Swarm-cluster the CCS reads
