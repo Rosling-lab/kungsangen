@@ -165,7 +165,7 @@ rule ccs:
     envmodules:
         "bioinfo-tools",
         "SMRT/5.0.1" # ccs from newer versions doesn't accept RSII data
-    shell: "ccs --numThreads {threads} {input} {output} &>{log}"
+    shell: "ccs --numThreads {threads} --richQVs {input} {output} &>{log}"
 
 rule ccs2:
     output: "process/nodemux/{movie}.ccs.bam"
