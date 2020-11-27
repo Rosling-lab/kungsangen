@@ -2,7 +2,7 @@
 # seqrun n uc ccs
 seqrun="$1"
 shift
-n="$1"
+printf -v n "%05d" $1
 shift
 uc="$1"
 shift
