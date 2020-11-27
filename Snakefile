@@ -304,8 +304,8 @@ rule derep:
         "vsearch/2.14.1"
     shell:
         """
-         fastq=$(mktemp --suffix .fastq)
-         trap 'rm ${fastq}' EXIT
+         fastq=$(mktemp --suffix .fastq) &&
+         trap 'rm ${{fastq}}' EXIT &&
          cat {input} |
          vsearch --fastq_filter - \\
             --fastq_maxee 15 \\
@@ -317,7 +317,7 @@ rule derep:
             --sizeout \\
             --fasta_width 0\\
             --output {output.fasta}\\
-            --uc {output.uc}
+            --uc {output.uc} &&
          gzip -c ${{fastq}} >{output.fastq}
         """
 
