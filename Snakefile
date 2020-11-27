@@ -211,7 +211,7 @@ rule nodemux_combine:
 # instead, search for 5.8S.
 rule orient:
     output:
-        orient = temp("process/{movie}.ccs.orient.fastq.gz"),
+        orient = "process/{movie}.ccs.orient.fastq.gz",
         noprimer = "process/{movie}.ccs.noprimer.fastq.gz"
     input:
         ccs = "process/{movie}.ccs.fastq.gz"
@@ -313,8 +313,8 @@ checkpoint swarmselect:
     input:
         swarm="process/{seqrun}.ccs.swarm",
         uc=   "process/{seqrun}.ccs.derep.uc",
-        bam=  expand("process/{movie}.{type}.bam", movie = moviefiles),
-        pbi= expand("process/{movie}.{type}.bam.pbi", movie = moviefiles),
+        bam=  expand("process/{movie}.{{type}}.bam", movie = moviefiles),
+        pbi= expand("process/{movie}.{{type}}.bam.pbi", movie = moviefiles),
         script="scripts/swarm_laa.sh"
     log: "logs/swarmselect_{seqrun}_{type}.log"
     threads: maxthreads
