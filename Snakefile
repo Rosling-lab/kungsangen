@@ -362,14 +362,14 @@ rule index:
 
 # for each of the swarm clusters, make a BAM file containing the source CCS
 checkpoint swarmselect:
-    output: directory("process/swarm/{seqrun}")
+    output: directory("process/swarm/{seqrun}_{type}")
     input:
         swarm="process/{seqrun}.ccs.swarm",
         uc=   "process/{seqrun}.ccs.derep.uc",
-        bam=  expand("process/{movie}.ccs.bam", movie = moviefiles),
-        pbi= expand("process/{movie}.ccs.bam.pbi", movie = moviefiles),
+        bam=  expand("process/{movie}.{type}.bam", movie = moviefiles),
+        pbi= expand("process/{movie}.{type}.bam.pbi", movie = moviefiles),
         script="scripts/swarm_laa.sh"
-    log: "logs/swarmselect_{seqrun}.log"
+    log: "logs/swarmselect_{seqrun}_{type}.log"
     threads: maxthreads
     conda: "conda/swarmextract.yaml"
     #bamsieve in the env module gives mysterious errors
@@ -382,9 +382,10 @@ checkpoint swarmselect:
         """
 	[ -d {output} ] || mkdir -p {output}
         cat {input.swarm} |
-          {{ parallel --pipe -N1 -j {threads} {input.script} {{#}} {input.uc} process .ccs {output}; }} &>{log}
+          {{ parallel --pipe -N1 -j {threads} {input.script} {{#}} {input.uc} process .{wildcards.type} {output}; }} &>{log}
         """
 
+# get consensus of CCS reads from each swarm cluster
 rule swarm_consensus:
     output: "process/{seqrun}.swarm.cons.fasta"
     input:
@@ -406,23 +407,25 @@ rule swarm_consensus:
         {{ parallel --pipe -N1 -j {threads} {input.script} {wildcards.seqrun} {{#}} {input.uc} {input.fastq}; }} >{output}
         """
 
-# find haplotypes (ASVs) from pacbio subreads in each gefast cluster
+# find haplotypes (ASVs) from pacbio subreads or ccs in each gefast cluster
 rule laa:
     output:
-        result="process/swarm/{seqrun}/swarm_{clust}.laa.fastq.gz",
-        junk="process/swarm/{seqrun}/swarm_{clust}.junk.fastq.gz",
-        report="process/swarm/{seqrun}/swarm_{clust}.report.csv",
-        subreads="process/swarm/{seqrun}/swarm_{clust}.subreads.csv",
-        pcr="process/swarm/{seqrun}/swarm_{clust}.pcr.csv"
+        result="process/swarm/{seqrun}_{type}/swarm_{clust}.laa.fastq.gz",
+        junk="process/swarm/{seqrun}_{type}/swarm_{clust}.junk.fastq.gz",
+        report="process/swarm/{seqrun}_{type}/swarm_{clust}.report.csv",
+        subreads="process/swarm/{seqrun}_{type}/swarm_{clust}.subreads.csv",
+        pcr="process/swarm/{seqrun}_{type}/swarm_{clust}.pcr.csv"
     input:
-        subreads="process/swarm/{seqrun}/swarm_{clust}.bam"
+        subreads="process/swarm/{seqrun}_{type}/swarm_{clust}.bam"
     shadow: "shallow"
     # although each invocation of laa can run in parallel, this is probably quite inefficient for the
     # majority of clusters, which are small.  So just do single threads, with multiple clusters running in parallel.
     threads: 1
+    params:
+        clustersize=lambda wildcards : '3' if wildcards.type == "ccs" else '50'
     resources:
         walltime=240
-    log: "logs/laa_{seqrun}_{clust}.log"
+    log: "logs/laa_{seqrun}_{type}_{clust}.log"
     conda: "conda/pacbiolaa.yaml"
     envmodules:
         "bioinfo-tools",
@@ -453,10 +456,10 @@ rule laa:
         """
 
 def swarmfiles(wildcards):
-    swarmdir = checkpoints.swarmselect.get(seqrun = wildcards.seqrun).output[0]
+    swarmdir = checkpoints.swarmselect.get(wildcards).output[0]
     clusters = glob_wildcards(os.path.join(swarmdir, "swarm_{cluster}.bam"))
     return expand("{swarmdir}/swarm_{cluster}.{ext}", swarmdir = swarmdir, cluster = clusters.cluster,
                   ext = ["laa.fastq.gz", "junk.fastq.gz", "report.csv", "subreads.csv", "pcr.csv"])
 rule all_laa:
-    output: touch("process/all_laa_{seqrun}")
+    output: touch("process/all_laa_{seqrun}_{type}")
     input: swarmfiles
