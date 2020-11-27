@@ -100,7 +100,7 @@ rule lima:
         temp("process/{movie}.subreads.demux.bam")
     input:
         bam = "process/{movie}.subreads.bam",
-        tags = "tags/its1_lr5_barcodes.fasta"
+        tags = "tags/fwd_rev_barcodes.fasta"
     shadow: "shallow"
     threads: moviethreads
     resources:
