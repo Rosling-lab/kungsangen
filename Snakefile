@@ -211,75 +211,22 @@ rule nodemux_combine:
 # instead, search for 5.8S.
 rule orient:
     output:
-        orient = temp("process/{movie}.ccs.orient.fastq"),
-        no58S = "process/{movie}.ccs.no58S.fastq",
-        multi58S = "process/{movie}.ccs.multi58S.fastq"
+        orient = temp("process/{movie}.ccs.orient.fastq.gz"),
+        noprimer = "process/{movie}.ccs.noprimer.fastq.gz"
     input:
-        ccs = "process/{movie}.ccs.fastq.gz",
-        cm = "reference/RF00002.cm"
-    params:
-        tempfasta = "process/{movie}.ccs.orient.fasta",
-        temptable = "{movie}_58S_hits.tsv",
-        tempall = "{movie}_all",
-        tempmulti = "{movie}_multi",
-        tempfwd = "{movie}_fwd",
-        temprev = "{movie}_rev",
-        temprevfq = "{movie}_rev.fastq"
+        ccs = "process/{movie}.ccs.fastq.gz"
     threads: moviethreads
     log: "logs/{movie}_orient.log"
     conda: "conda/orient.yaml"
-    envmodules:
-        "bioinfo-tools",
-        "Fastx/0.0.14",
-        "infernal/1.1.2",
-        "vsearch/2.14.1"
     shell:
         """
-        # convert to fasta
-        zcat {input.ccs} | fastq_to_fasta -o {params.tempfasta} >{log}
-        # search for 5.8S
-        cmsearch --hmmonly\\
-            --noali\\
-            --tblout {params.temptable}\\
-            --notrunc\\
-            --cpu {threads}\\
-            {input.cm}\\
-            {params.tempfasta} >>{log}
-        # create list of all sequences
-        awk '!/^#/{{print $1}}' {params.temptable} >{params.tempall}
-        # sequences which are present multiple times
-        sort <{params.tempall} | uniq -d  >{params.tempmulti}
-        # sequences which are present only once
-        grep -v -f {params.tempmulti} {params.tempall} |
-        grep -f - {params.temptable} |
-        # column 10 is the orientation of the 5.8S hit: + or -
-        awk '$10 == "+" {{print $1 >"{params.tempfwd}"}}; $10 == "-" {{print $1 >"{params.temprev}"}}'
-        
-        vsearch --fastx_getseqs {input.ccs}\\
-            --labels {params.tempmulti}\\
-            --fastqout {output.multi58S}\\
-            --notmatchedfq - |
-        vsearch --fastx_getseqs -\\
-            --labels {params.tempfwd}\\
-            --fastqout {output.orient}\\
-            --notmatchedfq - |
-        vsearch --fastx_getseqs -\\
-            --labels {params.temprev}\\
-            --fastqout {params.temprevfq}\\
-            --notmatchedfq {output.no58S} 2>>{log}
-        fastx_reverse_complement -i {params.temprevfq} >>{output.orient}
-        
-        n=$(grep -c "^@" {input.ccs})
-        nfwd=$(wc -l {params.tempfwd})
-        nrev=$(wc -l {params.temprev})
-        nmulti=$(wc -l {params.tempmulti})
-        nnone=$(grep -c "^@" {output.no58S})
-        
-        echo "\n$nfwd/$n sequences have forward 5.8S hit" >>{log}
-        echo "$nrev/$n sequences have reverse 5.8S hit" >>{log}
-        echo "$nmulti/$n sequences have multiple 5.8s hits (see {output.multi58S})" >>{log}
-        echo "$nnone/$n sequences have no 5.8S hit (see {output.no58S})" >>{log}
-        rm {params}      
+        cutadapt\\
+            -a "TCCGTAGGTGAACCTGC;e=0.15...CGAAGTTTCCCTCAGGA;required;e=0.15"\\
+            --action=none\\
+            --revcomp\\
+            -o {output.orient}\\
+            --untrimmed_output {output.noprimer}\\
+            -j {threads}
         """
 
 # quality filter the ccs and dereplicate
@@ -292,7 +239,7 @@ rule derep:
         fasta="process/pb_363.ccs.derep.fasta",
         fastq="process/pb_363.ccs.orient.fastq.gz",
         uc="process/pb_363.ccs.derep.uc"
-    input: expand("process/{movie}.ccs.orient.fastq", movie = moviefiles)
+    input: expand("process/{movie}.ccs.orient.fastq.gz", movie = moviefiles)
     resources:
         walltime=10
     shadow: "shallow"
