@@ -186,7 +186,9 @@ rule ccs2:
 # this loses a lot of PacBio-specific information, but it is useful for other software.
 rule bam2fastq:
     output: temp("process/{name}.fastq.gz")
-    input: "process/{name}.bam"
+    input:
+        bam = "process/{name}.bam",
+        pbi = "process/{name}.bam.pbi"
     resources:
              walltime=10
     threads: 1
@@ -195,7 +197,7 @@ rule bam2fastq:
     envmodules:
         "bioinfo-tools",
         "SMRT/7.0.1"
-    shell: "bam2fastq -o process/{wildcards.name} {input} &>{log}"
+    shell: "bam2fastq -o process/{wildcards.name} {input.bam} &>{log}"
 
 rule nodemux_combine:
     output: "process/nodemux/pb_363.ccs.fastq.gz"
