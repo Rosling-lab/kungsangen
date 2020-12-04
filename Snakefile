@@ -406,7 +406,7 @@ rule laa:
         """
 
 def swarmfiles(wildcards):
-    swarmdir = checkpoints.swarmselect.get(wildcards).output[0]
+    swarmdir = checkpoints.swarmselect.get(**wildcards).output[0]
     clusters = glob_wildcards(os.path.join(swarmdir, "swarm_{cluster}.bam"))
     return expand("{swarmdir}/swarm_{cluster}.{ext}", swarmdir = swarmdir, cluster = clusters.cluster,
                   ext = ["laa.fastq.gz", "junk.fastq.gz", "report.csv", "subreads.csv", "pcr.csv"])
