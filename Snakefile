@@ -227,8 +227,9 @@ rule orient:
             --action=none\\
             --revcomp\\
             -o {output.orient}\\
-            --untrimmed_output {output.noprimer}\\
-            -j {threads}
+            --untrimmed-output {output.noprimer}\\
+            -j {threads}\\
+            {input.ccs}
         """
 
 # quality filter the ccs and dereplicate
