@@ -256,7 +256,7 @@ rule derep:
         """
          fastq=$(mktemp --suffix .fastq) &&
          trap 'rm ${{fastq}}' EXIT &&
-         cat {input} |
+         zcat {input} |
          vsearch --fastq_filter - \\
             --fastq_maxee 15 \\
             --fastq_qmax 93 \\
