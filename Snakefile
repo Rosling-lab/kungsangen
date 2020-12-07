@@ -362,24 +362,27 @@ rule table_translate:
     input: "start_files/new_fqNames.txt"
     log: "logs/table_translate.log"
     threads: 1
-    shell: "awk -F '[-,_.]' '{{}print $2-1 "," $4-1, $6  "_"  $7  "_"  $8}}' {input} >{output} 2>{log}"
+    shell:
+        """
+        awk -F '[-,_.]' '{{print $2-1 "," $4-1, $6  "_"  $7  "_"  $8}}' {input} >{output} 2>{log}
+        """
 
 rule swarm_table:
-    output: "process/{seqrun}_{type}-swarm.table"
+    output: "process/{seqrun}_{type}.swarm.table"
     input:
         bamdir = "process/swarm/{seqrun}_{type}",
         script = "scripts/swarm_table.sh",
         samples = "process/sample.tsv"
-    log: "logs/swarm_table_{seqrun}.log
+    log: "logs/swarm_table_{seqrun}_{type}.log"
     threads: maxthreads
     conda: "conda/samtools_parallel.yaml"
     envmodules:
         "bioinfo-tools",
-        "samtools/1.1.10",
+        "samtools/1.10",
         "gnuparallel/20180822"
     shell:
         """
-        ls -1 {input.bamdir}/swarm_*.bam | {{ parallel -j {threads} {input.script} {{}} {input.samples; }} >{output} 2>{log}
+        ls -1 {input.bamdir}/swarm_*.bam | {{ parallel -j {threads} {input.script} {{}} {input.samples}; }} >{output} 2>{log}
         """
 
 # find haplotypes (ASVs) from pacbio subreads or ccs in each gefast cluster
