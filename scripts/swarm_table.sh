@@ -6,4 +6,6 @@ samtools view $1 |
   awk '{print $2}' |
   sort |
   uniq -c |
-  awk '{print "'"${swarm}"'", $2, $1}'
+  awk '{print $2, "'"${swarm}"'", $1}' |
+  sort |
+  join - $2 -o "2.2 1.2 1.3"
