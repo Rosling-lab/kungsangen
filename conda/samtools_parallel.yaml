@@ -1,0 +1,8 @@
+name: samtools_parallel
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - samtools=1.11
+  - parallel=20200922
