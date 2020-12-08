@@ -97,7 +97,12 @@ wildcard_constraints:
 # in the headers for each sequence
 rule lima:
     output:
-        temp("process/{movie}.subreads.demux.bam")
+        bam = temp("process/{movie}.subreads.demux.bam"),
+        counts = "process/{movie}.subreads.demux.lima.counts",
+        report = "process/{movie}.subreads.demux.lima.report",
+        guess = "process/{movie}.subreads.demux.lima.guess",
+        summary = "process/{movie}.subreads.demux.lima.summary",
+        clips = "process/{movie}.subreads.demux.lima.clips"
     input:
         bam = "process/{movie}.subreads.bam",
         tags = "tags/fwd_rev_barcodes.fasta"
@@ -110,7 +115,7 @@ rule lima:
     envmodules:
         "bioinfo-tools",
         "SMRT/7.0.1"
-    shell: "lima {input.bam} {input.tags} --different --peek-guess -j {threads} {output} &>{log}"
+    shell: "lima {input.bam} {input.tags} --different --peek-guess -j {threads} {output.bam} &>{log}"
 
 # filter out the samples which are not being used in this project.
 # bamsieve from pacbio looked like it would be a good way to do this,
