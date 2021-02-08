@@ -97,12 +97,7 @@ wildcard_constraints:
 # in the headers for each sequence
 rule lima:
     output:
-        bam = temp("process/{movie}.subreads.demux.bam"),
-        counts = "process/{movie}.subreads.demux.lima.counts",
-        report = "process/{movie}.subreads.demux.lima.report",
-        guess = "process/{movie}.subreads.demux.lima.guess",
-        summary = "process/{movie}.subreads.demux.lima.summary",
-        clips = "process/{movie}.subreads.demux.lima.clips"
+        bam = temp("process/{movie}.subreads.demux.bam")
     input:
         bam = "process/{movie}.subreads.bam",
         tags = "tags/fwd_rev_barcodes.fasta"
@@ -116,6 +111,13 @@ rule lima:
         "bioinfo-tools",
         "SMRT/7.0.1"
     shell: "lima {input.bam} {input.tags} --different --peek-guess -j {threads} {output.bam} &>{log}"
+
+# sort the lima report alphabetically
+# by default it is sorted numerically
+rule sortreport:
+    output: "process/{infile}.sort.lima.report"
+    input: "process/{infile}.lima.report"
+    shell: "tail -n +1 {input} | sort -k 1b,1 >{output}"
 
 # filter out the samples which are not being used in this project.
 # bamsieve from pacbio looked like it would be a good way to do this,
@@ -438,11 +440,77 @@ rule laa:
         mv amplicon_analysis_subreads.csv {output.subreads} &>>{log}
         """
 
+def reportfiles(wildcards):
+    swarmdir = checkpoints.swarmselect.get(**wildcards).output[0]
+    clusters = glob_wildcards(os.path.join(swarmdir, "swarm_{cluster}.bam"))
+    return expand("{swarmdir}/swarm_{cluster}.report.csv", swarmdir = swarmdir, cluster = clusters.cluster)
+
+def laafastq(wildcards):
+    swarmdir = checkpoints.swarmselect.get(**wildcards).output[0]
+    clusters = glob_wildcards(os.path.join(swarmdir, "swarm_{cluster}.bam"))
+    return expand("{swarmdir}/swarm_{cluster}.laa.fastq.gz", swarmdir = swarmdir, cluster = clusters.cluster)
+
 def swarmfiles(wildcards):
     swarmdir = checkpoints.swarmselect.get(**wildcards).output[0]
     clusters = glob_wildcards(os.path.join(swarmdir, "swarm_{cluster}.bam"))
     return expand("{swarmdir}/swarm_{cluster}.{ext}", swarmdir = swarmdir, cluster = clusters.cluster,
                   ext = ["laa.fastq.gz", "junk.fastq.gz", "report.csv", "subreads.csv", "pcr.csv"])
+
+rule laa_table:
+    output: "process/{seqrun}_{type}.swarm.otutab"
+    input:
+        expand("process/{movie}.subreads.demux.sort.lima.report", movie= moviefiles),
+        reportfiles,
+        samplekey = "process/sample.tsv",
+        script = "scripts/lima_map.sh"
+    envmodules:
+        "bioinfo-tools",
+        "gnuparallel/20180822",
+        "gawk/4.1.4"
+    conda: "conda/gawk_parallel.yaml"
+    threads: maxthreads
+    log: "logs/laa_table_{seqrun}_{type}.log"
+    shell:
+        """
+        ls -1 process/swarm/{wildcards.seqrun}_{wildcards.type}/*.subreads.csv |
+        {{ parallel -j {threads} {input.script} "process" ".subreads.demux.sort" {input.samplekey} {{}}; }} >{output} 2>{log}
+        """
+
+rule laa_fastq:
+    output: "process/{seqrun}_{type}.swarm.laa.fastq.gz"
+    input: laafastq
+    shell:
+        """
+        for f in process/swarm/{wildcards.seqrun}_{wildcards.type}/swarm_*.laa.fastq.gz; do
+            zcat $f |
+            sed 's/^@Barcode_/@'"$(basename $f .laa.fastq.gz)"' Barcode_/'
+        done |
+        gzip -c - >{output}
+        """
+
+rule laa_select:
+    output: "process/{seqrun}_{type}.swarm.laa.select.fastq.gz"
+    input:
+        fastq = "process/{seqrun}_{type}.swarm.laa.fastq.gz",
+        otutab = "process/{seqrun}_{type}.swarm.otutab"
+    conda: "conda/vsearch.yaml"
+    envmodules:
+        "bioinfo-tools",
+        "vsearch/2.14.1"
+    threads: maxthreads
+    log: "logs/laa_select_{seqrun}_{type}.log"
+    shell:
+        """
+        temp=$(mktemp)
+        trap 'rm $temp' EXIT
+        awk '{{print $2 " " $3}}' {input.otutab} |
+        sort -u > $temp
+        vsearch --fastx_getseqs {input.fastq} --labels $temp --notrunclabels --fastqout - 2>{log} |
+        gzip -c - >{output}
+        """
+
+        
+
 rule all_laa:
     output: touch("process/all_laa_{seqrun}_{type}")
     input: swarmfiles
