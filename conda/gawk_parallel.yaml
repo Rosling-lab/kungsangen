@@ -1,0 +1,8 @@
+name: gawk_parallel
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - "gawk>=4.1.4"
+  - parallel=20200922
