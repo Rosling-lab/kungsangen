@@ -51,12 +51,9 @@ movies=$(gawk -F / '{print $1}' $temp | sort -u)
 
 for m in $movies;
   do
-  mtemp=$(mktemp)
-  alltemp="$alltemp $mktemp"
-  tail -n +1 ${keydir}/${m}${keyext}.lima.report | sort -k 1b,1 >$mtemp
   grep "^$m" $temp |
   sort -k 1b,1 |
-  join - $mtemp -o '1.2 1.3 2.41 2.42'
+  join - ${keydir}/${m}${keyext}.lima.report -o '1.2 1.3 2.41 2.42'
 done |
   gawk '{print $3 "," $4, $1, $2}' |
   sort |
