@@ -2,6 +2,7 @@
 # For the tree, use only 5.8S and the full LSU regions
 # these can be aligned separately and concatenated.
 
+#### Ampliseq clusters ####
 # First load the ampliseq results and use LSUx to cut out subregions
 ampliseq <- readr::read_tsv(
     "processReads/ampliseq/qiime2_ASV_table.tsv",
@@ -67,6 +68,7 @@ ampliseq_regions <- dplyr::mutate_at(
 dplyr::n_distinct(ampliseq_regions$`5_8S`)
 dplyr::n_distinct(ampliseq_regions$LSU)
 
+#### Tzara Clusters ####
 # now load the tzara data
 tzara_sets <- c("quiver_nosingle", "quiver_single", "arrow_nosingle", "arrow_single")
 tzara_regions <- list()
@@ -100,6 +102,8 @@ for (s in tzara_sets) {
     )
 }
 
+#### Combined table ####
+
 # get all the unique 5.8S and LSU sequences
 all_5_8S <- dplyr::bind_rows(
     dplyr::select(ampliseq_regions, `5_8S_hash`, `5_8S`),
@@ -117,6 +121,7 @@ all_LSU <- unique(all_LSU)
 all_LSU <- all_LSU[complete.cases(all_LSU),]
 all_LSU <- Biostrings::RNAStringSet(chartr("T", "U", tibble::deframe(all_LSU)))
 
+#### Alignment ####
 # align them independently
 # these are pretty quick alignments (~30 min)
 # they are a bit faster because we are only aligning the unique sequences
@@ -130,7 +135,7 @@ align_5_8S["missing"] <-
 align_LSU["missing"] <-
     Biostrings::RNAStringSet(strrep("-", Biostrings::width(align_LSU[1])))
 
-
+#### Concatenation ####
 # now find all unique pairs of 5.8S and LSU
 all_both <- dplyr::bind_rows(
     dplyr::select(ampliseq_regions, `5_8S_hash`, LSU_hash),
@@ -154,6 +159,7 @@ align_degap <- Biostrings::maskGaps(align_degap, min.fraction = 0.9)
 align_degap <- as(align_degap, "DNAStringSet")
 Biostrings::writeXStringSet(align_degap, file.path(comparedir, "comparealn.degap.fasta"))
 
+#### ML Tree ####
 # make a tree with fasttree
 # takes about 5 min
 system2(
@@ -165,6 +171,7 @@ system2(
 tree <- treeio::read.newick(file.path(comparedir, "comparealn.degap.tree"))
 tree <- phangorn::midpoint(tree)
 
+#### Community matrix ####
 # make a "community matrix" for the different pipelines
 library(magrittr)
 ampliseq_reads <- readr::read_tsv(
@@ -212,10 +219,12 @@ otu_tab <- tibble::column_to_rownames(otu_tab, "seq_id")
 
 otu_tab <- phyloseq::otu_table(otu_tab, taxa_are_rows = TRUE)
 
+#### phyloseq object and UniFrac distances ####
 physeq <- phyloseq::phyloseq(tree, otu_tab)
 phyloseq::UniFrac(physeq)
 phyloseq::UniFrac(physeq, weighted = TRUE)
 
+#### Figure ####
 (ggtree::ggtree(tree) +
     ggtree::theme_tree2() +
     ggtree::geom_tiplab(label = "", align = TRUE)) %>%

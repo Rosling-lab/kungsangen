@@ -1,5 +1,7 @@
 library(magrittr)
 
+#### Single linkage (Swarm/GeFaST) ####
+
 sl_seqs <- Biostrings::readDNAStringSet(
     here::here("process/pb_363.swarm.cons.fasta")
 )
@@ -44,6 +46,7 @@ write.table(sl_nosingle, here::here("processReads", "swarm_table.tsv"),
             sep = "\t")
 saveRDS(sl_nosingle, here::here("processReads", "swarm_table.rds"))
 
+#### VSEARCH ####
 
 # load the VSEARCH cluster consensus sequences
 vs_seqs <- Biostrings::readDNAStringSet(
@@ -96,7 +99,7 @@ readr::write_tsv(vs_nosingle,
 saveRDS(vs_nosingle,
         here::here("processReads/clusterOTUs/vsearch_otu_table.rds"))
 
-## Ampliseq
+#### Ampliseq ####
 
 ampliseq_table <- readr::read_tsv(
     here::here("processReads/ampliseq/feature-table.tsv"),
