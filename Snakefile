@@ -483,7 +483,7 @@ rule laa_fastq:
         """
         for f in process/swarm/{wildcards.seqrun}_{wildcards.type}/swarm_*.laa.fastq.gz; do
             zcat $f |
-            sed 's/^@Barcode_/@'"$(basename $f .laa.fastq.gz)"' Barcode_/'
+            sed 's/^@Barcode/@'"$(basename $f .laa.fastq.gz)"' Barcode/'
         done |
         gzip -c - >{output}
         """
