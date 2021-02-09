@@ -102,12 +102,163 @@ for (s in tzara_sets) {
     )
 }
 
+#### Single linkage (Swarm/GeFaST) clusters ####
+
+sl_seqs <- Biostrings::readDNAStringSet(
+    here::here("process/pb_363.swarm.cons.fasta")
+)
+
+names(sl_seqs) <- gsub("consensus", "swarm_", names(sl_seqs))
+
+sl_positions <- LSUx::lsux(
+    seq = sl_seqs,
+    cm_32S = cm_32S_trunc,
+    ITS1 = TRUE,
+    cpu = 8,
+    # allow 2 Gb ram (per process)
+    mxsize = 2048
+)
+
+# Just cut out 5.8S and LSU
+sl_regions <- purrr::map2(
+    .x = c("5_8S", "LSU1"),
+    .y = c("5_8S", "LSU4"),
+    tzara::extract_region,
+    seq = as.character(sl_seqs),
+    positions = sl_positions
+)
+sl_regions <- purrr::map2(sl_regions,
+                          c("5_8S", "LSU"),
+                          tibble::enframe,
+                          name = "seq_id")
+sl_regions <- purrr::reduce(
+    sl_regions,
+    dplyr::full_join,
+    by = "seq_id"
+)
+sl_regions <- dplyr::mutate(
+    sl_regions,
+    `5_8S_hash` = tzara::seqhash(`5_8S`),
+    LSU_hash = tzara::seqhash(LSU)
+)
+sl_regions <- dplyr::mutate_at(
+    sl_regions,
+    dplyr::vars(dplyr::ends_with("_hash")),
+    tidyr::replace_na,
+    replace = "missing"
+)
+
+# How many unique of each?
+dplyr::n_distinct(sl_regions$`5_8S`)
+dplyr::n_distinct(sl_regions$LSU)
+
+#### VSEARCH clusters ####
+
+vs_seqs <- Biostrings::readDNAStringSet(
+    here::here("processReads", "clusterOTUs", "cluster", "otus_all20samp.fasta")
+)
+
+vs_positions <- LSUx::lsux(
+    seq = vs_seqs,
+    cm_32S = cm_32S_trunc,
+    ITS1 = TRUE,
+    cpu = 8,
+    # allow 2 Gb ram (per process)
+    mxsize = 2048
+)
+
+# Just cut out 5.8S and LSU
+vs_regions <- purrr::map2(
+    .x = c("5_8S", "LSU1"),
+    .y = c("5_8S", "LSU4"),
+    tzara::extract_region,
+    seq = as.character(vs_seqs),
+    positions = vs_positions
+)
+vs_regions <- purrr::map2(vs_regions,
+                          c("5_8S", "LSU"),
+                          tibble::enframe,
+                          name = "seq_id")
+vs_regions <- purrr::reduce(
+    vs_regions,
+    dplyr::full_join,
+    by = "seq_id"
+)
+vs_regions <- dplyr::mutate(
+    vs_regions,
+    `5_8S_hash` = tzara::seqhash(`5_8S`),
+    LSU_hash = tzara::seqhash(LSU)
+)
+vs_regions <- dplyr::mutate_at(
+    vs_regions,
+    dplyr::vars(dplyr::ends_with("_hash")),
+    tidyr::replace_na,
+    replace = "missing"
+)
+
+# How many unique of each?
+dplyr::n_distinct(vs_regions$`5_8S`)
+dplyr::n_distinct(vs_regions$LSU)
+
+#### LAA ####
+
+laa_seqs <- Biostrings::readDNAStringSet(
+    here::here("process", "pb_363_subreads.demux.sieve.swarm.laa.select.fastq.gz"),
+    format = "fastq"
+)
+
+laa_positions <- LSUx::lsux(
+    seq = laa_seqs,
+    cm_32S = cm_32S_trunc,
+    ITS1 = TRUE,
+    cpu = 8,
+    # allow 2 Gb ram (per process)
+    mxsize = 2048
+)
+
+# Just cut out 5.8S and LSU
+laa_regions <- purrr::map2(
+    .x = c("5_8S", "LSU1"),
+    .y = c("5_8S", "LSU4"),
+    tzara::extract_region,
+    seq = as.character(laa_seqs),
+    positions = laa_positions
+)
+laa_regions <- purrr::map2(laa_regions,
+                          c("5_8S", "LSU"),
+                          tibble::enframe,
+                          name = "seq_id")
+laa_regions <- purrr::reduce(
+    laa_regions,
+    dplyr::full_join,
+    by = "seq_id"
+)
+laa_regions <- dplyr::mutate(
+    laa_regions,
+    `5_8S_hash` = tzara::seqhash(`5_8S`),
+    LSU_hash = tzara::seqhash(LSU)
+)
+
+laa_regions <- dplyr::mutate_at(
+    laa_regions,
+    dplyr::vars(dplyr::ends_with("_hash")),
+    tidyr::replace_na,
+    replace = "missing"
+)
+
+# How many unique of each?
+dplyr::n_distinct(laa_regions$`5_8S`)
+dplyr::n_distinct(laa_regions$LSU)
+
 #### Combined table ####
 
 # get all the unique 5.8S and LSU sequences
 all_5_8S <- dplyr::bind_rows(
     dplyr::select(ampliseq_regions, `5_8S_hash`, `5_8S`),
-    purrr::map_dfr(tzara_regions, dplyr::select, `5_8S_hash`, `5_8S`)
+    dplyr::select(sl_regions, `5_8S_hash`, `5_8S`),
+    dplyr::select(vs_regions, `5_8S_hash`, `5_8S`),
+    dplyr::select(laa_regions, `5_8S_hash`, `5_8S`)#,
+    # purrr::map_dfr(tzara_regions, dplyr::select, `5_8S_hash`, `5_8S`)
 )
 all_5_8S <- unique(all_5_8S)
 all_5_8S <- all_5_8S[complete.cases(all_5_8S),]
@@ -115,7 +266,10 @@ all_5_8S <- Biostrings::RNAStringSet(chartr("T", "U", tibble::deframe(all_5_8S))
 
 all_LSU <- dplyr::bind_rows(
     dplyr::select(ampliseq_regions, LSU_hash, LSU),
-    purrr::map_dfr(tzara_regions, dplyr::select, LSU_hash, LSU)
+    dplyr::select(sl_regions, LSU_hash, LSU),
+    dplyr::select(vs_regions, LSU_hash, LSU),
+    dplyr::select(laa_regions, LSU_hash, LSU)#,
+    # purrr::map_dfr(tzara_regions, dplyr::select, LSU_hash, LSU)
 )
 all_LSU <- unique(all_LSU)
 all_LSU <- all_LSU[complete.cases(all_LSU),]
@@ -123,7 +277,7 @@ all_LSU <- Biostrings::RNAStringSet(chartr("T", "U", tibble::deframe(all_LSU)))
 
 #### Alignment ####
 # align them independently
-# these are pretty quick alignments (~30 min)
+# these are pretty quick alignments (~1 hour)
 # they are a bit faster because we are only aligning the unique sequences
 align_5_8S <- DECIPHER::AlignSeqs(all_5_8S, processors = 8)
 align_LSU <- DECIPHER::AlignSeqs(all_LSU, processors = 8)
@@ -139,7 +293,10 @@ align_LSU["missing"] <-
 # now find all unique pairs of 5.8S and LSU
 all_both <- dplyr::bind_rows(
     dplyr::select(ampliseq_regions, `5_8S_hash`, LSU_hash),
-    purrr::map_dfr(tzara_regions, dplyr::select, `5_8S_hash`, LSU_hash)
+    dplyr::select(sl_regions, `5_8S_hash`, LSU_hash),
+    dplyr::select(vs_regions, `5_8S_hash`, LSU_hash),
+    dplyr::select(laa_regions, `5_8S_hash`, LSU_hash)
+    # purrr::map_dfr(tzara_regions, dplyr::select, `5_8S_hash`, LSU_hash)
 )
 all_both <- unique(all_both)
 # paste together the 5.8S and LSU sequences for each.
@@ -151,11 +308,15 @@ align_both <- Biostrings::DNAStringSet(chartr("U", "T", align_both))
 # output the alignment
 comparedir <- file.path("processReads", "compare")
 if (!dir.exists(comparedir)) dir.create(comparedir)
-Biostrings::writeXStringSet(align_both, file.path(comparedir, "comparealn.fasta"))
+Biostrings::writeXStringSet(
+    align_both,
+    file.path(comparedir, "comparealn.fasta.gz"),
+    compress = TRUE
+)
 
 # remove columns with at least 90% gaps
 align_degap <- Biostrings::DNAMultipleAlignment(align_both)
-align_degap <- Biostrings::maskGaps(align_degap, min.fraction = 0.9)
+align_degap <- Biostrings::maskGaps(align_degap, min.fraction = 0.9, min.block.width = 1)
 align_degap <- as(align_degap, "DNAStringSet")
 Biostrings::writeXStringSet(align_degap, file.path(comparedir, "comparealn.degap.fasta"))
 
@@ -213,7 +374,54 @@ for (s in tzara_sets) {
 
     tzara_reads[[s]] <- table
 }
-otu_tab <- purrr::reduce(c(tzara_reads, list(ampliseq_reads)), dplyr::full_join, by = "seq_id")
+
+sl_reads <- readr::read_delim(
+    here::here("process", "pb_363_ccs.swarm.table"),
+    delim = " ",
+    col_names = c("Sample", "OTU", "reads"),
+    col_types = "cci"
+) %>%
+    dplyr::group_by(OTU) %>%
+    dplyr::summarize(reads = sum(reads)) %>%
+    dplyr::left_join(sl_regions, by = c("OTU" = "seq_id")) %>%
+    dplyr::transmute(
+        seq_id = paste(`5_8S_hash`, LSU_hash, sep = "_"),
+        single_link = reads/sum(reads)
+    ) %>%
+    dplyr::group_by(seq_id) %>%
+    dplyr::summarise_all(sum)
+
+vs_reads <- vs_regions %>%
+    dplyr::transmute(
+        vsearch = stringr::str_remove(seq_id, "^centroid=OTU_[0-9]+;seqs=") %>%
+            stringr::str_remove(";clusterid=[0-9]+$") %>%
+            as.integer() %>%
+            divide_by(sum(.)),
+        seq_id = paste(`5_8S_hash`, LSU_hash, sep = "_")
+    ) %>%
+    dplyr::group_by(seq_id) %>%
+    dplyr::summarise_all(sum)
+
+laa_reads <- readr::read_delim(
+    here::here("process", "pb_363_subreads.demux.sieve.swarm.otutab"),
+    delim = " ",
+    col_names = c("sample", "swarm", "subswarm", "reads"),
+    col_types = "ccci"
+) %>%
+    tidyr::unite("seq_id", swarm, subswarm, sep = " ") %>%
+    dplyr::left_join(laa_regions, by = "seq_id") %>%
+    dplyr::transmute(
+        seq_id = paste(`5_8S_hash`, LSU_hash, sep = "_"),
+        laa = reads / sum(reads)
+    ) %>%
+    dplyr::group_by(seq_id) %>%
+    dplyr::summarise_all(sum)
+
+otu_tab <- purrr::reduce(
+    list(ampliseq_reads, vs_reads, sl_reads, laa_reads),
+    dplyr::full_join,
+    by = "seq_id"
+)
 otu_tab <- dplyr::mutate_if(otu_tab, is.numeric, tidyr::replace_na, 0)
 otu_tab <- tibble::column_to_rownames(otu_tab, "seq_id")
 
