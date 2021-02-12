@@ -177,6 +177,7 @@ dependencies:
   - r-nlme=3.1_150=r36h580db52_0
   - r-permute=0.9_5=r36h6115d3f_3
   - r-phangorn=2.5.5=r36h0357c0b_2
+  - r-phylotax=0.0.3=r36_1
   - r-pillar=1.4.6=r36h6115d3f_0
   - r-pixmap=0.4_11=r36h6115d3f_1003
   - r-pkgbuild=1.1.0=r36h6115d3f_0
