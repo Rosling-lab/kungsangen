@@ -427,7 +427,7 @@ rule laa:
             --minClusterSize 3\\
             --maxPhasingReads 100000\\
             --minSplitReads 3\\
-            --minSplitFraction 0.001\\ >&{log} && 
+            --minSplitFraction 0.001\\ >&{log} &&
         touch amplicon_analysis.fastq &&
         touch amplicon_analysis_chimeras_noise.fastq &&
         touch amplicon_analysis_summary.csv &&
@@ -503,13 +503,12 @@ rule laa_select:
         """
         temp=$(mktemp)
         trap 'rm $temp' EXIT
-        awk '{{print $2 " " $3}}' {input.otutab} |
-        sort -u > $temp
+        awk '!x[$2 " " $3]++ {{print $2 " " $3}}' {input.otutab} > $temp
         vsearch --fastx_getseqs {input.fastq} --labels $temp --notrunclabels --fastqout - 2>{log} |
         gzip -c - >{output}
         """
 
-        
+
 
 rule all_laa:
     output: touch("process/all_laa_{seqrun}_{type}")
