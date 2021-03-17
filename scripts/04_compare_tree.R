@@ -70,37 +70,37 @@ dplyr::n_distinct(ampliseq_regions$LSU)
 
 #### Tzara Clusters ####
 # now load the tzara data
-tzara_sets <- c("quiver_nosingle", "quiver_single", "arrow_nosingle", "arrow_single")
-tzara_regions <- list()
-for (s in tzara_sets) {
-    tzara_regions[[s]] <- list()
-    for (r in regions) {
-        tzara_regions[[s]][[r]] <- Biostrings::readDNAStringSet(
-            paste0("processReads/tzara/", s, "/ASV_", r, ".fasta")
-        )
-        tzara_regions[[s]][[r]] <- tibble::enframe(
-            as.character(tzara_regions[[s]][[r]]),
-            name = "seq_id",
-            value = r
-        )
-    }
-    tzara_regions[[s]] <-
-        purrr::reduce(tzara_regions[[s]], dplyr::full_join, by = "seq_id")
-    tzara_regions[[s]] <- dplyr::transmute(
-        tzara_regions[[s]],
-        seq_id = seq_id,
-        `5_8S` = `5_8S`,
-        `5_8S_hash` = tzara::seqhash(`5_8S`),
-        LSU = stringr::str_c(LSU1, V2, LSU2, V3, LSU3, V4, LSU4),
-        LSU_hash = tzara::seqhash(LSU)
-    )
-    tzara_regions[[s]] <- dplyr::mutate_at(
-        tzara_regions[[s]],
-        dplyr::vars(dplyr::ends_with("_hash")),
-        tidyr::replace_na,
-        replace = "missing"
-    )
-}
+# tzara_sets <- c("quiver_nosingle", "quiver_single", "arrow_nosingle", "arrow_single")
+# tzara_regions <- list()
+# for (s in tzara_sets) {
+#     tzara_regions[[s]] <- list()
+#     for (r in regions) {
+#         tzara_regions[[s]][[r]] <- Biostrings::readDNAStringSet(
+#             paste0("processReads/tzara/", s, "/ASV_", r, ".fasta")
+#         )
+#         tzara_regions[[s]][[r]] <- tibble::enframe(
+#             as.character(tzara_regions[[s]][[r]]),
+#             name = "seq_id",
+#             value = r
+#         )
+#     }
+#     tzara_regions[[s]] <-
+#         purrr::reduce(tzara_regions[[s]], dplyr::full_join, by = "seq_id")
+#     tzara_regions[[s]] <- dplyr::transmute(
+#         tzara_regions[[s]],
+#         seq_id = seq_id,
+#         `5_8S` = `5_8S`,
+#         `5_8S_hash` = tzara::seqhash(`5_8S`),
+#         LSU = stringr::str_c(LSU1, V2, LSU2, V3, LSU3, V4, LSU4),
+#         LSU_hash = tzara::seqhash(LSU)
+#     )
+#     tzara_regions[[s]] <- dplyr::mutate_at(
+#         tzara_regions[[s]],
+#         dplyr::vars(dplyr::ends_with("_hash")),
+#         tidyr::replace_na,
+#         replace = "missing"
+#     )
+# }
 
 #### Single linkage (Swarm/GeFaST) clusters ####
 
@@ -109,6 +109,12 @@ sl_seqs <- Biostrings::readDNAStringSet(
 )
 
 names(sl_seqs) <- gsub("consensus", "swarm_", names(sl_seqs))
+
+sl_table <- readRDS(
+    here::here("processReads", "swarm_table.rds")
+)
+
+sl_seqs <- sl_seqs[names(sl_seqs) %in% sl_table$OTU]
 
 sl_positions <- LSUx::lsux(
     seq = sl_seqs,
@@ -157,6 +163,17 @@ dplyr::n_distinct(sl_regions$LSU)
 vs_seqs <- Biostrings::readDNAStringSet(
     here::here("processReads", "clusterOTUs", "cluster", "otus_all20samp.fasta")
 )
+names(vs_seqs) <- gsub(
+    "centroid=(OTU_[0-9]+);seqs=[0-9]+;clusterid=[0-9]+",
+    "\\1",
+    names(vs_seqs)
+)
+
+vs_table <- readRDS(
+    here::here("processReads", "clusterOTUs", "vsearch_otu_table.rds")
+)
+
+vs_seqs <- vs_seqs[names(vs_seqs) %in% vs_table$OTU]
 
 vs_positions <- LSUx::lsux(
     seq = vs_seqs,
@@ -202,53 +219,53 @@ dplyr::n_distinct(vs_regions$LSU)
 
 #### LAA ####
 
-laa_seqs <- Biostrings::readDNAStringSet(
-    here::here("process", "pb_363_subreads.demux.sieve.swarm.laa.select.fastq.gz"),
-    format = "fastq"
-)
-
-laa_positions <- LSUx::lsux(
-    seq = laa_seqs,
-    cm_32S = cm_32S_trunc,
-    ITS1 = TRUE,
-    cpu = 8,
-    # allow 2 Gb ram (per process)
-    mxsize = 2048
-)
-
-# Just cut out 5.8S and LSU
-laa_regions <- purrr::map2(
-    .x = c("5_8S", "LSU1"),
-    .y = c("5_8S", "LSU4"),
-    tzara::extract_region,
-    seq = as.character(laa_seqs),
-    positions = laa_positions
-)
-laa_regions <- purrr::map2(laa_regions,
-                          c("5_8S", "LSU"),
-                          tibble::enframe,
-                          name = "seq_id")
-laa_regions <- purrr::reduce(
-    laa_regions,
-    dplyr::full_join,
-    by = "seq_id"
-)
-laa_regions <- dplyr::mutate(
-    laa_regions,
-    `5_8S_hash` = tzara::seqhash(`5_8S`),
-    LSU_hash = tzara::seqhash(LSU)
-)
-
-laa_regions <- dplyr::mutate_at(
-    laa_regions,
-    dplyr::vars(dplyr::ends_with("_hash")),
-    tidyr::replace_na,
-    replace = "missing"
-)
-
-# How many unique of each?
-dplyr::n_distinct(laa_regions$`5_8S`)
-dplyr::n_distinct(laa_regions$LSU)
+# laa_seqs <- Biostrings::readDNAStringSet(
+#     here::here("process", "pb_363_subreads.demux.sieve.swarm.laa.select.fastq.gz"),
+#     format = "fastq"
+# )
+#
+# laa_positions <- LSUx::lsux(
+#     seq = laa_seqs,
+#     cm_32S = cm_32S_trunc,
+#     ITS1 = TRUE,
+#     cpu = 8,
+#     # allow 2 Gb ram (per process)
+#     mxsize = 2048
+# )
+#
+# # Just cut out 5.8S and LSU
+# laa_regions <- purrr::map2(
+#     .x = c("5_8S", "LSU1"),
+#     .y = c("5_8S", "LSU4"),
+#     tzara::extract_region,
+#     seq = as.character(laa_seqs),
+#     positions = laa_positions
+# )
+# laa_regions <- purrr::map2(laa_regions,
+#                           c("5_8S", "LSU"),
+#                           tibble::enframe,
+#                           name = "seq_id")
+# laa_regions <- purrr::reduce(
+#     laa_regions,
+#     dplyr::full_join,
+#     by = "seq_id"
+# )
+# laa_regions <- dplyr::mutate(
+#     laa_regions,
+#     `5_8S_hash` = tzara::seqhash(`5_8S`),
+#     LSU_hash = tzara::seqhash(LSU)
+# )
+#
+# laa_regions <- dplyr::mutate_at(
+#     laa_regions,
+#     dplyr::vars(dplyr::ends_with("_hash")),
+#     tidyr::replace_na,
+#     replace = "missing"
+# )
+#
+# # How many unique of each?
+# dplyr::n_distinct(laa_regions$`5_8S`)
+# dplyr::n_distinct(laa_regions$LSU)
 
 #### Combined table ####
 
@@ -256,8 +273,8 @@ dplyr::n_distinct(laa_regions$LSU)
 all_5_8S <- dplyr::bind_rows(
     dplyr::select(ampliseq_regions, `5_8S_hash`, `5_8S`),
     dplyr::select(sl_regions, `5_8S_hash`, `5_8S`),
-    dplyr::select(vs_regions, `5_8S_hash`, `5_8S`),
-    dplyr::select(laa_regions, `5_8S_hash`, `5_8S`)#,
+    dplyr::select(vs_regions, `5_8S_hash`, `5_8S`)#,
+    # dplyr::select(laa_regions, `5_8S_hash`, `5_8S`),
     # purrr::map_dfr(tzara_regions, dplyr::select, `5_8S_hash`, `5_8S`)
 )
 all_5_8S <- unique(all_5_8S)
@@ -267,8 +284,8 @@ all_5_8S <- Biostrings::RNAStringSet(chartr("T", "U", tibble::deframe(all_5_8S))
 all_LSU <- dplyr::bind_rows(
     dplyr::select(ampliseq_regions, LSU_hash, LSU),
     dplyr::select(sl_regions, LSU_hash, LSU),
-    dplyr::select(vs_regions, LSU_hash, LSU),
-    dplyr::select(laa_regions, LSU_hash, LSU)#,
+    dplyr::select(vs_regions, LSU_hash, LSU)#,
+    # dplyr::select(laa_regions, LSU_hash, LSU),
     # purrr::map_dfr(tzara_regions, dplyr::select, LSU_hash, LSU)
 )
 all_LSU <- unique(all_LSU)
@@ -294,8 +311,8 @@ align_LSU["missing"] <-
 all_both <- dplyr::bind_rows(
     dplyr::select(ampliseq_regions, `5_8S_hash`, LSU_hash),
     dplyr::select(sl_regions, `5_8S_hash`, LSU_hash),
-    dplyr::select(vs_regions, `5_8S_hash`, LSU_hash),
-    dplyr::select(laa_regions, `5_8S_hash`, LSU_hash)
+    dplyr::select(vs_regions, `5_8S_hash`, LSU_hash)#,
+    # dplyr::select(laa_regions, `5_8S_hash`, LSU_hash)
     # purrr::map_dfr(tzara_regions, dplyr::select, `5_8S_hash`, LSU_hash)
 )
 all_both <- unique(all_both)
@@ -357,68 +374,73 @@ ampliseq_reads <-
     dplyr::group_by(seq_id) %>%
     dplyr::summarize_all(sum)
 
-tzara_reads <- list()
-for (s in tzara_sets) {
-    s_sym <- rlang::sym(s)
-    table <- readRDS(paste0("processReads/tzara/", s, "/asv_table.rds"))
-    table <- colSums(table)
-    table <- tibble::enframe(table, name = "seq_id", value = s)
-    table <- dplyr::left_join(table, tzara_regions[[s]], by = "seq_id")
-    table <- dplyr::transmute(
-        table,
-        seq_id = paste(`5_8S_hash`, LSU_hash, sep = "_"),
-        !!s_sym := !!s_sym / sum(!!s_sym)
-    )
-    table <- dplyr::group_by(table, seq_id)
-    table <- dplyr::summarize_all(table, sum)
+# tzara_reads <- list()
+# for (s in tzara_sets) {
+#     s_sym <- rlang::sym(s)
+#     table <- readRDS(paste0("processReads/tzara/", s, "/asv_table.rds"))
+#     table <- colSums(table)
+#     table <- tibble::enframe(table, name = "seq_id", value = s)
+#     table <- dplyr::left_join(table, tzara_regions[[s]], by = "seq_id")
+#     table <- dplyr::transmute(
+#         table,
+#         seq_id = paste(`5_8S_hash`, LSU_hash, sep = "_"),
+#         !!s_sym := !!s_sym / sum(!!s_sym)
+#     )
+#     table <- dplyr::group_by(table, seq_id)
+#     table <- dplyr::summarize_all(table, sum)
+#
+#     tzara_reads[[s]] <- table
+# }
 
-    tzara_reads[[s]] <- table
-}
-
-sl_reads <- readr::read_delim(
-    here::here("process", "pb_363_ccs.swarm.table"),
-    delim = " ",
-    col_names = c("Sample", "OTU", "reads"),
-    col_types = "cci"
-) %>%
-    dplyr::group_by(OTU) %>%
-    dplyr::summarize(reads = sum(reads)) %>%
-    dplyr::left_join(sl_regions, by = c("OTU" = "seq_id")) %>%
+sl_reads <- sl_table %>%
+    tibble::column_to_rownames("OTU") %>%
+    rowSums() %>%
+    divide_by(sum(.)) %>%
+    tibble::enframe(name = "seq_id", value = "single_link") %>%
+    dplyr::left_join(sl_regions, by = "seq_id") %>%
     dplyr::transmute(
         seq_id = paste(`5_8S_hash`, LSU_hash, sep = "_"),
-        single_link = reads/sum(reads)
+        single_link = single_link
     ) %>%
     dplyr::group_by(seq_id) %>%
-    dplyr::summarise_all(sum)
+    dplyr::summarize_all(sum)
 
-vs_reads <- vs_regions %>%
-    dplyr::transmute(
-        vsearch = stringr::str_remove(seq_id, "^centroid=OTU_[0-9]+;seqs=") %>%
-            stringr::str_remove(";clusterid=[0-9]+$") %>%
-            as.integer() %>%
-            divide_by(sum(.)),
-        seq_id = paste(`5_8S_hash`, LSU_hash, sep = "_")
-    ) %>%
-    dplyr::group_by(seq_id) %>%
-    dplyr::summarise_all(sum)
-
-laa_reads <- readr::read_delim(
-    here::here("process", "pb_363_subreads.demux.sieve.swarm.otutab"),
-    delim = " ",
-    col_names = c("sample", "swarm", "subswarm", "reads"),
-    col_types = "ccci"
-) %>%
-    tidyr::unite("seq_id", swarm, subswarm, sep = " ") %>%
-    dplyr::left_join(laa_regions, by = "seq_id") %>%
+vs_reads <- vs_table %>%
+    tibble::column_to_rownames("OTU") %>%
+    rowSums() %>%
+    divide_by(sum(.)) %>%
+    tibble::enframe(name = "seq_id", value = "vsearch") %>%
+    dplyr::left_join(vs_regions, by = "seq_id") %>%
     dplyr::transmute(
         seq_id = paste(`5_8S_hash`, LSU_hash, sep = "_"),
-        laa = reads / sum(reads)
+        vsearch = vsearch
     ) %>%
     dplyr::group_by(seq_id) %>%
-    dplyr::summarise_all(sum)
+    dplyr::summarize_all(sum)
+
+# laa_reads <- readr::read_delim(
+#     here::here("process", "pb_363_subreads.demux.sieve.swarm.otutab"),
+#     delim = " ",
+#     col_names = c("sample", "swarm", "subswarm", "reads"),
+#     col_types = "ccci"
+# ) %>%
+#     tidyr::unite("seq_id", swarm, subswarm, sep = " ") %>%
+#     dplyr::left_join(laa_regions, by = "seq_id") %>%
+#     dplyr::transmute(
+#         seq_id = paste(`5_8S_hash`, LSU_hash, sep = "_"),
+#         laa = reads / sum(reads)
+#     ) %>%
+#     dplyr::group_by(seq_id) %>%
+#     dplyr::summarise_all(sum)
 
 otu_tab <- purrr::reduce(
-    list(ampliseq_reads, vs_reads, sl_reads, laa_reads),
+    list(
+        # tzara_reads,
+        ampliseq_reads,
+        vs_reads,
+        sl_reads#,
+        # laa_reads
+    ),
     dplyr::full_join,
     by = "seq_id"
 )
@@ -440,7 +462,7 @@ phyloseq::UniFrac(physeq, weighted = TRUE)
                      colnames_angle = 90,
                      hjust = 1,
                      width = 0.2,
-                     legend_title = "log10(abundance)") %>%
+                     legend_title = "log10(read abundance)") %>%
     ggplot2::ggsave("processReads/compare/treemap.pdf", plot = ., device = "pdf",
                     width = 8, height = 300, limitsize = FALSE)
 
@@ -452,7 +474,7 @@ physeq_glom <- phyloseq::tip_glom(physeq, h = 0.01)
                      colnames_angle = 90,
                      hjust = 1,
                      width = 0.2,
-                     legend_title = "log10(abundance)") %>%
+                     legend_title = "log10(read abundance)") %>%
     ggplot2::ggsave("processReads/compare/treemap_glom.pdf", plot = ., device = "pdf",
                     width = 8, height = 300, limitsize = FALSE)
 
