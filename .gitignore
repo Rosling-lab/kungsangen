@@ -10,8 +10,7 @@ processReads/demultiplex/detectSiameras
 processReads/demultiplex/demult/results
 !process/*.cons.fasta
 !process/*.table
-
-
+_targets/meta/process
+_targets/meta/progress
 .Rhistory
-
 kungsangen.Rproj
