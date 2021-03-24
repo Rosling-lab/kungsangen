@@ -5,6 +5,8 @@
 library(targets)
 library(tarchetypes)
 
+comparedir <- file.path("processReads", "compare")
+
 pre_positions_targets <-
 tar_plan(
 
@@ -38,11 +40,12 @@ tar_plan(
 
 positions_targets <-  tar_map(
   values = list(seq = rlang::syms(c("ampliseq", "sl_seqs", "vs_seqs")),
+                table = rlang::syms(c("ampliseq_table", "sl_table", "vs_table")),
                 id = c("as", "sl", "vs")),
   tar_target(
     positions,
     LSUx::lsux(
-      seq = seq,
+      seq = seq[table$OTU],
       cm_32S = cm_32S_trunc,
       ITS1 = TRUE,
       cpu = 8,
@@ -51,21 +54,24 @@ positions_targets <-  tar_map(
     )
   ),
 
-  # Just cut out 5.8S and LSU
+  # Just cut out 5.8S, LSU, ITS2, and ITS
   tar_target(
     regions,
     purrr::map2(
-      .x = c("5_8S", "LSU1"),
-      .y = c("5_8S", "LSU4"),
+      .x = c("5_8S", "LSU1", "ITS2", "ITS1"),
+      .y = c("5_8S", "LSU4", "ITS2", "ITS2"),
       tzara::extract_region,
       seq = seq,
       positions = positions
     ) %>%
-      purrr::map2(c("5_8S", "LSU"), tibble::enframe, name = "seq_id") %>%
+      purrr::map2(c("5_8S", "LSU", "ITS2", "ITS"),
+                  tibble::enframe, name = "seq_id") %>%
       purrr::reduce(dplyr::full_join, by = "seq_id") %>%
       dplyr::mutate(
         `5_8S_hash` = tzara::seqhash(`5_8S`),
-        LSU_hash = tzara::seqhash(LSU)
+        LSU_hash = tzara::seqhash(LSU),
+        ITS2_hash = tzara::seqhash(ITS2),
+        ITS_hash = tzara::seqhash(ITS)
       ) %>%
       dplyr::mutate_at(
         dplyr::vars(dplyr::ends_with("_hash")),
@@ -73,13 +79,25 @@ positions_targets <-  tar_map(
         replace = "missing"
       )
   ),
+  tar_target(
+    hash_key,
+    dplyr::left_join(
+      dplyr::select(regions, seq_id, dplyr::ends_with("hash")),
+      tibble::enframe(tzara::seqhash(seq), name = "seq_id", value = "full_hash"),
+      by = "seq_id"
+    ) %>%
+      dplyr::select(-seq_id) %>%
+      unique()
+  ),
   names = id
 )
 
-
 #### Combined table ####
 align_targets <- tar_map(
-  values = list(hash = c("5_8S_hash", "LSU_hash"), region = c("5_8S", "LSU")),
+  values = list(
+    hash = c("5_8S_hash", "LSU_hash", "ITS2_hash", "ITS_hash"),
+    region = c("5_8S", "LSU", "ITS2", "ITS")
+  ),
   # get all the unique 5.8S and LSU sequences
   tar_combine(
     allseqs,
@@ -109,7 +127,39 @@ align_targets <- tar_map(
   names = region
 )
 
+# we don't need to align ITS
+align_targets$align <- purrr::discard(
+  align_targets$align,
+  ~ grepl("ITS", .$settings$name)
+)
+
+# make an (optionally constrainted) ML tree with fasttree
+fasttree <- function(aln_file, out_file, constraints = NULL) {
+  args <- character(0)
+  if (!is.null(constraints)) {
+    constraint_file <- tempfile(fileext = ".fasta")
+    Biostrings::writeXStringSet(constraints, constraint_file)
+    on.exit(unlink(constraint_file))
+    args <- c("-constraints", constraint_file)
+  }
+  stopifnot(
+    system2(
+      command = "fasttree",
+      args = c(args, "-nt", "-gtr", aln_file),
+      stdout = out_file
+    ) == 0
+  )
+  out_file
+}
+
 concat_targets <- tar_plan(
+
+  tar_combine(
+    hash_key,
+    positions_targets$hash_key,
+    command = dplyr::bind_rows(!!!.x) %>% unique()
+  ),
+
   #### Concatenation ####
   # now find all unique pairs of 5.8S and LSU
   tar_combine(
@@ -134,7 +184,6 @@ concat_targets <- tar_plan(
   tar_file(
     write_comparealn,
     {
-      comparedir <- file.path("processReads", "compare")
       if (!dir.exists(comparedir)) dir.create(comparedir)
       alnfile <- file.path(comparedir, "comparealn.fasta.gz")
       Biostrings::writeXStringSet(align_both, alnfile, compress = TRUE)
@@ -156,10 +205,9 @@ concat_targets <- tar_plan(
     tar_file(
       write_aln,
       {
-        comparedir <- file.path("processReads", "compare")
         if (!dir.exists(comparedir)) dir.create(comparedir)
-        alnfile <- file.path(comparedir, sprintf("%s.fasta.gz", file))
-        Biostrings::writeXStringSet(aln, alnfile, compress = TRUE)
+        alnfile <- file.path(comparedir, sprintf("%s.fasta", file))
+        Biostrings::writeXStringSet(aln, alnfile)
         alnfile
       }
     ),
@@ -171,35 +219,43 @@ concat_targets <- tar_plan(
   # takes about 5 min
   tar_file(
     tree_file,
-    file.path(comparedir, "comparealn.degap.tree") %T>%
-    system2(
-      command = "fasttree",
-      args = c("-nt", "-gtr", write_aln_degap),
-      stdout = .
+    fasttree(
+      aln_file = write_aln_degap,
+      out_file = file.path(comparedir, "comparealn.degap.tree"),
+      constraints = tax_constraints
     )
   ),
 
-  tree = treeio::read.newick(tree_file) %>%
-    phangorn::midpoint()
+  tree_raw = treeio::read.newick(tree_file),
+  tree_rooted = root_with_kingdoms(tree_raw, kingdoms, c("Euglenozoa", "Heterolobosa")),
+  tree_fungi = dplyr::filter(kingdoms, taxon == "Fungi")$label %>%
+    ape::getMRCA(tree_rooted, .) %>%
+    ape::extract.clade(tree_rooted, .)
 )
 
 #### Community matrix ####
 # make a "community matrix" for the different pipelines
 reads_targets <- tar_map(
-  list(
-    table = rlang::syms(c("ampliseq_table", "vs_table", "sl_table")),
-    regions = rlang::syms(c("regions_as", "regions_vs", "regions_sl")),
-    id = c("ampliseq", "vsearch", "single_link")
-  ),
+  tidyr::crossing(
+    m = tibble::tibble(
+      table = rlang::syms(c("ampliseq_table", "vs_table", "sl_table")),
+      regions = rlang::syms(c("regions_as", "regions_vs", "regions_sl")),
+      id = c("ampliseq", "vsearch", "single_link")
+    ),
+    r = tibble::tibble(
+      hashcols = list(c("5_8S_hash", "LSU_hash"), "ITS2_hash", "ITS_hash"),
+      id2 = c("concat", "ITS2", "ITS")
+    )
+  ) %>% tidyr::unpack(c("m", "r")),
   tar_fst_tbl(
     reads,
     tibble::column_to_rownames(table, "OTU") %>%
       rowSums() %>%
       tibble::enframe(name = "seq_id", value = "n") %>%
       dplyr::left_join(regions, by = "seq_id") %>%
-      dplyr::mutate_at(c("5_8S_hash", "LSU_hash"), tidyr::replace_na, "missing") %>%
+      dplyr::mutate_at(hashcols, tidyr::replace_na, "missing") %>%
       dplyr::transmute(
-        seq_id = paste(`5_8S_hash`, LSU_hash, sep = "_"),
+        seq_id = glue::glue(paste0("{`", hashcols, "`}", collapse = "_")),
         n = n/sum(n)
       ) %>%
       dplyr::rename(!!id := n) %>%
@@ -207,14 +263,129 @@ reads_targets <- tar_map(
       dplyr::summarize_all(sum),
     tidy_eval = FALSE
   ),
-  names = id
+  names = c(id, id2)
 )
+
+unite_precluster <- function(seqs, outroot) {
+  assertthat::assert_that(
+    assertthat::is.string(seqs),
+    assertthat::is.readable(seqs)
+  )
+  out_uc = glue::glue("{outroot}.uc")
+  stopifnot(
+    system2(
+      command = "vsearch",
+      args = c("--cluster_fast", seqs, "--id", "0.80", "--uc", out_uc)
+    ) == 0
+  )
+  out_uc
+}
+
+unite_cluster <- function(preclust, seqs, threshold, outfile) {
+  seqs <- Biostrings::DNAStringSet(seqs[preclust$seq_id])
+  tf <- tempfile(pattern = "clust", fileext = ".fasta")
+  outfile <- tempfile(pattern = "out")
+  Biostrings::writeXStringSet(seqs, tf)
+  on.exit(unlink(tf))
+  on.exit(unlink(outfile), TRUE)
+  stopifnot(
+    system2(
+      "blastclust",
+      c("-i", tf, "-S", threshold, "-L", "0.85", "-a", "8", "-e", "F", "-o",
+        outfile, "-p", "F")
+    ) == 0
+  )
+  readLines(outfile)
+}
+
+#### Cluster the ITS2 at different thresholds ####
+its2_cluster_targets <- tar_plan(
+  tar_file(
+    its2_file,
+    file.path(comparedir, "ITS2.fasta.gz") %T>%
+      Biostrings::writeXStringSet(Biostrings::DNAStringSet(allseqs_ITS2), .)
+  ),
+
+  tar_file(
+    its2_precluster_file,
+    unite_precluster(its2_file, file.path(comparedir, "ITS2_precluster"))
+  ),
+  its2_precluster = readr::read_tsv(
+    its2_precluster_file,
+    col_names = paste0("V", 1:10),
+    col_types = "ciidfccccc",
+    na = c("", "NA", "*")
+  ) %>%
+    dplyr::select(seq_id = V9, cluster = V10) %>%
+    dplyr::mutate_all(stringr::str_replace, ";.*", "") %>%
+    dplyr::mutate(cluster = dplyr::coalesce(cluster, seq_id)) %>%
+    unique() %>%
+    dplyr::group_by(cluster),
+  its2_precluster_singletons = dplyr::filter(its2_precluster, dplyr::n() == 1),
+  tar_group_by(
+    its2_precluster_clusters,
+    dplyr::filter(its2_precluster, dplyr::n() > 1),
+    cluster
+  ),
+
+  tar_map(
+   values = list(threshold = c(90, 97, 99)),
+   tar_target(
+     its2_cluster,
+     unite_cluster(its2_precluster_clusters, allseqs_ITS2, threshold),
+     pattern = map(its2_precluster_clusters)
+   )
+  )
+)
+
+
+
+draw_singleton <- function(label, offset, extend = 0.35, ...) {
+  geom_strip(label, label, "", align = TRUE, offset = offset, extend = extend, ...)
+}
+draw_cluster <- function(node, offset, extend = 0.35, ...) {
+  geom_cladelabel(node, "", align = TRUE, offset = offset, extend = extend, ...)
+}
+
+draw_clusters <- function(clusters, singletons, hash_key, physeq, offset) {
+  tree <- phyloseq::phy_tree(physeq)
+  tips <- phyloseq::taxa_names(physeq)
+  clusters <- dplyr::bind_rows(
+    tibble::tibble(
+      seq_id = trimws(clusters),
+      cluster = formatC(seq_along(clusters), width = 4, flag = "0")
+    ),
+    singletons
+  ) %>%
+    dplyr::rename(ITS2_hash = seq_id) %>%
+    tidyr::separate_rows(ITS2_hash) %>%
+    dplyr::left_join(hash_key, by = "ITS2_hash") %>%
+    dplyr::transmute(cluster = cluster, label = paste(`5_8S_hash`, LSU_hash, sep = "_")) %>%
+    dplyr::filter(label %in% tips) %>%
+    unique() %>%
+    dplyr::group_by(cluster)
+
+  singletons <- dplyr::filter(clusters, dplyr::n() == 1)
+  clusters <- dplyr::filter(clusters, dplyr::n() > 1) %>%
+    dplyr::summarize(
+      n = dplyr::n(),
+      mrca = ape::getMRCA(tree, label) %||% match(label, tips),
+      n_desc = length(unlist(phangorn::Descendants(tree, mrca[1])))
+    )
+  mono_clusters <- dplyr::filter(clusters, n == n_desc)
+  poly_clusters <- dplyr::filter(clusters, n < n_desc)
+  c(
+    lapply(poly_clusters$mrca, draw_cluster, offset = offset, color = "red"),
+    lapply(mono_clusters$mrca, draw_cluster, offset = offset),
+    lapply(singletons$label, draw_singleton, offset = offset)
+  )
+}
 
 phyloseq_targets <- tar_plan(
 
   tar_combine(
     otu_tab,
-    reads_targets$reads,
+    purrr::keep(reads_targets$reads, ~ endsWith(.$settings$name, "concat")),
     command =
       purrr::reduce(list(!!!.x), dplyr::full_join, by = "seq_id") %>%
       dplyr::mutate_if(is.numeric, tidyr::replace_na, 0) %>%
@@ -223,11 +394,45 @@ phyloseq_targets <- tar_plan(
   ),
 
   #### phyloseq object and UniFrac distances ####
-  physeq = phyloseq::phyloseq(tree, otu_tab),
-  physeq_glom = phyloseq::tip_glom(physeq, h = 0.01),
+  tax_table =
+    dplyr::select(tax_all, full_hash, rank, taxon) %>%
+    dplyr::left_join(
+      dplyr::transmute(
+        hash_key,
+        full_hash = full_hash,
+        label = stringr::str_c(`5_8S_hash`, LSU_hash, sep = "_")
+      ),
+      by = "full_hash"
+    ) %>%
+    phylotax::make_taxon_labels(abbrev = taxon_abbrevs) %>%
+    dplyr::rename(taxon_label = new) %>%
+    dplyr::left_join(tibble::tibble(old = tree_rooted$tip.label), by = "old") %>%
+    tidyr::replace_na(list(taxon_label = "")) %>%
+    tibble::column_to_rownames("old") %>%
+    as.matrix() %>%
+    phyloseq::tax_table(),
+  tar_map(
+    values = list(
+      tree = rlang::syms(c("tree_rooted", "tree_fungi")),
+      id = c("alleuks", "fungi")
+    ),
+    tar_target(
+      physeq,
+      phyloseq::phyloseq(tree, otu_tab, tax_table)
+    ),
+    names = id
+  ),
+  # physeq_glom = phyloseq::tip_glom(physeq, h = 0.01),
 
   tar_map(
-    values = list(weight = c(TRUE, FALSE), id = c("unweighted", "weighted")),
+    values = tidyr::crossing(
+      weight = c(TRUE, FALSE),
+      tidyr::nesting(
+        physeq = rlang::syms(c("physeq_alleuks", "physeq_fungi")),
+        id = c("alleuks", "fungi")
+      )
+    ) %>%
+      dplyr::mutate(id = paste0(id, "_", ifelse(weight, "", "un"), "weighted")),
     tar_target(
       unifrac,
       phyloseq::UniFrac(physeq, weighted = weight)
@@ -236,29 +441,72 @@ phyloseq_targets <- tar_plan(
   ),
 
   #### Figure ####
+
+  fungi_cluster_geoms = c(
+    draw_clusters(
+      clusters = its2_cluster_90,
+      singletons = its2_precluster_singletons,
+      hash_key = hash_key,
+      physeq = physeq_fungi,
+      offset = 0.25
+    ),
+    draw_clusters(
+      clusters = its2_cluster_97,
+      singletons = its2_precluster_singletons,
+      hash_key = hash_key,
+      physeq = physeq_fungi,
+      offset = 0.30
+    ),
+    draw_clusters(
+      clusters = its2_cluster_99,
+      singletons = its2_precluster_singletons,
+      hash_key = hash_key,
+      physeq = physeq_fungi,
+      offset = 0.35
+    )
+  ),
+
   tar_map(
     values = list(
-      physeq_obj = rlang::syms(c("physeq", "physeq_glom")),
-      id = c("raw", "glom")
+      physeq_obj = rlang::syms(c("physeq_alleuks", "physeq_fungi")),
+      tree_height = c(300, 75),
+      tip_offset = c(0.4, 0.3),
+      id = c("alleuks", "fungi")
     ),
     tar_qs(
       tree_fig,
-      (ggtree::ggtree(physeq_obj) +
-         ggtree::theme_tree2() +
-         ggtree::geom_tiplab(label = "", align = TRUE)) %>%
-        ggtree::gheatmap(log(as(phyloseq::otu_table(physeq_obj), "matrix")),
-                         colnames_angle = 90,
-                         hjust = 1,
-                         width = 0.2,
-                         legend_title = "log10(read abundance)")
+      (ggtree(physeq_obj) +
+         theme_tree2() +
+         geom_tiplab(label = "", align = TRUE) +
+         geom_tiplab(
+           aes(label = taxon_label),
+           align = TRUE, offset = tip_offset, linetype = NULL, size = 2.5, family = "mono") +
+         xlim(0, 6) +
+         scale_y_continuous(expand = expansion(add = c(10, 0.6)))) %>%
+        gheatmap(
+          log10(as(phyloseq::otu_table(physeq_obj), "matrix")),
+          colnames_angle = 90,
+          hjust = 1,
+          width = 0.1,
+          legend_title = "log10(read abundance)"
+        ) +
+        ggplot2::theme(legend.position = "bottom"),
+      packages = c("ggplot2", "ggtree", "rlang"),
+      error = "workspace"
     ),
     tar_file(
       tree_fig_file,
-      sprintf("processReads/compare/treemap_%s.pdf", id) %T>%
-        ggplot2::ggsave(., plot = tree_fig, device = "pdf", width = 8,
-                        height = 300, limitsize = FALSE)
+      sprintf("%s/treemap_%s.pdf", comparedir, id) %T>%
+        ggplot2::ggsave(., plot = tree_fig, device = "pdf", width = 12,
+                        height = tree_height, limitsize = FALSE)
     ),
     names = id
+  ),
+  tar_file(
+    tree_cluster_fig_file,
+    sprintf("%s/tree_clusters_fungi.pdf", comparedir) %T>%
+      ggplot2::ggsave(., plot = tree_fig_fungi + fungi_cluster_geoms[1:100],
+                      device = "pdf", width = 12, height = 75, limitsize = FALSE)
   )
 )
 
@@ -266,6 +514,7 @@ compare_tree_targets <- list(
   pre_positions_targets,
   positions_targets,
   align_targets,
+  its2_cluster_targets,
   concat_targets,
   reads_targets,
   phyloseq_targets

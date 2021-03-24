@@ -42,6 +42,7 @@ dependencies:
   - bioconductor-treeio=1.10.0=r36_0
   - bioconductor-xvector=0.26.0=r36h516909a_0
   - bioconductor-zlibbioc=1.32.0=r36h516909a_0
+  - blast-legacy=2.2.26=2
   - brotlipy=0.7.0=py38h497a2fe_1001
   - bwidget=1.9.14=ha770c72_0
   - bzip2=1.0.8=h516909a_3
