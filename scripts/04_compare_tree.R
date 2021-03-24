@@ -2,71 +2,282 @@
 # For the tree, use only 5.8S and the full LSU regions
 # these can be aligned separately and concatenated.
 
-#### Ampliseq clusters ####
-# First load the ampliseq results and use LSUx to cut out subregions
-ampliseq <- readr::read_tsv(
-    "processReads/ampliseq/qiime2_ASV_table.tsv",
-    col_types = readr::cols(
+library(targets)
+library(tarchetypes)
+
+pre_positions_targets <-
+tar_plan(
+
+  # get the path for the CM which is truncated at the LR5 primer site
+  # (included in LSUx)
+  tar_file(
+    cm_32S_trunc,
+    system.file(
+      file.path("extdata", "fungi_32S_LR5.cm"),
+      package = "LSUx"
+    )
+  ),
+
+  #### Ampliseq clusters ####
+  # First load the ampliseq results and use LSUx to cut out subregions
+  tar_file(ampliseq_file, "processReads/ampliseq/qiime2_ASV_table.tsv"),
+
+  ampliseq =
+    readr::read_tsv(
+      ampliseq_file,
+      col_types = readr::cols(
         .default = readr::col_double(),
         Feature.ID = readr::col_character(),
         Taxon = readr::col_character(),
         sequence = readr::col_character()
+      )
+    ) %>%
+    dplyr::select("Feature.ID", "sequence") %>%
+    tibble::deframe()
+  )
+
+positions_targets <-  tar_map(
+  values = list(seq = rlang::syms(c("ampliseq", "sl_seqs", "vs_seqs")),
+                id = c("as", "sl", "vs")),
+  tar_target(
+    positions,
+    LSUx::lsux(
+      seq = seq,
+      cm_32S = cm_32S_trunc,
+      ITS1 = TRUE,
+      cpu = 8,
+      # allow 2 Gb ram (per process)
+      mxsize = 2048
     )
+  ),
+
+  # Just cut out 5.8S and LSU
+  tar_target(
+    regions,
+    purrr::map2(
+      .x = c("5_8S", "LSU1"),
+      .y = c("5_8S", "LSU4"),
+      tzara::extract_region,
+      seq = seq,
+      positions = positions
+    ) %>%
+      purrr::map2(c("5_8S", "LSU"), tibble::enframe, name = "seq_id") %>%
+      purrr::reduce(dplyr::full_join, by = "seq_id") %>%
+      dplyr::mutate(
+        `5_8S_hash` = tzara::seqhash(`5_8S`),
+        LSU_hash = tzara::seqhash(LSU)
+      ) %>%
+      dplyr::mutate_at(
+        dplyr::vars(dplyr::ends_with("_hash")),
+        tidyr::replace_na,
+        replace = "missing"
+      )
+  ),
+  names = id
 )
 
-ampliseq <- tibble::deframe(ampliseq[,c("Feature.ID", "sequence")])
 
-# get the path for the CM which is truncated at the LR5 primer site
-# (included in LSUx)
-cm_32S_trunc <- system.file(
-    file.path("extdata", "fungi_32S_LR5.cm"),
-    package = "LSUx"
+#### Combined table ####
+align_targets <- tar_map(
+  values = list(hash = c("5_8S_hash", "LSU_hash"), region = c("5_8S", "LSU")),
+  # get all the unique 5.8S and LSU sequences
+  tar_combine(
+    allseqs,
+    positions_targets$regions,
+    command =
+      purrr::map_dfr(list(!!!.x), dplyr::select, hash, region) %>%
+      unique() %>%
+      dplyr::filter(complete.cases(.)) %>%
+      tibble::deframe() %>%
+      chartr(old = "T", new = "U") %>%
+      Biostrings::RNAStringSet()
+  ),
+  #### Alignment ####
+  # align them independently
+  # these are pretty quick alignments (~1 hour)
+  # they are a bit faster because we are only aligning the unique sequences
+  tar_target(
+    name = align,
+    DECIPHER::AlignSeqs(allseqs, processors = 8) %>%
+      # add an extra sequence to each one for "missing"
+      # it is just gaps, with the same length as the alignment
+      magrittr::inset(
+        i = "missing",
+        value = Biostrings::RNAStringSet(strrep("-", Biostrings::width(.[1])))
+      )
+  ),
+  names = region
 )
 
-positions <- LSUx::lsux(
-    seq = ampliseq,
-    cm_32S = cm_32S_trunc,
-    ITS1 = TRUE,
-    cpu = 8,
-    # allow 2 Gb ram (per process)
-    mxsize = 2048
+concat_targets <- tar_plan(
+  #### Concatenation ####
+  # now find all unique pairs of 5.8S and LSU
+  tar_combine(
+    all_both,
+    positions_targets$regions,
+    command =
+      purrr::map_dfr(list(!!!.x), dplyr::select, "5_8S_hash", "LSU_hash") %>%
+      unique()
+  ),
+  # paste together the 5.8S and LSU sequences for each.
+  align_both = paste(
+    align_5_8S[all_both$`5_8S_hash`],
+    align_LSU[all_both$LSU_hash],
+    sep = ""
+  ) %>%
+    set_names(paste(all_both$`5_8S_hash`, all_both$LSU_hash, sep = "_")) %>%
+    # make it DNA instead of RNA for fastree
+    chartr(old = "U", new = "T") %>%
+    Biostrings::DNAStringSet(),
+
+  # output the alignment
+  tar_file(
+    write_comparealn,
+    {
+      comparedir <- file.path("processReads", "compare")
+      if (!dir.exists(comparedir)) dir.create(comparedir)
+      alnfile <- file.path(comparedir, "comparealn.fasta.gz")
+      Biostrings::writeXStringSet(align_both, alnfile, compress = TRUE)
+      alnfile
+    }
+  ),
+
+  # remove columns with at least 90% gaps
+  align_degap = Biostrings::DNAMultipleAlignment(align_both) %>%
+    Biostrings::maskGaps(min.fraction = 0.9, min.block.width = 1) %>%
+    as("DNAStringSet"),
+
+  tar_map(
+    values = list(
+      aln = rlang::syms(c("align_both", "align_degap")),
+      file = c("comparealn", "comparealn.degap"),
+      id = c("both", "degap")
+    ),
+    tar_file(
+      write_aln,
+      {
+        comparedir <- file.path("processReads", "compare")
+        if (!dir.exists(comparedir)) dir.create(comparedir)
+        alnfile <- file.path(comparedir, sprintf("%s.fasta.gz", file))
+        Biostrings::writeXStringSet(aln, alnfile, compress = TRUE)
+        alnfile
+      }
+    ),
+    names = id
+  ),
+
+  #### ML Tree ####
+  # make a tree with fasttree
+  # takes about 5 min
+  tar_file(
+    tree_file,
+    file.path(comparedir, "comparealn.degap.tree") %T>%
+    system2(
+      command = "fasttree",
+      args = c("-nt", "-gtr", write_aln_degap),
+      stdout = .
+    )
+  ),
+
+  tree = treeio::read.newick(tree_file) %>%
+    phangorn::midpoint()
 )
 
-regions <- unique(positions$region)
-regions
+#### Community matrix ####
+# make a "community matrix" for the different pipelines
+reads_targets <- tar_map(
+  list(
+    table = rlang::syms(c("ampliseq_table", "vs_table", "sl_table")),
+    regions = rlang::syms(c("regions_as", "regions_vs", "regions_sl")),
+    id = c("ampliseq", "vsearch", "single_link")
+  ),
+  tar_fst_tbl(
+    reads,
+    tibble::column_to_rownames(table, "OTU") %>%
+      rowSums() %>%
+      tibble::enframe(name = "seq_id", value = "n") %>%
+      dplyr::left_join(regions, by = "seq_id") %>%
+      dplyr::mutate_at(c("5_8S_hash", "LSU_hash"), tidyr::replace_na, "missing") %>%
+      dplyr::transmute(
+        seq_id = paste(`5_8S_hash`, LSU_hash, sep = "_"),
+        n = n/sum(n)
+      ) %>%
+      dplyr::rename(!!id := n) %>%
+      dplyr::group_by(seq_id) %>%
+      dplyr::summarize_all(sum),
+    tidy_eval = FALSE
+  ),
+  names = id
+)
 
-# Just cut out 5.8S and LSU
-ampliseq_regions <- purrr::map2(
-    .x = c("5_8S", "LSU1"),
-    .y = c("5_8S", "LSU4"),
-    tzara::extract_region,
-    seq = ampliseq,
-    positions = positions
+phyloseq_targets <- tar_plan(
+
+  tar_combine(
+    otu_tab,
+    reads_targets$reads,
+    command =
+      purrr::reduce(list(!!!.x), dplyr::full_join, by = "seq_id") %>%
+      dplyr::mutate_if(is.numeric, tidyr::replace_na, 0) %>%
+      tibble::column_to_rownames("seq_id") %>%
+      phyloseq::otu_table(taxa_are_rows = TRUE)
+  ),
+
+  #### phyloseq object and UniFrac distances ####
+  physeq = phyloseq::phyloseq(tree, otu_tab),
+  physeq_glom = phyloseq::tip_glom(physeq, h = 0.01),
+
+  tar_map(
+    values = list(weight = c(TRUE, FALSE), id = c("unweighted", "weighted")),
+    tar_target(
+      unifrac,
+      phyloseq::UniFrac(physeq, weighted = weight)
+    ),
+    names = id
+  ),
+
+  #### Figure ####
+  tar_map(
+    values = list(
+      physeq_obj = rlang::syms(c("physeq", "physeq_glom")),
+      id = c("raw", "glom")
+    ),
+    tar_qs(
+      tree_fig,
+      (ggtree::ggtree(physeq_obj) +
+         ggtree::theme_tree2() +
+         ggtree::geom_tiplab(label = "", align = TRUE)) %>%
+        ggtree::gheatmap(log(as(phyloseq::otu_table(physeq_obj), "matrix")),
+                         colnames_angle = 90,
+                         hjust = 1,
+                         width = 0.2,
+                         legend_title = "log10(read abundance)")
+    ),
+    tar_file(
+      tree_fig_file,
+      sprintf("processReads/compare/treemap_%s.pdf", id) %T>%
+        ggplot2::ggsave(., plot = tree_fig, device = "pdf", width = 8,
+                        height = 300, limitsize = FALSE)
+    ),
+    names = id
+  )
 )
-ampliseq_regions <- purrr::map2(ampliseq_regions,
-                                c("5_8S", "LSU"),
-                                tibble::enframe,
-                                name = "seq_id")
-ampliseq_regions <- purrr::reduce(
-    ampliseq_regions,
-    dplyr::full_join,
-    by = "seq_id"
+
+compare_tree_targets <- list(
+  pre_positions_targets,
+  positions_targets,
+  align_targets,
+  concat_targets,
+  reads_targets,
+  phyloseq_targets
 )
-ampliseq_regions <- dplyr::mutate(
-    ampliseq_regions,
-    `5_8S_hash` = tzara::seqhash(`5_8S`),
-    LSU_hash = tzara::seqhash(LSU)
-)
-ampliseq_regions <- dplyr::mutate_at(
-    ampliseq_regions,
-    dplyr::vars(dplyr::ends_with("_hash")),
-    tidyr::replace_na,
-    replace = "missing"
-)
+
+# colSums(phyloseq::otu_table(physeq_glom) > 0)
+# colSums(phyloseq::otu_table(physeq_glom) > 1/30000) # no global singletons
+
 
 # How many unique of each?
-dplyr::n_distinct(ampliseq_regions$`5_8S`)
-dplyr::n_distinct(ampliseq_regions$LSU)
+# dplyr::n_distinct(ampliseq_regions$`5_8S`)
+# dplyr::n_distinct(ampliseq_regions$LSU)
 
 #### Tzara Clusters ####
 # now load the tzara data
@@ -102,120 +313,15 @@ dplyr::n_distinct(ampliseq_regions$LSU)
 #     )
 # }
 
-#### Single linkage (Swarm/GeFaST) clusters ####
-
-sl_seqs <- Biostrings::readDNAStringSet(
-    here::here("process/pb_363.swarm.cons.fasta")
-)
-
-names(sl_seqs) <- gsub("consensus", "swarm_", names(sl_seqs))
-
-sl_table <- readRDS(
-    here::here("processReads", "swarm_table.rds")
-)
-
-sl_seqs <- sl_seqs[names(sl_seqs) %in% sl_table$OTU]
-
-sl_positions <- LSUx::lsux(
-    seq = sl_seqs,
-    cm_32S = cm_32S_trunc,
-    ITS1 = TRUE,
-    cpu = 8,
-    # allow 2 Gb ram (per process)
-    mxsize = 2048
-)
-
-# Just cut out 5.8S and LSU
-sl_regions <- purrr::map2(
-    .x = c("5_8S", "LSU1"),
-    .y = c("5_8S", "LSU4"),
-    tzara::extract_region,
-    seq = as.character(sl_seqs),
-    positions = sl_positions
-)
-sl_regions <- purrr::map2(sl_regions,
-                          c("5_8S", "LSU"),
-                          tibble::enframe,
-                          name = "seq_id")
-sl_regions <- purrr::reduce(
-    sl_regions,
-    dplyr::full_join,
-    by = "seq_id"
-)
-sl_regions <- dplyr::mutate(
-    sl_regions,
-    `5_8S_hash` = tzara::seqhash(`5_8S`),
-    LSU_hash = tzara::seqhash(LSU)
-)
-sl_regions <- dplyr::mutate_at(
-    sl_regions,
-    dplyr::vars(dplyr::ends_with("_hash")),
-    tidyr::replace_na,
-    replace = "missing"
-)
-
 # How many unique of each?
-dplyr::n_distinct(sl_regions$`5_8S`)
-dplyr::n_distinct(sl_regions$LSU)
+# dplyr::n_distinct(sl_regions$`5_8S`)
+# dplyr::n_distinct(sl_regions$LSU)
 
 #### VSEARCH clusters ####
 
-vs_seqs <- Biostrings::readDNAStringSet(
-    here::here("processReads", "clusterOTUs", "cluster", "otus_all20samp.fasta")
-)
-names(vs_seqs) <- gsub(
-    "centroid=(OTU_[0-9]+);seqs=[0-9]+;clusterid=[0-9]+",
-    "\\1",
-    names(vs_seqs)
-)
-
-vs_table <- readRDS(
-    here::here("processReads", "clusterOTUs", "vsearch_otu_table.rds")
-)
-
-vs_seqs <- vs_seqs[names(vs_seqs) %in% vs_table$OTU]
-
-vs_positions <- LSUx::lsux(
-    seq = vs_seqs,
-    cm_32S = cm_32S_trunc,
-    ITS1 = TRUE,
-    cpu = 8,
-    # allow 2 Gb ram (per process)
-    mxsize = 2048
-)
-
-# Just cut out 5.8S and LSU
-vs_regions <- purrr::map2(
-    .x = c("5_8S", "LSU1"),
-    .y = c("5_8S", "LSU4"),
-    tzara::extract_region,
-    seq = as.character(vs_seqs),
-    positions = vs_positions
-)
-vs_regions <- purrr::map2(vs_regions,
-                          c("5_8S", "LSU"),
-                          tibble::enframe,
-                          name = "seq_id")
-vs_regions <- purrr::reduce(
-    vs_regions,
-    dplyr::full_join,
-    by = "seq_id"
-)
-vs_regions <- dplyr::mutate(
-    vs_regions,
-    `5_8S_hash` = tzara::seqhash(`5_8S`),
-    LSU_hash = tzara::seqhash(LSU)
-)
-vs_regions <- dplyr::mutate_at(
-    vs_regions,
-    dplyr::vars(dplyr::ends_with("_hash")),
-    tidyr::replace_na,
-    replace = "missing"
-)
-
 # How many unique of each?
-dplyr::n_distinct(vs_regions$`5_8S`)
-dplyr::n_distinct(vs_regions$LSU)
+# dplyr::n_distinct(vs_regions$`5_8S`)
+# dplyr::n_distinct(vs_regions$LSU)
 
 #### LAA ####
 
@@ -266,217 +372,3 @@ dplyr::n_distinct(vs_regions$LSU)
 # # How many unique of each?
 # dplyr::n_distinct(laa_regions$`5_8S`)
 # dplyr::n_distinct(laa_regions$LSU)
-
-#### Combined table ####
-
-# get all the unique 5.8S and LSU sequences
-all_5_8S <- dplyr::bind_rows(
-    dplyr::select(ampliseq_regions, `5_8S_hash`, `5_8S`),
-    dplyr::select(sl_regions, `5_8S_hash`, `5_8S`),
-    dplyr::select(vs_regions, `5_8S_hash`, `5_8S`)#,
-    # dplyr::select(laa_regions, `5_8S_hash`, `5_8S`),
-    # purrr::map_dfr(tzara_regions, dplyr::select, `5_8S_hash`, `5_8S`)
-)
-all_5_8S <- unique(all_5_8S)
-all_5_8S <- all_5_8S[complete.cases(all_5_8S),]
-all_5_8S <- Biostrings::RNAStringSet(chartr("T", "U", tibble::deframe(all_5_8S)))
-
-all_LSU <- dplyr::bind_rows(
-    dplyr::select(ampliseq_regions, LSU_hash, LSU),
-    dplyr::select(sl_regions, LSU_hash, LSU),
-    dplyr::select(vs_regions, LSU_hash, LSU)#,
-    # dplyr::select(laa_regions, LSU_hash, LSU),
-    # purrr::map_dfr(tzara_regions, dplyr::select, LSU_hash, LSU)
-)
-all_LSU <- unique(all_LSU)
-all_LSU <- all_LSU[complete.cases(all_LSU),]
-all_LSU <- Biostrings::RNAStringSet(chartr("T", "U", tibble::deframe(all_LSU)))
-
-#### Alignment ####
-# align them independently
-# these are pretty quick alignments (~1 hour)
-# they are a bit faster because we are only aligning the unique sequences
-align_5_8S <- DECIPHER::AlignSeqs(all_5_8S, processors = 8)
-align_LSU <- DECIPHER::AlignSeqs(all_LSU, processors = 8)
-
-# add an extra sequence to each one for "missing"
-# it is just gaps, with the same length as the alignment
-align_5_8S["missing"] <-
-    Biostrings::RNAStringSet(strrep("-", Biostrings::width(align_5_8S[1])))
-align_LSU["missing"] <-
-    Biostrings::RNAStringSet(strrep("-", Biostrings::width(align_LSU[1])))
-
-#### Concatenation ####
-# now find all unique pairs of 5.8S and LSU
-all_both <- dplyr::bind_rows(
-    dplyr::select(ampliseq_regions, `5_8S_hash`, LSU_hash),
-    dplyr::select(sl_regions, `5_8S_hash`, LSU_hash),
-    dplyr::select(vs_regions, `5_8S_hash`, LSU_hash)#,
-    # dplyr::select(laa_regions, `5_8S_hash`, LSU_hash)
-    # purrr::map_dfr(tzara_regions, dplyr::select, `5_8S_hash`, LSU_hash)
-)
-all_both <- unique(all_both)
-# paste together the 5.8S and LSU sequences for each.
-align_both <- paste(align_5_8S[all_both$`5_8S_hash`], align_LSU[all_both$LSU_hash], sep = "")
-names(align_both) <- paste(all_both$`5_8S_hash`, all_both$LSU_hash, sep = "_")
-# make it DNA instead of RNA for fastree
-align_both <- Biostrings::DNAStringSet(chartr("U", "T", align_both))
-
-# output the alignment
-comparedir <- file.path("processReads", "compare")
-if (!dir.exists(comparedir)) dir.create(comparedir)
-Biostrings::writeXStringSet(
-    align_both,
-    file.path(comparedir, "comparealn.fasta.gz"),
-    compress = TRUE
-)
-
-# remove columns with at least 90% gaps
-align_degap <- Biostrings::DNAMultipleAlignment(align_both)
-align_degap <- Biostrings::maskGaps(align_degap, min.fraction = 0.9, min.block.width = 1)
-align_degap <- as(align_degap, "DNAStringSet")
-Biostrings::writeXStringSet(align_degap, file.path(comparedir, "comparealn.degap.fasta"))
-
-#### ML Tree ####
-# make a tree with fasttree
-# takes about 5 min
-system2(
-    command = "fasttree",
-    args = c("-nt", "-gtr", file.path(comparedir, "comparealn.degap.fasta")),
-    stdout = file.path(comparedir, "comparealn.degap.tree")
-)
-
-tree <- treeio::read.newick(file.path(comparedir, "comparealn.degap.tree"))
-tree <- phangorn::midpoint(tree)
-
-#### Community matrix ####
-# make a "community matrix" for the different pipelines
-library(magrittr)
-ampliseq_reads <- readr::read_tsv(
-    "processReads/ampliseq/feature-table.tsv",
-    skip = 1,
-    col_types = readr::cols(
-        .default = readr::col_integer(),
-        `#ASV_ID` = readr::col_character()
-    )
-)
-
-ampliseq_reads <-
-    tibble::column_to_rownames(ampliseq_reads, "#ASV_ID") %>%
-    rowSums() %>%
-    tibble::enframe(name = "seq_id", value = "arrow_ampliseq") %>%
-    dplyr::left_join(ampliseq_regions, by = "seq_id") %>%
-    dplyr::mutate_at(c("5_8S_hash", "LSU_hash"), tidyr::replace_na, "missing") %>%
-    dplyr::transmute(
-        seq_id = paste(`5_8S_hash`, LSU_hash, sep = "_"),
-        arrow_ampliseq = arrow_ampliseq/sum(arrow_ampliseq)
-    ) %>%
-    dplyr::group_by(seq_id) %>%
-    dplyr::summarize_all(sum)
-
-# tzara_reads <- list()
-# for (s in tzara_sets) {
-#     s_sym <- rlang::sym(s)
-#     table <- readRDS(paste0("processReads/tzara/", s, "/asv_table.rds"))
-#     table <- colSums(table)
-#     table <- tibble::enframe(table, name = "seq_id", value = s)
-#     table <- dplyr::left_join(table, tzara_regions[[s]], by = "seq_id")
-#     table <- dplyr::transmute(
-#         table,
-#         seq_id = paste(`5_8S_hash`, LSU_hash, sep = "_"),
-#         !!s_sym := !!s_sym / sum(!!s_sym)
-#     )
-#     table <- dplyr::group_by(table, seq_id)
-#     table <- dplyr::summarize_all(table, sum)
-#
-#     tzara_reads[[s]] <- table
-# }
-
-sl_reads <- sl_table %>%
-    tibble::column_to_rownames("OTU") %>%
-    rowSums() %>%
-    divide_by(sum(.)) %>%
-    tibble::enframe(name = "seq_id", value = "single_link") %>%
-    dplyr::left_join(sl_regions, by = "seq_id") %>%
-    dplyr::transmute(
-        seq_id = paste(`5_8S_hash`, LSU_hash, sep = "_"),
-        single_link = single_link
-    ) %>%
-    dplyr::group_by(seq_id) %>%
-    dplyr::summarize_all(sum)
-
-vs_reads <- vs_table %>%
-    tibble::column_to_rownames("OTU") %>%
-    rowSums() %>%
-    divide_by(sum(.)) %>%
-    tibble::enframe(name = "seq_id", value = "vsearch") %>%
-    dplyr::left_join(vs_regions, by = "seq_id") %>%
-    dplyr::transmute(
-        seq_id = paste(`5_8S_hash`, LSU_hash, sep = "_"),
-        vsearch = vsearch
-    ) %>%
-    dplyr::group_by(seq_id) %>%
-    dplyr::summarize_all(sum)
-
-# laa_reads <- readr::read_delim(
-#     here::here("process", "pb_363_subreads.demux.sieve.swarm.otutab"),
-#     delim = " ",
-#     col_names = c("sample", "swarm", "subswarm", "reads"),
-#     col_types = "ccci"
-# ) %>%
-#     tidyr::unite("seq_id", swarm, subswarm, sep = " ") %>%
-#     dplyr::left_join(laa_regions, by = "seq_id") %>%
-#     dplyr::transmute(
-#         seq_id = paste(`5_8S_hash`, LSU_hash, sep = "_"),
-#         laa = reads / sum(reads)
-#     ) %>%
-#     dplyr::group_by(seq_id) %>%
-#     dplyr::summarise_all(sum)
-
-otu_tab <- purrr::reduce(
-    list(
-        # tzara_reads,
-        ampliseq_reads,
-        vs_reads,
-        sl_reads#,
-        # laa_reads
-    ),
-    dplyr::full_join,
-    by = "seq_id"
-)
-otu_tab <- dplyr::mutate_if(otu_tab, is.numeric, tidyr::replace_na, 0)
-otu_tab <- tibble::column_to_rownames(otu_tab, "seq_id")
-
-otu_tab <- phyloseq::otu_table(otu_tab, taxa_are_rows = TRUE)
-
-#### phyloseq object and UniFrac distances ####
-physeq <- phyloseq::phyloseq(tree, otu_tab)
-phyloseq::UniFrac(physeq)
-phyloseq::UniFrac(physeq, weighted = TRUE)
-
-#### Figure ####
-(ggtree::ggtree(tree) +
-    ggtree::theme_tree2() +
-    ggtree::geom_tiplab(label = "", align = TRUE)) %>%
-    ggtree::gheatmap(log(as(otu_tab, "matrix")),
-                     colnames_angle = 90,
-                     hjust = 1,
-                     width = 0.2,
-                     legend_title = "log10(read abundance)") %>%
-    ggplot2::ggsave("processReads/compare/treemap.pdf", plot = ., device = "pdf",
-                    width = 8, height = 300, limitsize = FALSE)
-
-physeq_glom <- phyloseq::tip_glom(physeq, h = 0.01)
-(ggtree::ggtree(physeq_glom) +
-        ggtree::theme_tree2() +
-        ggtree::geom_tiplab(label = "", align = TRUE)) %>%
-    ggtree::gheatmap(log(as(phyloseq::otu_table(physeq_glom), "matrix")),
-                     colnames_angle = 90,
-                     hjust = 1,
-                     width = 0.2,
-                     legend_title = "log10(read abundance)") %>%
-    ggplot2::ggsave("processReads/compare/treemap_glom.pdf", plot = ., device = "pdf",
-                    width = 8, height = 300, limitsize = FALSE)
-
-colSums(phyloseq::otu_table(physeq_glom) > 0)
-colSums(phyloseq::otu_table(physeq_glom) > 1/30000) # no global singletons
