@@ -24,7 +24,7 @@ source(here::here("scripts", "09_accumulation.R"))
 c(
   otu_table_plan,
   lsux_targets,
-  its2_targets,
+  its2_cluster_targets,
   taxonomy_targets,
   tree_targets,
   accumulation_targets

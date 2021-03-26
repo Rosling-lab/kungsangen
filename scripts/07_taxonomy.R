@@ -12,7 +12,7 @@ taxonomy_targets <- tar_plan(
     # files for the reference datasets
     tar_file(
       reference_file,
-      sprintf("reference/%s.sintax2.fasta.gz", reference)
+      sprintf("reference/%s.sintax.fasta.gz", reference)
     ),
     # unique kingdoms in each reference dataset
     tar_qs(
