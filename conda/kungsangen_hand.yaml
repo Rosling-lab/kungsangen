@@ -40,12 +40,16 @@ dependencies:
   - r-openxlsx=
   - r-phangorn
   - r-phylotax=0.0.4
+  - r-pingr
   - r-purrr
   - r-qs
   - r-readr
   - r-readxl
   - r-rentrez
   - r-rlang
+  - r-shiny
+  - r-shinycssloaders
+  - r-shinywidgets
   - r-stringr
   - r-tarchetypes
   - r-targets

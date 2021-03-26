@@ -122,7 +122,7 @@ dependencies:
   - make=4.3=hd18ef5c_1
   - nbformat=5.1.2=pyhd8ed1ab_1
   - ncurses=6.2=h58526e2_4
-  - openssl=1.1.1j=h7f98852_0
+  - openssl=1.1.1k=h7f98852_0
   - pango=1.42.4=h69149e4_5
   - pcre=8.44=he1b5a44_0
   - pcre2=10.36=h032f7d1_1
@@ -273,6 +273,7 @@ dependencies:
   - r-phangorn=2.6.2=r40h03ef668_0
   - r-phylotax=0.0.4=r40_1
   - r-pillar=1.5.1=r40hc72bb7e_0
+  - r-pingr=2.0.1=r40hcdcec82_0
   - r-pixmap=0.4_12=r40hc72bb7e_0
   - r-pkgbuild=1.2.0=r40hc72bb7e_0
   - r-pkgconfig=2.0.3=r40h6115d3f_1
@@ -324,6 +325,8 @@ dependencies:
   - r-segmented=1.3_3=r40hc72bb7e_0
   - r-seqinr=4.2_5=r40hcfec24a_0
   - r-shiny=1.6.0=r40hc72bb7e_0
+  - r-shinycssloaders=1.0.0=r40h6115d3f_0
+  - r-shinywidgets=0.6.0=r40hc72bb7e_0
   - r-snow=0.4_3=r40h6115d3f_1002
   - r-solrium=1.1.4=r40h6115d3f_1
   - r-sourcetools=0.1.7=r40he1b5a44_1002
