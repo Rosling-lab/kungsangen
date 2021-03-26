@@ -12,5 +12,6 @@ processReads/demultiplex/demult/results
 !process/*.table
 _targets/meta/process
 _targets/meta/progress
+_targets/workspaces
 .Rhistory
 kungsangen.Rproj
