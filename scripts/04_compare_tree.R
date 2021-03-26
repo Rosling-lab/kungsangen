@@ -7,6 +7,7 @@ library(tarchetypes)
 library(rlang)
 
 comparedir <- file.path("processReads", "compare")
+if (!dir.exists(comparedir)) dir.create(comparedir)
 
 pre_positions_targets <-
 tar_plan(
@@ -180,17 +181,6 @@ concat_targets <- tar_plan(
     # make it DNA instead of RNA for fastree
     chartr(old = "U", new = "T") %>%
     Biostrings::DNAStringSet(),
-
-  # output the alignment
-  tar_file(
-    write_comparealn,
-    {
-      if (!dir.exists(comparedir)) dir.create(comparedir)
-      alnfile <- file.path(comparedir, "comparealn.fasta.gz")
-      Biostrings::writeXStringSet(align_both, alnfile, compress = TRUE)
-      alnfile
-    }
-  ),
 
   # remove columns with at least 90% gaps
   align_degap = Biostrings::DNAMultipleAlignment(align_both) %>%
