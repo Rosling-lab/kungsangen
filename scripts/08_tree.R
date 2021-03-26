@@ -115,7 +115,17 @@ concat_targets <- tar_plan(
   tree_rooted = root_with_kingdoms(tree_raw, kingdoms, c("Euglenozoa", "Heterolobosa")),
   tree_fungi = dplyr::filter(kingdoms, taxon == "Fungi")$label %>%
     ape::getMRCA(tree_rooted, .) %>%
-    ape::extract.clade(tree_rooted, .)
+    ape::extract.clade(tree_rooted, .),
+  tree_animals = dplyr::filter(kingdoms, taxon == "Metazoa")$label %>%
+    ape::getMRCA(tree_rooted, .) %>%
+    ape::extract.clade(tree_rooted, .),
+  tree_plants = dplyr::filter(phyla, taxon == "Streptophyta")$label %>%
+    ape::getMRCA(tree_rooted, .) %>%
+    ape::extract.clade(tree_rooted, .),
+  tree_protists = tree_rooted %>%
+    ape::drop.tip(tree_fungi$tip.label) %>%
+    ape::drop.tip(tree_animals$tip.label) %>%
+    ape::drop.tip(tree_plants$tip.label)
 )
 
 #### Community matrix ####

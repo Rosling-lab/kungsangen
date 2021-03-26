@@ -115,7 +115,27 @@ taxonomy_targets <- tar_plan(
     dplyr::select(label, constraint) %>%
     dplyr::filter(complete.cases(.)) %>%
     tibble::deframe() %>%
-    Biostrings::BStringSet()
+    Biostrings::BStringSet(),
+  # get the plylum assignments where there are no conflicts
+  # these are only used to pick out the vascular plants
+  phyla = tax_all %>%
+    # take kingdom and phylum assignments
+    dplyr::filter(rank %in% c("kingdom", "phylum")) %>%
+    # deal separately with kindoms and phyla
+    dplyr::group_split(rank) %>%
+    purrr::map(dplyr::group_by, full_hash) %>%
+    # keep only assignments where there is no disagreement
+    purrr::map(dplyr::filter, dplyr::n_distinct(taxon) == 1) %>%
+    {dplyr::semi_join(.[[2]], .[[1]], by = "full_hash")} %>%
+    dplyr::select(taxon, full_hash) %>%
+    unique() %>%
+    # join to the has key to get hashes of 5.8S and LSU
+    # since these are the tip names on the tree
+    dplyr::left_join(hash_key, by = "full_hash") %>%
+    dplyr::mutate(label = paste(`5_8S_hash`, LSU_hash, sep = "_")) %>%
+    dplyr::group_by(label) %>%
+    # require unanimity among identifications
+    dplyr::filter(dplyr::n_distinct(taxon) == 1)
 )
 
 taxonomy_targets <- c(
