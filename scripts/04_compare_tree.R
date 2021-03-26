@@ -4,6 +4,7 @@
 
 library(targets)
 library(tarchetypes)
+library(rlang)
 
 comparedir <- file.path("processReads", "compare")
 
@@ -338,16 +339,11 @@ its2_cluster_targets <- tar_plan(
   )
 )
 
-
-
-draw_singleton <- function(label, offset, extend = 0.35, ...) {
-  geom_strip(label, label, "", align = TRUE, offset = offset, extend = extend, ...)
-}
-draw_cluster <- function(node, offset, extend = 0.35, ...) {
-  geom_cladelabel(node, "", align = TRUE, offset = offset, extend = extend, ...)
+draw_cluster <- function(node, offset, extend = 0.35, barsize = 2, ...) {
+  geom_cladelab(node, "", align = TRUE, offset = offset, extend = extend, barsize = barsize, ...)
 }
 
-draw_clusters <- function(clusters, singletons, hash_key, physeq, offset) {
+draw_clusters <- function(clusters, singletons, hash_key, physeq, offset, name = "") {
   tree <- phyloseq::phy_tree(physeq)
   tips <- phyloseq::taxa_names(physeq)
   clusters <- dplyr::bind_rows(
@@ -363,21 +359,17 @@ draw_clusters <- function(clusters, singletons, hash_key, physeq, offset) {
     dplyr::transmute(cluster = cluster, label = paste(`5_8S_hash`, LSU_hash, sep = "_")) %>%
     dplyr::filter(label %in% tips) %>%
     unique() %>%
-    dplyr::group_by(cluster)
-
-  singletons <- dplyr::filter(clusters, dplyr::n() == 1)
-  clusters <- dplyr::filter(clusters, dplyr::n() > 1) %>%
+    dplyr::group_by(cluster) %>%
     dplyr::summarize(
       n = dplyr::n(),
-      mrca = ape::getMRCA(tree, label) %||% match(label, tips),
+      mrca = if (n > 1) ape::getMRCA(tree, label) else  match(label, tips),
       n_desc = length(unlist(phangorn::Descendants(tree, mrca[1])))
     )
   mono_clusters <- dplyr::filter(clusters, n == n_desc)
   poly_clusters <- dplyr::filter(clusters, n < n_desc)
-  c(
-    lapply(poly_clusters$mrca, draw_cluster, offset = offset, color = "red"),
-    lapply(mono_clusters$mrca, draw_cluster, offset = offset),
-    lapply(singletons$label, draw_singleton, offset = offset)
+  list(
+    draw_cluster(poly_clusters$mrca, offset = offset, barcolor = scales::alpha("red", 0.5)),
+    draw_cluster(mono_clusters$mrca, offset = offset, barsize = 1.5)
   )
 }
 
@@ -442,28 +434,32 @@ phyloseq_targets <- tar_plan(
 
   #### Figure ####
 
-  fungi_cluster_geoms = c(
-    draw_clusters(
-      clusters = its2_cluster_90,
-      singletons = its2_precluster_singletons,
-      hash_key = hash_key,
-      physeq = physeq_fungi,
-      offset = 0.25
+  tar_target(
+    fungi_cluster_geoms,
+    c(
+      draw_clusters(
+        clusters = its2_cluster_90,
+        singletons = its2_precluster_singletons,
+        hash_key = hash_key,
+        physeq = physeq_fungi,
+        offset = 0.15
+      ),
+      draw_clusters(
+        clusters = its2_cluster_97,
+        singletons = its2_precluster_singletons,
+        hash_key = hash_key,
+        physeq = physeq_fungi,
+        offset = 0.20
+      ),
+      draw_clusters(
+        clusters = its2_cluster_99,
+        singletons = its2_precluster_singletons,
+        hash_key = hash_key,
+        physeq = physeq_fungi,
+        offset = 0.25
+      )
     ),
-    draw_clusters(
-      clusters = its2_cluster_97,
-      singletons = its2_precluster_singletons,
-      hash_key = hash_key,
-      physeq = physeq_fungi,
-      offset = 0.30
-    ),
-    draw_clusters(
-      clusters = its2_cluster_99,
-      singletons = its2_precluster_singletons,
-      hash_key = hash_key,
-      physeq = physeq_fungi,
-      offset = 0.35
-    )
+    packages = c("rlang", "ggtree")
   ),
 
   tar_map(
@@ -505,7 +501,7 @@ phyloseq_targets <- tar_plan(
   tar_file(
     tree_cluster_fig_file,
     sprintf("%s/tree_clusters_fungi.pdf", comparedir) %T>%
-      ggplot2::ggsave(., plot = tree_fig_fungi + fungi_cluster_geoms[1:100],
+      ggplot2::ggsave(., plot = tree_fig_fungi + fungi_cluster_geoms,
                       device = "pdf", width = 12, height = 75, limitsize = FALSE)
   )
 )
