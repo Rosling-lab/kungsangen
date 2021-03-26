@@ -18,8 +18,10 @@ source(here::here("scripts", "01_functions.R"))
 source(here::here("scripts", "04_otu_tables.R"))
 source(here::here("scripts", "05_taxonomy.R"))
 source(here::here("scripts", "06_compare_tree.R"))
+source(here::here("scripts", "07_species_accumulatio.R"))
 list(
   otu_table_plan,
   compare_tree_targets,
-  taxonomy_targets
+  taxonomy_targets,
+  accumulation_targets
 )

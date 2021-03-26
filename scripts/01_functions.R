@@ -234,3 +234,54 @@ cluster_annotation <- function(label, x, y = -0.20) {
     grid::textGrob(label = label, rot = 90, hjust = 1, gp = grid::gpar(fontsize = 6)),
     xmin = x, xmax = x, ymin = y, ymax = y)
 }
+
+#### Functions for species accumulation curves ####
+
+# function to print numbers greater than 1000 with "k"
+formatk <- function(x, ...) {
+  ifelse(
+    x < 1000,
+    format(x, ...),
+    paste0(format(x / 1000, ...), "k")
+  )
+}
+
+# function to make mean of species accumulation curves
+# accum is the result of iNEXT::iNEXT
+# new_x is the points to estimate the mean of the accumulation curves
+# samples_data is a data.frame or matrix with the same rownames used in the
+#   otu table passed to iNEXT
+# groupname is the name of a column in samples_data which defines groups of sites
+#   to average over
+accumulation_means <- function(accum, newx, sampledata, groupname) {
+# get the plotting data
+  ggplot2::fortify(accum) %>%
+    # iNEXT doesn't give the same set of x values for each site, so it's hard to
+    # take a reasonable average.  So for each site, make a spline function to
+    # interpolate the iNEXT results,and get the values at a particular set of x
+    # values.
+    dplyr::group_by(site) %>%
+    dplyr::summarize(
+      interp = list(splinefun(x = x, y = y)),
+      x = list(newx),
+      y = list(interp[[1]](x[[1]]))
+    ) %>%
+    dplyr::select(site, x, y) %>%
+    tidyr::unchop(c(x, y)) %>%
+    # add wetness annotations
+    dplyr::mutate(Type = sampledata[as.character(site), groupname]) %>%
+    # get the median at each wetness.
+    dplyr::group_by(x, Type) %>%
+  dplyr::summarize_at("y", mean, .groups = "none")
+}
+
+recode_cluster_types <- function(data) {
+  dplyr::mutate_at(
+    data,
+    "cluster_type",
+    dplyr::recode,
+    as = "ASV (Ampliseq/DADA2)",
+    sl = "Single-linkage (GeFaST)",
+    vs = "Centroid-based (VSEARCH)"
+  )
+}
