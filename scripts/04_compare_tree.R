@@ -488,7 +488,7 @@ phyloseq_targets <- tar_plan(
     ),
     tar_file(
       tree_fig_file,
-      sprintf("%s/treemap_%s.pdf", comparedir, id) %T>%
+      sprintf("%s/treemap_%s.pdf", outdir, id) %T>%
         ggplot2::ggsave(., plot = tree_fig, device = "pdf", width = 12,
                         height = tree_height, limitsize = FALSE)
     ),
@@ -496,7 +496,7 @@ phyloseq_targets <- tar_plan(
   ),
   tar_file(
     tree_cluster_fig_file,
-    sprintf("%s/tree_clusters_fungi.pdf", comparedir) %T>%
+    sprintf("%s/tree_clusters_fungi.pdf", outdir) %T>%
       ggplot2::ggsave(
         .,
         plot = tree_fig_fungi +
