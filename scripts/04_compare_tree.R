@@ -372,6 +372,11 @@ draw_clusters <- function(clusters, singletons, hash_key, physeq, offset, name =
     draw_cluster(mono_clusters$mrca, offset = offset, barsize = 1.5)
   )
 }
+cluster_annotation <- function(label, x, y = -0.20) {
+  ggplot2::annotation_custom(
+    grid::textGrob(label = label, rot = 90, hjust = 1, gp = grid::gpar(fontsize = 6)),
+    xmin = x, xmax = x, ymin = y, ymax = y)
+}
 
 phyloseq_targets <- tar_plan(
 
@@ -484,7 +489,8 @@ phyloseq_targets <- tar_plan(
           colnames_angle = 90,
           hjust = 1,
           width = 0.1,
-          legend_title = "log10(read abundance)"
+          legend_title = "log10(read abundance)",
+          font.size = 2
         ) +
         ggplot2::theme(legend.position = "bottom"),
       packages = c("ggplot2", "ggtree", "rlang"),
@@ -501,8 +507,14 @@ phyloseq_targets <- tar_plan(
   tar_file(
     tree_cluster_fig_file,
     sprintf("%s/tree_clusters_fungi.pdf", comparedir) %T>%
-      ggplot2::ggsave(., plot = tree_fig_fungi + fungi_cluster_geoms,
-                      device = "pdf", width = 12, height = 75, limitsize = FALSE)
+      ggplot2::ggsave(
+        .,
+        plot = tree_fig_fungi +
+          fungi_cluster_geoms +
+          cluster_annotation(label = "SH 0.90", x = 1.425) +
+          cluster_annotation(label = "SH 0.97", x = 1.475) +
+          cluster_annotation(label = "SH 0.99", x = 1.525),
+        device = "pdf", width = 12, height = 75, limitsize = FALSE)
   )
 )
 
