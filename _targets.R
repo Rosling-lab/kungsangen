@@ -16,12 +16,16 @@ source(here::here("scripts", "01_functions.R"))
 # source(here::here("scripts", "02_lsux.R"))
 # source(here::here("scripts", "03_dada2.R"))
 source(here::here("scripts", "04_otu_tables.R"))
-source(here::here("scripts", "05_taxonomy.R"))
-source(here::here("scripts", "06_compare_tree.R"))
-source(here::here("scripts", "07_species_accumulatio.R"))
-list(
+source(here::here("scripts", "05_lsux.R"))
+source(here::here("scripts", "06_postcluster.R"))
+source(here::here("scripts", "07_taxonomy.R"))
+source(here::here("scripts", "08_tree.R"))
+source(here::here("scripts", "09_accumulation.R"))
+c(
   otu_table_plan,
-  compare_tree_targets,
+  lsux_targets,
+  its2_targets,
   taxonomy_targets,
+  tree_targets,
   accumulation_targets
 )

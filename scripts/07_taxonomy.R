@@ -3,10 +3,13 @@
 taxonomy_targets <- tar_plan(
   tar_map(
     values = list(
+      # allseqs is actually defined in 08_tree.R, but that's ok, targets will
+      # execute them in the correct order.
       allseqs = rlang::syms(c("allseqs_ITS", "allseqs_LSU", "allseqs_LSU")),
       reference = c("unite.ITS", "rdp_train.LSU", "silva.LSU"),
       id = c("unite", "rdp", "silva")
     ),
+    # files for the reference datasets
     tar_file(
       reference_file,
       sprintf("reference/%s.sintax2.fasta.gz", reference)
@@ -19,6 +22,7 @@ taxonomy_targets <- tar_plan(
         intern = TRUE
       )
     ),
+    # assign taxonomy using sintax
     tar_fst_tbl(
       tax,
       phylotax::taxonomy_sintax(
@@ -31,6 +35,7 @@ taxonomy_targets <- tar_plan(
     ),
     names = id
   ),
+  # combine all the taxonomy results into one table
   tax_all = dplyr::bind_rows(
     tibble::add_column(tax_unite, method = "unite") %>%
       dplyr::rename(ITS_hash = label) %>%
@@ -46,6 +51,7 @@ taxonomy_targets <- tar_plan(
                        by = "LSU_hash")
   ) %>%
     dplyr::filter(confidence >= 0.8),
+  # for each taxonomic level, when there are multiple assignments, do they match?
   tax_both =
     dplyr::filter(
         tax_all,
@@ -60,6 +66,7 @@ taxonomy_targets <- tar_plan(
     dplyr::filter(match) %>%
     dplyr::group_by(rank, n) %>%
     dplyr::summarize(frac = dplyr::n() / unique(n)),
+  # what are the disagreements between the different methods?
   tax_compare =
     tax_all %>%
     dplyr::group_by(full_hash, method) %>%
@@ -76,6 +83,8 @@ taxonomy_targets <- tar_plan(
     dplyr::ungroup() %>%
     dplyr::count(rank, taxon_unite, taxon_rdp, taxon_silva, c12n_unite,
                   c12n_rdp, c12n_silva),
+  # get the kingdom assignments where there are no conflicts
+  # these will be used to constrain the tree.
   kingdoms = tax_all %>%
     # take kingdom assignments
     dplyr::filter(rank == "kingdom") %>%
@@ -91,10 +100,14 @@ taxonomy_targets <- tar_plan(
     dplyr::group_by(label) %>%
     # require unanimity among identifications
     dplyr::filter(dplyr::n_distinct(taxon) == 1),
+  # constraints for the kingdoms
+  # enforces monophyly of each kingdom, as well as supergroups
   tar_file(
     constraint_file,
     file.path("reference", "constraints.fasta")
   ),
+  # copy the constraints for each kingdom onto the sequences which
+  # belong to that kingdom
   tax_constraints = Biostrings::readBStringSet(constraint_file) %>%
     as.character() %>%
     tibble::enframe(name = "taxon", value = "constraint") %>%
