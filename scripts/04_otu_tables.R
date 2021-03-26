@@ -30,14 +30,14 @@ tar_plan(
         dplyr::arrange(readr::parse_number(OTU)),
 
     tar_file(
-        sl_table_tsv,
-        here::here("processReads", "swarm_table.tsv") %T>%
-        write.table(sl_table, ., sep = "\t")
+        sl_table_xlsx,
+        file.path(datadir, "swarm_table.xlsx") %T>%
+        openxlsx::write.xlsx(sl_table, .)
     ),
 
     tar_file(
         sl_table_rds,
-        here::here("processReads", "swarm_table.rds") %T>%
+        file.path(datadir, "swarm_table.rds") %T>%
         saveRDS(sl_table, .)
     ),
 
@@ -90,14 +90,14 @@ tar_plan(
         dplyr::arrange(readr::parse_number(OTU)),
 
     tar_file(
-        vs_table_tsv,
-        here::here("processReads/clusterOTUs/vsearch_otu_table.tsv") %T>%
-            readr::write_tsv(vs_table, .)
+        vs_table_xlsx,
+        file.path(datadir, "vsearch_otu_table.xlsx") %T>%
+            openxlsx::write.xlsx(vs_table, .)
     ),
 
     tar_file(
         vs_table_rds,
-        here::here("processReads/clusterOTUs/vsearch_otu_table.rds") %T>%
+        file.path(datadir, "vsearch_otu_table.rds") %T>%
             saveRDS(vs_table, .)
     ),
 
@@ -124,13 +124,13 @@ tar_plan(
         dplyr::rename(OTU = "#ASV_ID"),
 
     tar_file(
-        ampliseq_table_tsv,
-        here::here("processReads/ampliseq/ampliseq_table.tsv") %T>%
-        readr::write_tsv(ampliseq_table, .)
+        ampliseq_table_xlsx,
+        file.path(datadir, "ampliseq_table.xlsx") %T>%
+        openxlsx::write.xlsx(ampliseq_table, .)
     ),
     tar_file(
         ampliseq_table_rds,
-        here::here("processReads/ampliseq/ampliseq_table.rds") %T>%
+        file.path(datadir, "ampliseq_table.rds") %T>%
             saveRDS(ampliseq_table, .)
     ),
 

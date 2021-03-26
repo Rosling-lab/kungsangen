@@ -29,9 +29,6 @@ physeq <- phyloseq(
     sample_data(samples_df)
 )
 
-outdir <- here::here("output", "figures")
-if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
-
 # function to print numbers greater than 1000 with "k"
 formatk <- function(x, ...) {
   ifelse(
@@ -99,9 +96,9 @@ fortify(seq_accum_sample) %>%
   xlab("reads") +
   scale_x_continuous() +
   ylab("Species richness")
-ggsave(path = outdir, filename = "Accum1.pdf", device = cairo_pdf,
+ggsave(path = figdir, filename = "Accum1.pdf", device = cairo_pdf,
        width = 6.25, height = 3)
-ggsave(path = outdir, filename = "Accum1.png", device = "png",
+ggsave(path = figdir, filename = "Accum1.png", device = "png",
        width = 6.25, height = 3, dpi = 150)
 
 #### Alpha diversity at each condition ####
@@ -265,7 +262,7 @@ fig_samp_accum_site <-
 
 ggpubr::ggarrange(fig_seq_accum_site, fig_samp_accum_site, ncol = 1,
                   labels = "auto")
-ggsave(path = outdir, filename = "Accum2.pdf", device = cairo_pdf,
+ggsave(path = figdir, filename = "Accum2.pdf", device = cairo_pdf,
        width = 6.25, height = 6)
-ggsave(path = outdir, filename = "Accum2.png", device = "png",
+ggsave(path = figdir, filename = "Accum2.png", device = "png",
        width = 6.25, height = 6, dpi = 150)
