@@ -2,31 +2,6 @@ library(targets)
 library(tarchetypes)
 library(magrittr)
 
-load_sl_seqs <- function(sl_seq_file) {
-    sl_seqs <- Biostrings::readDNAStringSet(sl_seq_file)
-    names(sl_seqs) <- gsub("consensus", "swarm_", names(sl_seqs))
-    as.character(sl_seqs)
-}
-
-load_sl_rawtable <- function(sl_table_file, sl_seqs) {
-    readr::read_delim(
-        sl_table_file,
-        delim = " ",
-        col_names = c("Sample", "OTU", "reads"),
-        col_types = "cci"
-    ) %>%
-        dplyr::arrange(OTU) %>%
-        tidyr::pivot_wider(
-            names_from = "Sample",
-            values_from = "reads",
-            values_fill = 0L
-        ) %>%
-        dplyr::left_join(
-            tibble::enframe(sl_seqs, name = "OTU", value = "seq"),
-            by = "OTU"
-        )
-}
-
 tar_plan(
 
     #### Single linkage (Swarm/GeFaST) ####

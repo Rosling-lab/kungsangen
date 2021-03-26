@@ -135,24 +135,6 @@ align_targets$align <- purrr::discard(
   ~ grepl("ITS", .$settings$name)
 )
 
-# make an (optionally constrainted) ML tree with fasttree
-fasttree <- function(aln_file, out_file, constraints = NULL) {
-  args <- character(0)
-  if (!is.null(constraints)) {
-    constraint_file <- tempfile(fileext = ".fasta")
-    Biostrings::writeXStringSet(constraints, constraint_file)
-    on.exit(unlink(constraint_file))
-    args <- c("-constraints", constraint_file)
-  }
-  stopifnot(
-    system2(
-      command = "fasttree",
-      args = c(args, "-nt", "-gtr", aln_file),
-      stdout = out_file
-    ) == 0
-  )
-  out_file
-}
 
 concat_targets <- tar_plan(
 
@@ -257,38 +239,6 @@ reads_targets <- tar_map(
   names = c(id, id2)
 )
 
-unite_precluster <- function(seqs, outroot) {
-  assertthat::assert_that(
-    assertthat::is.string(seqs),
-    assertthat::is.readable(seqs)
-  )
-  out_uc = glue::glue("{outroot}.uc")
-  stopifnot(
-    system2(
-      command = "vsearch",
-      args = c("--cluster_fast", seqs, "--id", "0.80", "--uc", out_uc)
-    ) == 0
-  )
-  out_uc
-}
-
-unite_cluster <- function(preclust, seqs, threshold, outfile) {
-  seqs <- Biostrings::DNAStringSet(seqs[preclust$seq_id])
-  tf <- tempfile(pattern = "clust", fileext = ".fasta")
-  outfile <- tempfile(pattern = "out")
-  Biostrings::writeXStringSet(seqs, tf)
-  on.exit(unlink(tf))
-  on.exit(unlink(outfile), TRUE)
-  stopifnot(
-    system2(
-      "blastclust",
-      c("-i", tf, "-S", threshold, "-L", "0.85", "-a", "8", "-e", "F", "-o",
-        outfile, "-p", "F")
-    ) == 0
-  )
-  readLines(outfile)
-}
-
 #### Cluster the ITS2 at different thresholds ####
 its2_cluster_targets <- tar_plan(
   tar_file(
@@ -328,45 +278,6 @@ its2_cluster_targets <- tar_plan(
    )
   )
 )
-
-draw_cluster <- function(node, offset, extend = 0.35, barsize = 2, ...) {
-  geom_cladelab(node, "", align = TRUE, offset = offset, extend = extend, barsize = barsize, ...)
-}
-
-draw_clusters <- function(clusters, singletons, hash_key, physeq, offset, name = "") {
-  tree <- phyloseq::phy_tree(physeq)
-  tips <- phyloseq::taxa_names(physeq)
-  clusters <- dplyr::bind_rows(
-    tibble::tibble(
-      seq_id = trimws(clusters),
-      cluster = formatC(seq_along(clusters), width = 4, flag = "0")
-    ),
-    singletons
-  ) %>%
-    dplyr::rename(ITS2_hash = seq_id) %>%
-    tidyr::separate_rows(ITS2_hash) %>%
-    dplyr::left_join(hash_key, by = "ITS2_hash") %>%
-    dplyr::transmute(cluster = cluster, label = paste(`5_8S_hash`, LSU_hash, sep = "_")) %>%
-    dplyr::filter(label %in% tips) %>%
-    unique() %>%
-    dplyr::group_by(cluster) %>%
-    dplyr::summarize(
-      n = dplyr::n(),
-      mrca = if (n > 1) ape::getMRCA(tree, label) else  match(label, tips),
-      n_desc = length(unlist(phangorn::Descendants(tree, mrca[1])))
-    )
-  mono_clusters <- dplyr::filter(clusters, n == n_desc)
-  poly_clusters <- dplyr::filter(clusters, n < n_desc)
-  list(
-    draw_cluster(poly_clusters$mrca, offset = offset, barcolor = scales::alpha("red", 0.5)),
-    draw_cluster(mono_clusters$mrca, offset = offset, barsize = 1.5)
-  )
-}
-cluster_annotation <- function(label, x, y = -0.20) {
-  ggplot2::annotation_custom(
-    grid::textGrob(label = label, rot = 90, hjust = 1, gp = grid::gpar(fontsize = 6)),
-    xmin = x, xmax = x, ymin = y, ymax = y)
-}
 
 phyloseq_targets <- tar_plan(
 
