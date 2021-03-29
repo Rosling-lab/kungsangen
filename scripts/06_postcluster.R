@@ -40,7 +40,6 @@ its2_cluster_targets <- tar_plan(
     tar_map(
       values = list(
         regions = rlang::syms(c("regions_as", "regions_vs", "regions_sl")),
-        reads = rlang::syms(c(""))
         type = c("as", "vs", "sl")
       ),
       tar_target(
@@ -61,13 +60,6 @@ its2_cluster_targets <- tar_plan(
             fraction = sum(present)/dplyr::n()
           )
       ),
-      tar_target(
-        cluster_abundance,
-        tibble::enframe(
-          c(its2_cluster, its2_precluster_singletons$seq_id),
-          value = "ITS2_hash"
-        ) %>%
-      )
       names = type
     )
   )
