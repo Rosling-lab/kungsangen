@@ -21,11 +21,13 @@ source(here::here("scripts", "06_postcluster.R"))
 source(here::here("scripts", "07_taxonomy.R"))
 source(here::here("scripts", "08_tree.R"))
 source(here::here("scripts", "09_accumulation.R"))
+source(here::here("scripts", "10_kingdom_tables.R"))
 c(
   otu_table_plan,
   lsux_targets,
   its2_cluster_targets,
   taxonomy_targets,
   tree_targets,
-  accumulation_targets
+  accumulation_targets,
+  kingdom_table_targets
 )

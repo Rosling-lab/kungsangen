@@ -285,3 +285,15 @@ recode_cluster_types <- function(data) {
     vs = "Centroid-based (VSEARCH)"
   )
 }
+
+
+# Save a data frame as XLSX or RDS
+write_table <- function(table, file, format = c("rds", "xlsx")) {
+  format <- match.arg(format)
+  switch(
+    format,
+    rds = saveRDS(object = table, file = file, version = 2),
+    xlsx = openxlsx::write.xlsx(x = table, file = file)
+  )
+  file
+}

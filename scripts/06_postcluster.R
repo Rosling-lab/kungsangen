@@ -36,6 +36,59 @@ its2_cluster_targets <- tar_plan(
       its2_cluster,
       unite_cluster(its2_precluster_clusters, allseqs_ITS2, threshold),
       pattern = map(its2_precluster_clusters)
+    ),
+    tar_map(
+      values = list(
+        regions = rlang::syms(c("regions_as", "regions_vs", "regions_sl")),
+        reads = rlang::syms(c(""))
+        type = c("as", "vs", "sl")
+      ),
+      tar_target(
+        cluster_fraction,
+        tibble::enframe(
+          c(its2_cluster, its2_precluster_singletons$seq_id),
+          value = "ITS2_hash"
+        ) %>%
+          dplyr::mutate_at("ITS2_hash", trimws) %>%
+          tidyr::separate_rows(ITS2_hash) %>%
+          dplyr::left_join(regions, ny = "ITS2_hash") %>%
+          dplyr::group_by(name) %>%
+          dplyr::summarize(present = !all(is.na(seq_id))) %>%
+          dplyr::summarize(
+            cluster_type = type,
+            threshold = threshold,
+            total = dplyr::n(),
+            fraction = sum(present)/dplyr::n()
+          )
+      ),
+      tar_target(
+        cluster_abundance,
+        tibble::enframe(
+          c(its2_cluster, its2_precluster_singletons$seq_id),
+          value = "ITS2_hash"
+        ) %>%
+      )
+      names = type
+    )
+  )
+)
+
+last_cluster_target <- dplyr::last(its2_cluster_targets)
+
+its2_cluster_targets <- c(
+  its2_cluster_targets,
+  list(
+    tar_combine(
+      cluster_fraction_table,
+      last_cluster_target[startsWith(names(last_cluster_target), "cluster_fraction")],
+      command = dplyr::bind_rows(!!!.x) %>%
+        recode_cluster_types() %>%
+        tidyr::pivot_wider(names_from = cluster_type, values_from = fraction)
+    ),
+    tar_file(
+      write_cluster_fraction_table,
+      file.path(datadir, "cluster_fractions.xlsx") %T>%
+        openxlsx::write.xlsx(file = ., cluster_fraction_table)
     )
   )
 )
