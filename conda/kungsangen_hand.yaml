@@ -10,6 +10,7 @@ dependencies:
   - bioconductor-decipher
   - 'bioconductor-ggtree>=2.4.0'
   - bioconductor-phyloseq
+  - blast-legacy
   - cutadapt=2.10
   - fasttree
   - iqtree
