@@ -16,4 +16,4 @@ _targets/workspaces
 .Rhistory
 kungsangen.Rproj
 
-*.xlsx#
+.~lock*#
