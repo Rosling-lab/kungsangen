@@ -151,12 +151,16 @@ reads_targets <- tar_map(
       dplyr::mutate_at(hashcols, tidyr::replace_na, "missing") %>%
       dplyr::transmute(
         seq_id = glue::glue(paste0("{`", hashcols, "`}", collapse = "_")),
-        n = n/sum(n)
+        n = n
       ) %>%
       dplyr::rename(!!id := n) %>%
       dplyr::group_by(seq_id) %>%
       dplyr::summarize_all(sum),
     tidy_eval = FALSE
+  ),
+  tar_fst_tbl(
+    abundance,
+    dplyr::mutate_if(reads, is.numeric, ~./sum(.))
   ),
   names = c(id, id2)
 )
@@ -165,7 +169,7 @@ phyloseq_targets <- tar_plan(
 
   tar_combine(
     otu_tab,
-    purrr::keep(reads_targets$reads, ~ endsWith(.$settings$name, "concat")),
+    purrr::keep(reads_targets$abundance, ~ endsWith(.$settings$name, "concat")),
     command =
       purrr::reduce(list(!!!.x), dplyr::full_join, by = "seq_id") %>%
       dplyr::mutate_if(is.numeric, tidyr::replace_na, 0) %>%
