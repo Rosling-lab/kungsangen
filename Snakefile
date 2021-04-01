@@ -34,9 +34,10 @@ localrules: all
 rule all:
     input:
         "process/pb_363.ccs.fastq.gz",
-        "process/pb_363.laa.fastq.gz",
-        "process/pb_363.laagc.fastq.gz",
-        "process/pb_363.ccs.swarm.cons.fasta"
+        #"process/pb_363.laa.fastq.gz",
+        #"process/pb_363.laagc.fastq.gz",
+        "process/pb_363.swarm.cons.fasta",
+        "process/pb_363.vclust.cons.fasta"
 
 # convert a raw RSII-format (.h5) movie to the Sequel format (.bam)
 # these files are pretty large, so they are marked as temporary.
@@ -216,8 +217,7 @@ rule nodemux_combine:
     shell: "cat {input} >{output} 2>{log}"
 
 # lima doesn't store any information about orientation when run on subreads,
-# and the primers are already gone, so we can't orient using primers.
-# instead, search for 5.8S.
+# so orient using the primers
 rule orient:
     output:
         orient = "process/{movie}.ccs.orient.fastq.gz",
@@ -240,14 +240,17 @@ rule orient:
         """
 
 # quality filter the ccs and dereplicate
-# allow up to 15 expected errors (about 1%) and minimum length 1000
-# the output has only one entry for each unique sequence
+# allow up to 1% expected errors, minimum length 1000, maximum length 2000
+# the fasta output has only one entry for each unique sequence
 # the label is the ZMW name of one of the first appearance, followed by ";size=n"
 # "n" gives the number of times the sequence appears.
 rule derep:
     output:
         fasta="process/pb_363.ccs.derep.fasta",
         fastq="process/pb_363.ccs.orient.fastq.gz",
+        tooshort="process/pb_363.ccs.orient.tooshort.fastq.gz",
+        toolong="process/pb_363.ccs.orient.toolong.fastq.gz",
+        toopoor="process/pb_363.ccs.orient.toopoor.fastq.gz",
         uc="process/pb_363.ccs.derep.uc"
     input: expand("process/{movie}.ccs.orient.fastq.gz", movie = moviefiles)
     resources:
@@ -262,12 +265,25 @@ rule derep:
     shell:
         """
          fastq=$(mktemp --suffix .fastq) &&
-         trap 'rm ${{fastq}}' EXIT &&
+         tooshort=$(mktemp --suffix .fastq) &&
+         toolong=$(mktemp --suffix .fastq) &&
+         toopoor=$(mktemp --suffix .fastq) &&
+         trap 'rm ${{fastq}} ${{tooshort}} ${{toolong}} ${{toopoor}}' EXIT &&
          zcat {input} |
          vsearch --fastq_filter - \\
-            --fastq_maxee 15 \\
+            --fastq_maxee_rate 0.01 \\
+            --fastq_qmax 93 \\
+            --fastqout_discarded ${{toopoor}}
+            --fastqout - |
+         vsearch --fastq_filter - \\
             --fastq_qmax 93 \\
             --fastq_minlen 1000 \\
+            --fastqout_discarded ${{tooshort}} \\
+            --fastqout - |
+         vsearch --fastq_filter - \\
+            --fastq_qmax 93 \\
+            --fastq_maxlen 2000 \\
+            --fastqout_discarded ${{toolong}} \\
             --fastqout ${{fastq}}\\
             --fastaout - |
          vsearch --derep_fulllength - \\
@@ -275,12 +291,51 @@ rule derep:
             --fasta_width 0\\
             --output {output.fasta}\\
             --uc {output.uc} &&
-         gzip -c ${{fastq}} >{output.fastq}
+         gzip -c ${{fastq}} >{output.fastq} &&
+         gzip -c ${{tooshort}} >{output.tooshort} &&
+         gzip -c ${{toolong}} >{output.toolong} &&
+         gzip -c ${{toopoor}} >{output.toopoor}
         """
+
+# Centroid-cluster the CCS reads
+rule vclust:
+    output:
+        uc = "process/{seqrun}.ccs.vclust.uc",
+        fasta = "process/{seqrun}.ccs.vclust.fasta",
+        otutab = "process/{seqrun}.ccs.vclust.otu_table.txt",
+        clustfile = "process/{seqrun}.ccs.vclust"
+    input: "process/{seqrun}.ccs.derep.fasta"
+    params:
+        clusterdir = "process/vclust/{seqrun}"
+    shadow: "shallow"
+    threads: maxthreads
+    log: "logs/vclust_{seqrun}.log"
+    conda: "conda/vsearch.yaml"
+    envmodules:
+        "bioinfo-tools",
+        "vsearch/2.14.1"
+    shell:
+        """
+        mkdir -p {params.clusterdir} &&
+        vsearch --cluster_size {input} \\
+            --consout {output.fasta} \\
+            --uc {output.uc} \\
+            --otutabout {output.otutab} \\
+            --relabel OTU \\
+            --id 0.99 \\
+            --clusterout_id \\
+            --clusters {params.clusterdir}/otu &&
+        for clust in $(ls {params.clusterdir}); do
+            sed -n '/^>/s/^>//p' | tr "\n" " " &&
+            echo
+        done >{output.clustfile} &&
+        rm -r {params.clusterdir}
+        """
+
 
 # Swarm-cluster the CCS reads
 # this is basically the same thing as single-linkage clustering
-# we use a maximum distance of 30, which is double the max ee
+# we use a maximum distance of 30, which is ~double the max ee
 # so theoretically, every sequence which came from a single biological variant
 # should end up in the same cluster.
 rule gefast:
@@ -342,16 +397,16 @@ checkpoint swarmselect:
           {{ parallel --pipe -N1 -j {threads} {input.script} {{#}} {input.uc} process .{wildcards.type} {output}; }} &>{log}
         """
 
-# get consensus of CCS reads from each swarm cluster
-rule swarm_consensus:
-    output: "process/{seqrun}.swarm.cons.fasta"
+# get consensus of CCS reads from each cluster
+rule cluster_consensus:
+    output: "process/{seqrun}.{clustype}.cons.fasta"
     input:
-        swarm="process/{seqrun}.ccs.swarm",
+        swarm="process/{seqrun}.ccs.{clustype}",
         uc=   "process/{seqrun}.ccs.derep.uc",
         fastq=  "process/{seqrun}.ccs.orient.fastq.gz",
         script="scripts/swarm_consensus.sh",
         c3s= "bin/c3s"
-    log: "logs/swarm_consensus_{seqrun}.log"
+    log: "logs/{clustype}_consensus_{seqrun}.log"
     threads: maxthreads
     conda: "conda/vsearch.yaml"
     envmodules:
