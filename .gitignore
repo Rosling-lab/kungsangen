@@ -15,3 +15,5 @@ _targets/meta/progress
 _targets/workspaces
 .Rhistory
 kungsangen.Rproj
+
+*.xlsx#
