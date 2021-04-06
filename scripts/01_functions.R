@@ -2,10 +2,10 @@
 
 #### Functions for loading data ####
 
-load_sl_seqs <- function(sl_seq_file) {
-  sl_seqs <- Biostrings::readDNAStringSet(sl_seq_file)
-  names(sl_seqs) <- gsub("consensus", "swarm_", names(sl_seqs))
-  as.character(sl_seqs)
+load_cons_seqs <- function(seq_file, prefix) {
+  seqs <- Biostrings::readDNAStringSet(seq_file)
+  names(seqs) <- gsub("consensus", prefix, names(seqs))
+  as.character(seqs)
 }
 
 load_sl_rawtable <- function(sl_table_file, sl_seqs) {
