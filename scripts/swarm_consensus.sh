@@ -21,7 +21,7 @@ tempfasta=$(mktemp --suffix ".fasta")
 trap 'rm $templabel $tempfastq $tempfasta' EXIT
 tr " " "\\n" 2>>"${conslog}" |
 # remove abundances
-sed 's/ccs;size=[0-9]*$/ccs/' 2>>"${conslog}" |
+sed -n 's/ccs;size=[0-9]*$/ccs/p' 2>>"${conslog}" |
 # find all lines in the clustering file that contain one of these sequence ids
 grep -F -f - "${uc}" 2>>"${conslog}" |
 # S and H represent the first and subsequent sequences in the cluster

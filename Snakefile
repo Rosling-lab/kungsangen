@@ -37,7 +37,8 @@ rule all:
         #"process/pb_363.laa.fastq.gz",
         #"process/pb_363.laagc.fastq.gz",
         "process/pb_363.swarm.cons.fasta",
-        "process/pb_363.vclust.cons.fasta"
+        "process/pb_363.vclust.cons.fasta",
+        "process/pb_363_ccs.swarm.table"
 
 # convert a raw RSII-format (.h5) movie to the Sequel format (.bam)
 # these files are pretty large, so they are marked as temporary.
@@ -273,7 +274,7 @@ rule derep:
          vsearch --fastq_filter - \\
             --fastq_maxee_rate 0.01 \\
             --fastq_qmax 93 \\
-            --fastqout_discarded ${{toopoor}}
+            --fastqout_discarded ${{toopoor}} \\
             --fastqout - |
          vsearch --fastq_filter - \\
             --fastq_qmax 93 \\
@@ -321,14 +322,14 @@ rule vclust:
             --consout {output.fasta} \\
             --uc {output.uc} \\
             --otutabout {output.otutab} \\
-            --relabel OTU \\
             --id 0.99 \\
             --clusterout_id \\
             --clusters {params.clusterdir}/otu &&
         for clust in $(ls {params.clusterdir}); do
-            sed -n '/^>/s/^>//p' | tr "\n" " " &&
+            sed -n '/^>/s/^>//p' <{params.clusterdir}/$clust | tr "\n" " " &&
             echo
-        done >{output.clustfile} &&
+        done |
+        grep -v "^$" >{output.clustfile} &&
         rm -r {params.clusterdir}
         """
 
