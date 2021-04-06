@@ -6,11 +6,11 @@ tar_plan(
 
     #### Single linkage (Swarm/GeFaST) ####
 
-    tar_file(sl_seq_file, here::here("process/pb_363.swarm.cons.fasta")),
-    sl_seqs = load_sl_seqs(sl_seq_file),
+    tar_file(sl_seq_file, "process/pb_363.swarm.cons.fasta"),
+    sl_seqs = load_cons_seqs(sl_seq_file, "swarm_"),
 
     # load the single-linkage table file and format it
-    tar_file(sl_table_file, here::here("process", "pb_363_ccs.swarm.table")),
+    tar_file(sl_table_file, "process/pb_363_ccs.swarm.table"),
     sl_rawtable = load_sl_rawtable(sl_table_file, sl_seqs),
     sl_seqtab =
         dplyr::select(sl_rawtable, -OTU) %>%
@@ -44,15 +44,11 @@ tar_plan(
     #### VSEARCH ####
 
     # load the VSEARCH cluster consensus sequences
-    tar_file(vs_seqs_file, here::here("processReads", "clusterOTUs", "cluster",
-                                      "otus_all20samp.fasta")),
-    vs_seqs = Biostrings::readDNAStringSet(vs_seqs_file) %>%
-        set_names(., gsub("centroid=(OTU_[0-9]+);.+", "\\1", names(.))) %>%
-      as.character(),
+    tar_file(vs_seqs_file, "process/pb_363.vclust.cons.fasta"),
+    vs_seqs = load_cons_seqs(vs_seqs_file, "OTU_"),
 
     # load the VSEARCH clustered table file and format it
-    tar_file(vs_rawtable_file, here::here("processReads", "clusterOTUs",
-                                          "cluster", "otu_table.txt")),
+    tar_file(vs_rawtable_file, "process/pb_363.ccs.vclust.otu_table.txt"),
     vs_rawtable = readr::read_delim(
         vs_rawtable_file,
         delim = "\t",
@@ -102,8 +98,7 @@ tar_plan(
     ),
 
     #### Ampliseq ####
-    tar_file(ampliseq_rawtable_file,
-             here::here("processReads/ampliseq/feature-table.tsv")),
+    tar_file(ampliseq_rawtable_file, "processReads/ampliseq/feature-table.tsv"),
     ampliseq_table = readr::read_tsv(
         ampliseq_rawtable_file,
         skip = 1,
@@ -137,7 +132,7 @@ tar_plan(
     #### log file
     tar_file(
         otu_log,
-        here::here("logs/otu_tables.log") %T>%
+        "logs/otu_tables.log" %T>%
         writeLines(
             c(
                 paste("Single linkage clusters:", sum(sl_seqtab), "reads in",
