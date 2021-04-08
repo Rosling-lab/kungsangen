@@ -38,7 +38,8 @@ rule all:
         #"process/pb_363.laagc.fastq.gz",
         "process/pb_363.swarm.cons.fasta",
         "process/pb_363.vclust.cons.fasta",
-        "process/pb_363_ccs.swarm.table"
+        "process/pb_363_ccs.swarm.table",
+        "process/pb_363_ccs.vclust.table"
 
 # convert a raw RSII-format (.h5) movie to the Sequel format (.bam)
 # these files are pretty large, so they are marked as temporary.
@@ -290,7 +291,7 @@ rule derep:
          vsearch --derep_fulllength - \\
             --sizeout \\
             --fasta_width 0\\
-            --output {output.fasta}\\
+            --output {output.fasta} \\
             --uc {output.uc} &&
          gzip -c ${{fastq}} >{output.fastq} &&
          gzip -c ${{tooshort}} >{output.tooshort} &&
@@ -367,24 +368,24 @@ rule gefast:
 rule index:
     output: "{basename}.bam.pbi"
     input: "{basename}.bam"
-    conda: "conda/swarmextract.yaml"
+    conda: "conda/clustselect.yaml"
     envmodules:
         "bioinfo-tools",
         "SMRT/7.0.1"
     shell: "pbindex {input}"
 
 # for each of the swarm clusters, make a BAM file containing the source CCS
-checkpoint swarmselect:
-    output: directory("process/swarm/{seqrun}_{type}")
+checkpoint clustselect:
+    output: directory("process/{clustype}/{seqrun}_{type}")
     input:
-        swarm="process/{seqrun}.ccs.swarm",
+        clust="process/{seqrun}.ccs.{clustype}",
         uc=   "process/{seqrun}.ccs.derep.uc",
         bam=  expand("process/{movie}.{{type}}.bam", movie = moviefiles),
         pbi= expand("process/{movie}.{{type}}.bam.pbi", movie = moviefiles),
-        script="scripts/swarm_laa.sh"
-    log: "logs/swarmselect_{seqrun}_{type}.log"
+        script="scripts/clustselect.sh"
+    log: "logs/{clustype}select_{seqrun}_{type}.log"
     threads: maxthreads
-    conda: "conda/swarmextract.yaml"
+    conda: "conda/clustselect.yaml"
     #bamsieve in the env module gives mysterious errors
     #envmodules:
     #    "bioinfo-tools",
@@ -394,18 +395,18 @@ checkpoint swarmselect:
     shell:
         """
 	[ -d {output} ] || mkdir -p {output}
-        cat {input.swarm} |
-          {{ parallel --pipe -N1 -j {threads} {input.script} {{#}} {input.uc} process .{wildcards.type} {output}; }} &>{log}
+        cat {input.clust} |
+          {{ parallel --pipe -N1 -j {threads} {input.script} {{#}} {input.uc} process .{wildcards.type} {output} {wildcards.clustype}; }} &>{log}
         """
 
 # get consensus of CCS reads from each cluster
 rule cluster_consensus:
     output: "process/{seqrun}.{clustype}.cons.fasta"
     input:
-        swarm="process/{seqrun}.ccs.{clustype}",
+        clust="process/{seqrun}.ccs.{clustype}",
         uc=   "process/{seqrun}.ccs.derep.uc",
         fastq=  "process/{seqrun}.ccs.orient.fastq.gz",
-        script="scripts/swarm_consensus.sh",
+        script="scripts/clust_consensus.sh",
         c3s= "bin/c3s"
     log: "logs/{clustype}_consensus_{seqrun}.log"
     threads: maxthreads
@@ -416,7 +417,7 @@ rule cluster_consensus:
         "gnuparallel/20180822"
     shell:
         """
-        cat {input.swarm} |
+        cat {input.clust} |
         {{ parallel --pipe -N1 -j {threads} {input.script} {wildcards.seqrun} {{#}} {input.uc} {input.fastq}; }} >{output}
         """
 
@@ -431,12 +432,12 @@ rule table_translate:
         """
 
 rule swarm_table:
-    output: "process/{seqrun}_{type}.swarm.table"
+    output: "process/{seqrun}_{type}.{clustype}.table"
     input:
-        bamdir = "process/swarm/{seqrun}_{type}",
-        script = "scripts/swarm_table.sh",
+        bamdir = "process/{clustype}/{seqrun}_{type}",
+        script = "scripts/clust_table.sh",
         samples = "process/sample.tsv"
-    log: "logs/swarm_table_{seqrun}_{type}.log"
+    log: "logs/{clustype}_table_{seqrun}_{type}.log"
     threads: maxthreads
     conda: "conda/samtools_parallel.yaml"
     envmodules:
@@ -445,7 +446,7 @@ rule swarm_table:
         "gnuparallel/20180822"
     shell:
         """
-        ls -1 {input.bamdir}/swarm_*.bam | {{ parallel -j {threads} {input.script} {{}} {input.samples}; }} >{output} 2>{log}
+        ls -1 {input.bamdir}/{wildcards.clustype}_*.bam | {{ parallel -j {threads} {input.script} {{}} {input.samples}; }} >{output} 2>{log}
         """
 
 # find haplotypes (ASVs) from pacbio subreads or ccs in each gefast cluster
@@ -497,17 +498,17 @@ rule laa:
         """
 
 def reportfiles(wildcards):
-    swarmdir = checkpoints.swarmselect.get(**wildcards).output[0]
+    swarmdir = checkpoints.clustselect.get(**wildcards).output[0]
     clusters = glob_wildcards(os.path.join(swarmdir, "swarm_{cluster}.bam"))
     return expand("{swarmdir}/swarm_{cluster}.report.csv", swarmdir = swarmdir, cluster = clusters.cluster)
 
 def laafastq(wildcards):
-    swarmdir = checkpoints.swarmselect.get(**wildcards).output[0]
+    swarmdir = checkpoints.clustselect.get(**wildcards).output[0]
     clusters = glob_wildcards(os.path.join(swarmdir, "swarm_{cluster}.bam"))
     return expand("{swarmdir}/swarm_{cluster}.laa.fastq.gz", swarmdir = swarmdir, cluster = clusters.cluster)
 
 def swarmfiles(wildcards):
-    swarmdir = checkpoints.swarmselect.get(**wildcards).output[0]
+    swarmdir = checkpoints.clustselect.get(**wildcards).output[0]
     clusters = glob_wildcards(os.path.join(swarmdir, "swarm_{cluster}.bam"))
     return expand("{swarmdir}/swarm_{cluster}.{ext}", swarmdir = swarmdir, cluster = clusters.cluster,
                   ext = ["laa.fastq.gz", "junk.fastq.gz", "report.csv", "subreads.csv", "pcr.csv"])

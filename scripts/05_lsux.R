@@ -32,8 +32,8 @@ pre_positions_targets <-
   )
 
 positions_targets <-  tar_map(
-  values = list(seq = rlang::syms(c("ampliseq", "sl_seqs", "vs_seqs")),
-                table = rlang::syms(c("ampliseq_table", "sl_table", "vs_table")),
+  values = list(seq = rlang::syms(c("ampliseq", "seqs_sl", "seqs_vs")),
+                table = rlang::syms(c("ampliseq_table", "table_sl", "table_vs")),
                 id = c("as", "sl", "vs")),
   tar_target(
     positions,

@@ -8,9 +8,9 @@ load_cons_seqs <- function(seq_file, prefix) {
   as.character(seqs)
 }
 
-load_sl_rawtable <- function(sl_table_file, sl_seqs) {
+load_rawtable <- function(table_file, seqs) {
   readr::read_delim(
-    sl_table_file,
+    table_file,
     delim = " ",
     col_names = c("Sample", "OTU", "reads"),
     col_types = "cci"
@@ -22,7 +22,7 @@ load_sl_rawtable <- function(sl_table_file, sl_seqs) {
       values_fill = 0L
     ) %>%
     dplyr::left_join(
-      tibble::enframe(sl_seqs, name = "OTU", value = "seq"),
+      tibble::enframe(seqs, name = "OTU", value = "seq"),
       by = "OTU"
     )
 }

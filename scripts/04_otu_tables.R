@@ -3,99 +3,55 @@ library(tarchetypes)
 library(magrittr)
 
 tar_plan(
-
-    #### Single linkage (Swarm/GeFaST) ####
-
-    tar_file(sl_seq_file, "process/pb_363.swarm.cons.fasta"),
-    sl_seqs = load_cons_seqs(sl_seq_file, "swarm_"),
-
-    # load the single-linkage table file and format it
-    tar_file(sl_table_file, "process/pb_363_ccs.swarm.table"),
-    sl_rawtable = load_sl_rawtable(sl_table_file, sl_seqs),
-    sl_seqtab =
-        dplyr::select(sl_rawtable, -OTU) %>%
+  tar_map(
+    values = list(
+      cluster_type = c("swarm", "vclust"),
+      cluster_prefix = c("swarm_", "OTU_"),
+      id = c("sl", "vs")
+    ),
+    # load consensus sequences
+    tar_file(seq_file, glue::glue("process/pb_363.{cluster_type}.cons.fasta")),
+    tar_target(seqs, load_cons_seqs(seq_file, cluster_prefix)),
+    # load OTU table
+    tar_file(table_file, glue::glue("process/pb_363_ccs.{cluster_type}.table")),
+    tar_target(rawtable, load_rawtable(table_file, seqs)),
+    # format OTU table for dada2
+    tar_target(
+      seqtab,
+      dplyr::select(rawtable, -OTU) %>%
         tibble::column_to_rownames("seq") %>%
         as.matrix() %>%
-        t(),
-
-    sl_nochim = dada2::removeBimeraDenovo(sl_seqtab, verbose = TRUE),
-
-    sl_nosingle = sl_nochim[,colSums(sl_nochim) > 1L],
-
-    sl_table = t(sl_nosingle) %>%
+        t()
+    ),
+    # remove chimeras
+    tar_target(
+      nochim,
+      dada2::removeBimeraDenovo(seqtab, verbose = TRUE, multithread = TRUE)
+    ),
+    # remove singletons
+    tar_target(nosingle, nochim[,colSums(nochim) > 1L]),
+    # output OTU table
+    tar_target(
+      table,
+      t(nosingle) %>%
         tibble::as_tibble(rownames = "seq") %>%
-        dplyr::left_join(dplyr::select(sl_rawtable, "seq", "OTU"), by = "seq") %>%
+        dplyr::left_join(dplyr::select(rawtable, "seq", "OTU"), by = "seq") %>%
         dplyr::select(-seq) %>%
         dplyr::select(OTU, dplyr::everything()) %>%
-        dplyr::arrange(readr::parse_number(OTU)),
-
+        dplyr::arrange(readr::parse_number(OTU))
+    ),
     tar_file(
-        sl_table_xlsx,
-        file.path(datadir, "swarm_table.xlsx") %T>%
-        openxlsx::write.xlsx(sl_table, .)
+      table_xlsx,
+      file.path(datadir, glue::glue("{cluster_type}_table.xlsx")) %T>%
+        openxlsx::write.xlsx(table, .)
     ),
-
     tar_file(
-        sl_table_rds,
-        file.path(datadir, "swarm_table.rds") %T>%
-        saveRDS(sl_table, .)
+      table_rds,
+      file.path(datadir, glue::glue("{cluster_type}_table.rds")) %T>%
+        saveRDS(table, .)
     ),
-
-    #### VSEARCH ####
-
-    # load the VSEARCH cluster consensus sequences
-    tar_file(vs_seqs_file, "process/pb_363.vclust.cons.fasta"),
-    vs_seqs = load_cons_seqs(vs_seqs_file, "OTU_"),
-
-    # load the VSEARCH clustered table file and format it
-    tar_file(vs_rawtable_file, "process/pb_363.ccs.vclust.otu_table.txt"),
-    vs_rawtable = readr::read_delim(
-        vs_rawtable_file,
-        delim = "\t",
-        col_types = readr::cols(
-            .default = readr::col_integer(),
-            `#OTU ID` = readr::col_character()
-        )
-    ) %>%
-        dplyr::left_join(
-            tibble::enframe(vs_seqs, name = "#OTU ID", value = "seq")
-        ) %>%
-        dplyr::group_by(seq) %>%
-        dplyr::summarize(
-            `#OTU ID` = dplyr::first(`#OTU ID`),
-            dplyr::across(where(is.integer), sum)
-        ),
-
-    vs_seqtable = dplyr::select(vs_rawtable, -"#OTU ID") %>%
-        tibble::column_to_rownames("seq") %>%
-        as.matrix(),
-
-    vs_nochim = dada2::removeBimeraDenovo(
-        t(vs_seqtable),
-        multithread = TRUE,
-        verbose = TRUE
-    ),
-
-    vs_nosingle = vs_nochim[,colSums(vs_nochim) > 1L],
-
-    vs_table = t(vs_nosingle) %>%
-        tibble::as_tibble(rownames = "seq") %>%
-        dplyr::left_join(dplyr::select(vs_rawtable, "seq", "#OTU ID"), by = "seq") %>%
-        dplyr::select(-seq) %>%
-        dplyr::select(OTU = "#OTU ID", dplyr::everything()) %>%
-        dplyr::arrange(readr::parse_number(OTU)),
-
-    tar_file(
-        vs_table_xlsx,
-        file.path(datadir, "vsearch_otu_table.xlsx") %T>%
-            openxlsx::write.xlsx(vs_table, .)
-    ),
-
-    tar_file(
-        vs_table_rds,
-        file.path(datadir, "vsearch_otu_table.rds") %T>%
-            saveRDS(vs_table, .)
-    ),
+    names = id
+  ),
 
     #### Ampliseq ####
     tar_file(ampliseq_rawtable_file, "processReads/ampliseq/feature-table.tsv"),
@@ -135,20 +91,20 @@ tar_plan(
         "logs/otu_tables.log" %T>%
         writeLines(
             c(
-                paste("Single linkage clusters:", sum(sl_seqtab), "reads in",
-                      ncol(sl_seqtab), "OTUs"),
+                paste("Single linkage clusters:", sum(seqtab_sl), "reads in",
+                      ncol(seqtab_sl), "OTUs"),
                 paste("Single linkage clusters after chimera removal:",
-                      sum(sl_nochim), "reads in", ncol(sl_nochim), "OTUs"),
+                      sum(nochim_sl), "reads in", ncol(nochim_sl), "OTUs"),
                 paste("Single linkage clusters after singleton removal:",
-                      sum(sl_nosingle), "reads in", ncol(sl_nosingle), "OTUs"),
+                      sum(nosingle_sl), "reads in", ncol(nosingle_sl), "OTUs"),
 
                 paste("VSEARCH 99% clusters:",
-                      sum(dplyr::select_if(vs_rawtable, is.integer)),
-                      "reads in", nrow(vs_rawtable), "OTUs"),
+                      sum(dplyr::select_if(rawtable_vs, is.integer)),
+                      "reads in", nrow(rawtable_vs), "OTUs"),
                 paste("VSEARCH 99% clusters after chimera removal:",
-                      sum(vs_nochim), "reads in", ncol(vs_nochim), "OTUs"),
+                      sum(nochim_vs), "reads in", ncol(nochim_vs), "OTUs"),
                 paste("VSEARCH 99% clusters after singleton removal:",
-                      sum(vs_nosingle), "reads in", ncol(vs_nosingle), "OTUs")
+                      sum(nosingle_vs), "reads in", ncol(nosingle_vs), "OTUs")
             ),
             .
         )

@@ -133,7 +133,7 @@ concat_targets <- tar_plan(
 reads_targets <- tar_map(
   tidyr::crossing(
     m = tibble::tibble(
-      table = rlang::syms(c("ampliseq_table", "vs_table", "sl_table")),
+      table = rlang::syms(c("ampliseq_table", "table_vs", "table_sl")),
       regions = rlang::syms(c("regions_as", "regions_vs", "regions_sl")),
       id = c("ampliseq", "vsearch", "single_link")
     ),
@@ -355,14 +355,14 @@ tree_targets <- c(
 # }
 
 # How many unique of each?
-# dplyr::n_distinct(sl_regions$`5_8S`)
-# dplyr::n_distinct(sl_regions$LSU)
+# dplyr::n_distinct(regions_sl$`5_8S`)
+# dplyr::n_distinct(regions_sl$LSU)
 
 #### VSEARCH clusters ####
 
 # How many unique of each?
-# dplyr::n_distinct(vs_regions$`5_8S`)
-# dplyr::n_distinct(vs_regions$LSU)
+# dplyr::n_distinct(regions_vs$`5_8S`)
+# dplyr::n_distinct(regions_vs$LSU)
 
 #### LAA ####
 
