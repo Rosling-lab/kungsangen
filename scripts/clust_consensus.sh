@@ -30,6 +30,7 @@ awk '/^[SH]/{print $9}' >${templabel} 2>>"${conslog}" &&
 echo "extracting $(wc -l <${templabel}) reads" >>"${conslog}" &&
 # extract the sequences from the ccs file
 vsearch --fastx_getseqs "${ccs}" \
+  --threads 1\
   --labels "${templabel}"\
   --fastqout "${tempfastq}" &>>"${conslog}" &&
 echo "finding consensus" >>"${conslog}" &&

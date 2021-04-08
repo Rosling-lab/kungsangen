@@ -273,22 +273,26 @@ rule derep:
          trap 'rm ${{fastq}} ${{tooshort}} ${{toolong}} ${{toopoor}}' EXIT &&
          zcat {input} |
          vsearch --fastq_filter - \\
+            --threads 1 \\
             --fastq_maxee_rate 0.01 \\
             --fastq_qmax 93 \\
             --fastqout_discarded ${{toopoor}} \\
             --fastqout - |
          vsearch --fastq_filter - \\
+            --threads 1 \\
             --fastq_qmax 93 \\
             --fastq_minlen 1000 \\
             --fastqout_discarded ${{tooshort}} \\
             --fastqout - |
          vsearch --fastq_filter - \\
+            --threads 1 \\
             --fastq_qmax 93 \\
             --fastq_maxlen 2000 \\
             --fastqout_discarded ${{toolong}} \\
             --fastqout ${{fastq}}\\
             --fastaout - |
          vsearch --derep_fulllength - \\
+            --threads 1 \\
             --sizeout \\
             --fasta_width 0\\
             --output {output.fasta} \\
@@ -320,11 +324,13 @@ rule vclust:
         """
         mkdir -p {params.clusterdir} &&
         vsearch --cluster_size {input} \\
+            --sizein \\
             --consout {output.fasta} \\
             --uc {output.uc} \\
             --otutabout {output.otutab} \\
             --id 0.99 \\
             --clusterout_id \\
+            --threads {threads} \\
             --clusters {params.clusterdir}/otu &&
         for clust in $(ls {params.clusterdir}); do
             sed -n '/^>/s/^>//p' <{params.clusterdir}/$clust | tr "\n" " " &&
@@ -561,7 +567,7 @@ rule laa_select:
         temp=$(mktemp)
         trap 'rm $temp' EXIT
         awk '!x[$2 " " $3]++ {{print $2 " " $3}}' {input.otutab} > $temp
-        vsearch --fastx_getseqs {input.fastq} --labels $temp --notrunclabels --fastqout - 2>{log} |
+        vsearch --fastx_getseqs {input.fastq} --labels $temp --notrunclabels --threads {threads} --fastqout - 2>{log} |
         gzip -c - >{output}
         """
 
