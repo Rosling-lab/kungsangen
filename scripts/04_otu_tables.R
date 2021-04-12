@@ -6,7 +6,7 @@ tar_plan(
   tar_map(
     values = list(
       cluster_type = c("swarm", "vclust"),
-      cluster_prefix = c("swarm_", "OTU_"),
+      cluster_prefix = c("swarm_", "vclust_"),
       id = c("sl", "vs")
     ),
     # load consensus sequences
