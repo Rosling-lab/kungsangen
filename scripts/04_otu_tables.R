@@ -10,10 +10,10 @@ tar_plan(
       id = c("sl", "vs")
     ),
     # load consensus sequences
-    tar_file(seq_file, glue::glue("process/pb_363.{cluster_type}.cons.fasta")),
+    tar_file(seq_file, paste0("process/pb_363.", cluster_type, ".cons.fasta")),
     tar_target(seqs, load_cons_seqs(seq_file, cluster_prefix)),
     # load OTU table
-    tar_file(table_file, glue::glue("process/pb_363_ccs.{cluster_type}.table")),
+    tar_file(table_file, paste0("process/pb_363_ccs.", cluster_type, ".table")),
     tar_target(rawtable, load_rawtable(table_file, seqs)),
     # format OTU table for dada2
     tar_target(
@@ -42,12 +42,12 @@ tar_plan(
     ),
     tar_file(
       table_xlsx,
-      file.path(datadir, glue::glue("{cluster_type}_table.xlsx")) %T>%
+      file.path(datadir, paste0(cluster_type, "_table.xlsx")) %T>%
         openxlsx::write.xlsx(table, .)
     ),
     tar_file(
       table_rds,
-      file.path(datadir, glue::glue("{cluster_type}_table.rds")) %T>%
+      file.path(datadir, paste0(cluster_type, "_table.rds")) %T>%
         saveRDS(table, .)
     ),
     names = id
