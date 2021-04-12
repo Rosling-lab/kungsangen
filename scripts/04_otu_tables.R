@@ -19,6 +19,8 @@ tar_plan(
     tar_target(
       seqtab,
       dplyr::select(rawtable, -OTU) %>%
+        dplyr::group_by(seq) %>%
+        dplyr::summarize_all(sum) %>%
         tibble::column_to_rownames("seq") %>%
         as.matrix() %>%
         t()
