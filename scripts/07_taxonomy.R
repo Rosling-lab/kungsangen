@@ -6,7 +6,7 @@ taxonomy_targets <- tar_plan(
       # allseqs is actually defined in 08_tree.R, but that's ok, targets will
       # execute them in the correct order.
       allseqs = rlang::syms(c("allseqs_ITS", "allseqs_LSU", "allseqs_LSU")),
-      reference = c("unite.ITS", "rdp_train.LSU", "silva.LSU"),
+      reference = c("unite_single.ITS", "rdp_train.LSU", "silva_nr99.LSU"),
       id = c("unite", "rdp", "silva")
     ),
     # files for the reference datasets
@@ -83,6 +83,7 @@ taxonomy_targets <- tar_plan(
     dplyr::ungroup() %>%
     dplyr::count(rank, taxon_unite, taxon_rdp, taxon_silva, c12n_unite,
                   c12n_rdp, c12n_silva),
+
   # get the kingdom assignments where there are no conflicts
   # these will be used to constrain the tree.
   kingdoms = tax_all %>%
