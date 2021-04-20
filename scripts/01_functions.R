@@ -429,3 +429,15 @@ taxon_plot <- function(
 
 }
 
+`%||%` <- function(x, ifna) {
+  ifelse(is.na(x), ifna, x)
+}
+
+tree_depth <- function(phylo) {
+  n <- length(phylo$edge.length)
+  depth <- numeric(n)
+  for (i in seq_len(n)) {
+    depth[i] <- phylo$edge.length[i] + depth[match(phylo$edge[i, 1], phylo$edge[,2])] %||% 0
+  }
+  max(depth)
+}
