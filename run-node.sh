@@ -19,6 +19,5 @@ module load snakemake &&
 
 snakemake -pr --jobs $SLURM_JOB_CPUS_PER_NODE\
   --use-envmodules\
-  --shadow-prefix /scratch\
-  process/pb_363.ccs.bam\
-  process/pb_363.laa.fastq
+  --use-conda\
+  --shadow-prefix /scratch
