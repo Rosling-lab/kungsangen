@@ -163,6 +163,14 @@ reads_targets <- tar_map(
 phyloseq_targets <- tar_plan(
 
   tar_combine(
+    reads_tab,
+    purrr::keep(reads_targets$reads, ~ endsWith(.$settings$name, "ITS2")),
+    command =
+      purrr::reduce(list(!!!.x), dplyr::full_join, by = "seq_id") %>%
+      dplyr::mutate_if(is.numeric, tidyr::replace_na, 0L)
+  ),
+
+  tar_combine(
     otu_tab,
     purrr::keep(reads_targets$abundance, ~ endsWith(.$settings$name, "concat")),
     command =
