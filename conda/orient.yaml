@@ -5,3 +5,4 @@ channels:
   - defaults
 dependencies:
   - cutadapt=3.0
+  - vsearch=2.15.1
