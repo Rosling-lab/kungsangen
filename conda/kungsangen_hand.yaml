@@ -24,6 +24,7 @@ dependencies:
   - r-clustermq
   - r-curl
   - r-dplyr
+  - r-eulerr
   - r-fst
   - r-ggplot2
   - r-ggpubr
@@ -56,6 +57,7 @@ dependencies:
   - r-targets
   - r-testthat
   - r-tidyr
+  - r-treetools
   - r-tzara=0.0.11
   - r-vegan
   - r-visnetwork

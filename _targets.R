@@ -22,6 +22,9 @@ source(here::here("scripts", "07_taxonomy.R"))
 source(here::here("scripts", "08_tree.R"))
 source(here::here("scripts", "09_accumulation.R"))
 source(here::here("scripts", "10_kingdom_tables.R"))
+source(here::here("scripts", "11_detection_limits.R"))
+source(here::here("scripts", "12_taxonomy_plots.R"))
+source(here::here("scripts", "13_venn.R"))
 c(
   otu_table_plan,
   lsux_targets,
@@ -29,5 +32,8 @@ c(
   taxonomy_targets,
   tree_targets,
   accumulation_targets,
-  kingdom_table_targets
+  kingdom_table_targets,
+  detection_targets,
+  taxplot_targets,
+  venn_targets
 )
