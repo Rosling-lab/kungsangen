@@ -44,14 +44,9 @@ its2_cluster_targets <- tar_plan(
       ),
       tar_target(
         cluster_fraction,
-        tibble::enframe(
-          c(its2_cluster, its2_precluster_singletons$seq_id),
-          value = "ITS2_hash"
-        ) %>%
-          dplyr::mutate_at("ITS2_hash", trimws) %>%
-          tidyr::separate_rows(ITS2_hash) %>%
-          dplyr::left_join(regions, ny = "ITS2_hash") %>%
-          dplyr::group_by(name) %>%
+        parse_clusters(its2_cluster, its2_precluster_singletons, "ITS2_hash") %>%
+          dplyr::left_join(regions, by = "ITS2_hash") %>%
+          dplyr::group_by(cluster) %>%
           dplyr::summarize(present = !all(is.na(seq_id))) %>%
           dplyr::summarize(
             cluster_type = type,

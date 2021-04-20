@@ -200,6 +200,18 @@ draw_cluster <- function(node, offset, extend = 0.35, barsize = 2, ...) {
   geom_cladelab(node, "", align = TRUE, offset = offset, extend = extend, barsize = barsize, ...)
 }
 
+parse_clusters <- function(clusters, singletons, name = "seq_id") {
+  tibble::enframe(unname(clusters), name = "cluster", value = "seq_id") %>%
+    dplyr::mutate(
+      cluster = formatC(cluster, flag = "0",
+                        width = ceiling(log10(max(cluster)))),
+      seq_id = trimws(seq_id)
+    ) %>%
+    tidyr::separate_rows(seq_id) %>%
+    dplyr::bind_rows(singletons) %>%
+    dplyr::rename(!!name := seq_id)
+}
+
 draw_clusters <- function(clusters, singletons, hash_key, physeq, offset, name = "") {
   tree <- phyloseq::phy_tree(physeq)
   tips <- phyloseq::taxa_names(physeq)
