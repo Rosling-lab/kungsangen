@@ -60,27 +60,30 @@ positions_targets <-  tar_map(
       purrr::map2(c("5_8S", "LSU", "ITS2", "ITS"),
                   tibble::enframe, name = "seq_id") %>%
       purrr::reduce(dplyr::full_join, by = "seq_id") %>%
+      dplyr::full_join(
+        tibble::enframe(seq, name = "seq_id", value = "full"),
+        by = "seq_id"
+      ) %>%
       dplyr::mutate(
         `5_8S_hash` = tzara::seqhash(`5_8S`),
         LSU_hash = tzara::seqhash(LSU),
         ITS2_hash = tzara::seqhash(ITS2),
-        ITS_hash = tzara::seqhash(ITS)
+        ITS_hash = tzara::seqhash(ITS),
+        full_hash = tzara::seqhash(full)
       ) %>%
       dplyr::mutate_at(
         dplyr::vars(dplyr::ends_with("_hash")),
         tidyr::replace_na,
         replace = "missing"
-      )
+      ) %>%
+      tidyr::unite("label", "5_8S_hash", "LSU_hash", remove = FALSE)
   ),
   tar_target(
     hash_key,
-    dplyr::left_join(
-      dplyr::select(regions, seq_id, dplyr::ends_with("hash")),
-      tibble::enframe(tzara::seqhash(seq), name = "seq_id", value = "full_hash"),
-      by = "seq_id"
-    ) %>%
-      dplyr::select(-seq_id) %>%
-      unique()
+    dplyr::select(regions, seq_id, label, dplyr::ends_with("hash")) %>%
+      dplyr::rename(!!id := seq_id) %>%
+      unique(),
+    tidy_eval = FALSE
   ),
   names = id
 )

@@ -14,8 +14,7 @@ tar_map(
     ),
     tar_fst_tbl(
       otu_table,
-      dplyr::select(regions, OTU = seq_id, `5_8S_hash`, LSU_hash) %>%
-        tidyr::unite("label", `5_8S_hash`, LSU_hash) %>%
+      dplyr::select(regions, OTU = seq_id, label) %>%
         dplyr::filter(label %in% tree$tip.label) %>%
         dplyr::left_join(otutab, by = "OTU") %>%
         dplyr::select(-label)

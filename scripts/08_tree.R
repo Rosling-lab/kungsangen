@@ -58,20 +58,15 @@ concat_targets <- tar_plan(
 
   #### Concatenation ####
   # now find all unique pairs of 5.8S and LSU
-  tar_combine(
-    all_both,
-    positions_targets$regions,
-    command =
-      purrr::map_dfr(list(!!!.x), dplyr::select, "5_8S_hash", "LSU_hash") %>%
-      unique()
-  ),
+  align_key = dplyr::select(hash_key, "label", "5_8S_hash", "LSU_hash") %>%
+    unique(),
   # paste together the 5.8S and LSU sequences for each.
   align_both = paste(
-    align_5_8S[all_both$`5_8S_hash`],
-    align_LSU[all_both$LSU_hash],
+    align_5_8S[align_key$`5_8S_hash`],
+    align_LSU[align_key$LSU_hash],
     sep = ""
   ) %>%
-    set_names(paste(all_both$`5_8S_hash`, all_both$LSU_hash, sep = "_")) %>%
+    set_names(align_key$label) %>%
     # make it DNA instead of RNA for fastree
     chartr(old = "U", new = "T") %>%
     Biostrings::DNAStringSet(),
@@ -138,8 +133,8 @@ reads_targets <- tar_map(
       id = c("ampliseq", "vsearch", "single_link")
     ),
     r = tibble::tibble(
-      hashcols = list(c("5_8S_hash", "LSU_hash"), "ITS2_hash", "ITS_hash"),
-      id2 = c("concat", "ITS2", "ITS")
+      hashcols = list(c("5_8S_hash", "LSU_hash"), "ITS2_hash", "ITS_hash", "full_hash"),
+      id2 = c("concat", "ITS2", "ITS", "full")
     )
   ) %>% tidyr::unpack(c("m", "r")),
   tar_fst_tbl(
@@ -181,11 +176,7 @@ phyloseq_targets <- tar_plan(
   tax_table =
     dplyr::select(tax_all, full_hash, rank, taxon) %>%
     dplyr::left_join(
-      dplyr::transmute(
-        hash_key,
-        full_hash = full_hash,
-        label = stringr::str_c(`5_8S_hash`, LSU_hash, sep = "_")
-      ),
+      dplyr::select(hash_key, full_hash, label),
       by = "full_hash"
     ) %>%
     phylotax::make_taxon_labels(abbrev = taxon_abbrevs) %>%
