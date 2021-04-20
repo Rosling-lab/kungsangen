@@ -309,3 +309,123 @@ write_table <- function(table, file, format = c("rds", "xlsx")) {
   )
   file
 }
+
+#### Taxonomy plot ####
+# Here's the somewhat modified function I used to make the plots in my previous paper
+# Plot distribution between different taxa
+taxon_plot <- function(
+  .data, # the data
+  rank, # what "rank" (column in the data) we are plotting
+  ..., # conditions to filter which rows we care about
+  y = reads, # should be reads or OTUs
+  x = Type, # what groups do we want to divide by
+  weight = if ("weight" %in% names(.data)) "weight" else "1", # column to weight the read and ASV counts by
+  cutoff = NULL, # groups which represent less than this fraction in all types are grouped together as "other"
+  cutoff_type = c("single", "either", "both"),
+  data_only = FALSE # just return the data
+) {
+  rank <- rlang::enquo(rank)
+  rank_label <- rlang::as_label(rank)
+  y <- rlang::enquo(y)
+  x <- rlang::enquo(x)
+  weight <- rlang::parse_expr(weight)
+  ranks <- c("kingdom", "phylum", "class", "order", "family", "genus")
+  cutoff_type <- match.arg(cutoff_type)
+  .data <- .data %>%
+    dplyr::group_by(!!x) %>%
+    dplyr::mutate(
+      OTUs = dplyr::n_distinct(OTU),
+      reads = reads/sum(reads * !!weight)
+    ) %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(...)
+  if (rank_label %in% ranks) {
+    .data <- .data %>%
+      dplyr::arrange_at(ranks) %>%
+      dplyr::mutate_at(
+        ranks,
+        ~ factor(
+          .,
+          levels = c(NA, "other",
+                     purrr::discard(unique(as.character(.)), is.na)),
+          exclude = "NULL"
+        )
+      )
+  } else if (!is.factor(dplyr::pull(.data, !!rank))) {
+    .data <- .data %>%
+      dplyr::mutate_at(
+        rank_label,
+        ~ factor(
+          .,
+          levels = c(NA, "other",
+                     purrr::discard(unique(as.character(.)), is.na)),
+          exclude = "NULL"
+        )
+      )
+  }
+  .data <- .data %>%
+    dplyr::group_by(!!x, !!rank) %>%
+    dplyr::summarize(reads = sum(!!weight * reads), OTUs = sum(unique(data.frame(OTU, w = !!weight))$w)/max(OTUs)) %>%
+    dplyr::ungroup()
+
+  if (data_only) return(.data)
+
+  if (!is.null(cutoff)) {
+    prelevels <- levels(dplyr::pull(.data, !!rank))
+    cutoff_fun <- switch(
+      cutoff_type,
+      single = function(x) all(dplyr::pull(x, !!y) < cutoff),
+      either = function(x) all(x$reads < cutoff, x$OTUs < cutoff),
+      both = function(x) all(x$reads < cutoff) | all(x$OTUs < cutoff)
+    )
+    .data <- dplyr::group_by(.data, !!rank) %>%
+      dplyr::group_map(
+
+        ~ if (cutoff_fun(.x)) {
+          dplyr::mutate(
+            .x,
+            !!rank := factor(
+              "other",
+              levels = levels(!!rank)
+            ),
+            exclude = NULL)
+        } else {
+          .x
+        },
+        .keep = TRUE
+      ) %>%
+      dplyr::bind_rows() %>%
+      dplyr::group_by(!!x, !!rank) %>%
+      dplyr::summarize(reads = sum(reads), OTUs = sum(OTUs)) %>%
+      dplyr::ungroup() %>%
+      dplyr::mutate(!!rank := factor(!!rank, levels = prelevels, exclude = NULL))
+  }
+
+  .data <- dplyr::mutate(.data, !!rank := forcats::fct_drop(!!rank))
+  vals <- levels(dplyr::pull(.data, !!rank))
+  # if ("other" %in% vals) vals <- c("other", vals) %>% magrittr::extract(!duplicated(.))
+  # if (any(is.na(vals))) vals <- c(NA, vals) %>% magrittr::extract(!duplicated(.))
+
+  if (rank_label == stringr::str_to_lower(rank_label)) rank_label <- stringr::str_to_title(rank_label)
+  y_label <- rlang::as_label(y)
+  if (y_label == stringr::str_to_lower(y_label)) y_label <- stringr::str_to_title(y_label)
+  ggplot(.data, aes(x = !!x, y = !!y, fill = !!rank)) +
+    geom_bar(position = position_stack(reverse = TRUE),
+             stat = "identity", color = "white", size = 0.2) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+          strip.background = element_blank(),
+          panel.spacing = unit(3, "pt")) +
+    scale_fill_discrete(
+      breaks = vals,
+      labels = tidyr::replace_na(as.character(vals), "unidentified"),
+      name = rank_label,
+      guide = guide_legend(ncol = 4, byrow = TRUE)
+    ) +
+    ylab(paste("Fraction of", y_label)) +
+    coord_flip() +
+    theme_bw() +
+    theme(legend.position = "bottom") +
+    xlab(NULL)
+
+}
+
