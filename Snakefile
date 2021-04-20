@@ -250,6 +250,7 @@ rule derep:
     output:
         fasta="process/pb_363.ccs.derep.fasta",
         fastq="process/pb_363.ccs.orient.fastq.gz",
+        trimmed="process/pb_363.ccs.trimmed.fastq.gz",
         tooshort="process/pb_363.ccs.orient.tooshort.fastq.gz",
         toolong="process/pb_363.ccs.orient.toolong.fastq.gz",
         toopoor="process/pb_363.ccs.orient.toopoor.fastq.gz",
@@ -260,10 +261,7 @@ rule derep:
     shadow: "shallow"
     threads: 2
     log: "logs/derep_pb_363.log"
-    conda: "conda/vsearch.yaml"
-    envmodules:
-        "bioinfo-tools",
-        "vsearch/2.14.1"
+    conda: "conda/orient.yaml"
     shell:
         """
          fastq=$(mktemp --suffix .fastq) &&
@@ -271,7 +269,12 @@ rule derep:
          toolong=$(mktemp --suffix .fastq) &&
          toopoor=$(mktemp --suffix .fastq) &&
          trap 'rm ${{fastq}} ${{tooshort}} ${{toolong}} ${{toopoor}}' EXIT &&
-         zcat {input} |
+         cat {input} > {output.fastq} &&
+         cutadapt \\
+            -a "TCCGTAGGTGAACCTGC;e=0.15...CGAAGTTTCCCTCAGGA;required;e=0.15"\\
+            -o -\\
+            -j 1\\
+            {output.fastq} |
          vsearch --fastq_filter - \\
             --threads 1 \\
             --fastq_maxee_rate 0.01 \\
@@ -297,7 +300,7 @@ rule derep:
             --fasta_width 0\\
             --output {output.fasta} \\
             --uc {output.uc} &&
-         gzip -c ${{fastq}} >{output.fastq} &&
+         gzip -c ${{fastq}} >{output.trimmed} &&
          gzip -c ${{tooshort}} >{output.tooshort} &&
          gzip -c ${{toolong}} >{output.toolong} &&
          gzip -c ${{toopoor}} >{output.toopoor}
@@ -411,7 +414,7 @@ rule cluster_consensus:
     input:
         clust="process/{seqrun}.ccs.{clustype}",
         uc=   "process/{seqrun}.ccs.derep.uc",
-        fastq=  "process/{seqrun}.ccs.orient.fastq.gz",
+        fastq=  "process/{seqrun}.ccs.trimmed.fastq.gz",
         script="scripts/clust_consensus.sh",
         c3s= "bin/c3s"
     log: "logs/{clustype}_consensus_{seqrun}.log"
