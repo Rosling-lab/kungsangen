@@ -18,7 +18,7 @@ tar_plan(
   tar_map(
     list(
       clustype = c("as", "vs", "sl"),
-      otutab = rlang::syms(c("ampliseq_table", "vs_table", "sl_table"))
+      otutab = rlang::syms(c("ampliseq_table", "table_vs", "table_sl"))
     ),
     # create a phyloseq object
     tar_target(

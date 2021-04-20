@@ -6,12 +6,14 @@ tar_map(
     group = c("protists", "fungi"),
     tree = rlang::syms(c("tree_protists", "tree_fungi"))
   ),
+  names = group,
   tar_map(
     values = list(
       clust_type = c("ampliseq", "vsearch", "swarm"),
-      otutab = rlang::syms(c("ampliseq_table", "vs_table", "sl_table")),
+      otutab = rlang::syms(c("ampliseq_table", "table_vs", "table_sl")),
       regions = rlang::syms(c("regions_as", "regions_vs", "regions_sl"))
     ),
+    names = clust_type,
     tar_fst_tbl(
       otu_table,
       dplyr::select(regions, OTU = seq_id, label) %>%
@@ -28,8 +30,6 @@ tar_map(
         file.path(datadir, sprintf("%s_table_%s.%s", clust_type, group, ext)) %>%
           write_table(otu_table, file = ., format = ext)
       )
-    ),
-    names = clust_type
-  ),
-  names = group
+    )
+  )
 ) -> kingdom_table_targets
