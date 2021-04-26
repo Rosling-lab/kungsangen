@@ -579,3 +579,22 @@ rule laa_select:
 rule all_laa:
     output: touch("process/all_laa_{seqrun}_{type}")
     input: swarmfiles
+
+rule r_targets:
+    output: touch(".targets")
+    input:
+        expand(["process/pb_363.{cluster_type}.cons.fasta", "process/pb_363_ccs.{cluster_type}.table"],
+            cluster_type = ["swarm", "vclust"]),
+        "processReads/ampliseq/feature-table.tsv",
+        expand("reference/{reference}.sintax.fasta.gz",
+            reference = ["unite_single.ITS", "rdp_train.LSU", "silva_nr99.LSU"]),
+        "reference/constraints.fasta",
+        "processReads/ampliseq/qiime2_ASV_table.tsv",
+        "start_files/meta.txt"
+    conda: "conda/kungsangen.yaml"
+    threads: maxthreads
+    log: "logs/targets.log"
+    shell:
+        """
+        R -e 'library(targets); tar_make(); stopifnot(all(is.na(tar_meta()$error)))' 2>1 | tee {log}
+        """
