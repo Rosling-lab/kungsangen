@@ -224,52 +224,41 @@ phyloseq_targets <- tar_plan(
   ),
 
   #### Figure ####
-
-  tar_target(
-    fungi_cluster_geoms,
-    c(
-      draw_clusters(
-        clusters = its2_cluster_90,
-        singletons = its2_precluster_singletons,
-        hash_key = hash_key,
-        physeq = physeq_fungi,
-        offset = 0.15
-      ),
-      draw_clusters(
-        clusters = its2_cluster_97,
-        singletons = its2_precluster_singletons,
-        hash_key = hash_key,
-        physeq = physeq_fungi,
-        offset = 0.20
-      ),
-      draw_clusters(
-        clusters = its2_cluster_99,
-        singletons = its2_precluster_singletons,
-        hash_key = hash_key,
-        physeq = physeq_fungi,
-        offset = 0.25
-      )
-    ),
-    packages = c("rlang", "ggtree")
-  ),
-
   tar_map(
+    # make separate figures for fungi and all eukaryotes
     values = list(
       physeq_obj = rlang::syms(c("physeq_alleuks", "physeq_fungi")),
-      tree_height = c(300, 75),
+      tree_height = c(150, 75),
       tip_offset = c(0.4, 0.3),
       id = c("alleuks", "fungi")
     ),
+    # just the tree without the clusters
     tar_qs(
       tree_fig,
-      (ggtree(physeq_obj) +
-         theme_tree2() +
-         geom_tiplab(label = "", align = TRUE) +
-         geom_tiplab(
-           aes(label = taxon_label),
-           align = TRUE, offset = tip_offset, linetype = NULL, size = 2.5, family = "mono") +
-         xlim(0, 6) +
-         scale_y_continuous(expand = expansion(add = c(10, 0.6)))) %>%
+      (
+        ggtree(physeq_obj) +
+          theme_tree2() +
+          geom_tiplab(label = "", align = TRUE) +
+          scale_y_continuous(expand = expansion(add = c(5, 0.6)))
+
+      ) %>%
+        {
+          . +
+            geom_tiplab(
+              aes(label = taxon_label),
+              align = TRUE,
+              offset = max(.$data$x) * 0.19,
+              linetype = NULL,
+              size = 2.5,
+              family = "mono"
+            ) +
+            scale_x_continuous(
+              expand = expansion(mult = c(0.01, 1.5)),
+              guide = NULL
+              # breaks = max(.$data$x) * c(1.12, 1.14, 1.16),
+              # labels = c("GH 0.90", "SH 0.97", "SH 0.99")
+            )
+        } %>%
         gheatmap(
           log10(as(phyloseq::otu_table(physeq_obj), "matrix")),
           colnames_angle = 90,
@@ -288,19 +277,53 @@ phyloseq_targets <- tar_plan(
         ggplot2::ggsave(., plot = tree_fig, device = "pdf", width = 12,
                         height = tree_height, limitsize = FALSE)
     ),
+    # clusters
+    tar_target(
+      cluster_geoms,
+      c(
+        draw_clusters(
+          clusters = its2_cluster_90,
+          singletons = its2_precluster_singletons,
+          hash_key = hash_key,
+          physeq = physeq_obj,
+          offset = max(tree_fig$data$x) * 0.11
+        ),
+        draw_clusters(
+          clusters = its2_cluster_97,
+          singletons = its2_precluster_singletons,
+          hash_key = hash_key,
+          physeq = physeq_obj,
+          offset = max(tree_fig$data$x) * 0.135
+        ),
+        draw_clusters(
+          clusters = its2_cluster_99,
+          singletons = its2_precluster_singletons,
+          hash_key = hash_key,
+          physeq = physeq_obj,
+          offset = max(tree_fig$data$x) * 0.16
+        )
+      ),
+      packages = c("rlang", "ggtree")
+    ),
+    tar_file(
+      tree_cluster_fig_file,
+      sprintf("%s/tree_clusters_%s.pdf", figdir, id) %T>%
+        ggplot2::ggsave(
+          .,
+          plot = tree_fig +
+            cluster_geoms +
+            ggplot2::annotate("text", x = max(tree_fig$data$x) * 1.13, y = 0,
+                              label = "GH 90", angle = 90, hjust = 1, size = 2) +
+            ggplot2::annotate("text", x = max(tree_fig$data$x) * 1.155, y = 0,
+                              label = "SH 97", angle = 90, hjust = 1, size = 2) +
+            ggplot2::annotate("text", x = max(tree_fig$data$x) * 1.18, y = 0,
+                              label = "SH 99", angle = 90, hjust = 1, size = 2),
+            # cluster_annotation(label = "SH 0.90", x = max(tree_fig$data$x) * 1.12) +
+            # cluster_annotation(label = "SH 0.97", x = max(tree_fig$data$x) * 1.14) +
+            # cluster_annotation(label = "SH 0.99", x = max(tree_fig$data$x) * 1.16),
+          device = "pdf", width = 12, height = tree_height, limitsize = FALSE)
+    ),
     names = id
-  ),
-  tar_file(
-    tree_cluster_fig_file,
-    sprintf("%s/tree_clusters_fungi.pdf", figdir) %T>%
-      ggplot2::ggsave(
-        .,
-        plot = tree_fig_fungi +
-          fungi_cluster_geoms +
-          cluster_annotation(label = "SH 0.90", x = 1.425) +
-          cluster_annotation(label = "SH 0.97", x = 1.475) +
-          cluster_annotation(label = "SH 0.99", x = 1.525),
-        device = "pdf", width = 12, height = 75, limitsize = FALSE)
   )
 )
 

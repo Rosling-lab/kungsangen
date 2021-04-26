@@ -237,14 +237,15 @@ draw_clusters <- function(clusters, singletons, hash_key, physeq, offset, name =
   mono_clusters <- dplyr::filter(clusters, n == n_desc)
   poly_clusters <- dplyr::filter(clusters, n < n_desc)
   list(
-    draw_cluster(poly_clusters$mrca, offset = offset, barcolor = scales::alpha("red", 0.5)),
-    draw_cluster(mono_clusters$mrca, offset = offset, barsize = 1.5)
+    draw_cluster(poly_clusters$mrca, offset = offset, barsize = 2.5, barcolor = scales::alpha("red", 0.5)),
+    draw_cluster(mono_clusters$mrca, offset = offset, barsize = 2)
   )
 }
-cluster_annotation <- function(label, x, y = -0.20) {
+cluster_annotation <- function(label, x, y = -0.20, width = 0.05) {
   ggplot2::annotation_custom(
-    grid::textGrob(label = label, rot = 90, hjust = 1, gp = grid::gpar(fontsize = 6)),
-    xmin = x, xmax = x, ymin = y, ymax = y)
+    grid::textGrob(label = label, rot = 90, hjust = 1, vjust = 0.5,
+                   gp = grid::gpar(fontsize = 6)),
+    xmin = x, xmax = x + width, ymin = y, ymax = y)
 }
 
 #### Functions for species accumulation curves ####
