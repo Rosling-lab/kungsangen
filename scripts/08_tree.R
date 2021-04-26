@@ -140,6 +140,7 @@ concat_targets <- tar_plan(
       region = c("5_8S", "LSU"),
       allseqs = paste0("allseqs_", region) %>% rlang::syms()
     ),
+    names = region,
     tar_file(
       realign,
       align_mafft_ginsi(
