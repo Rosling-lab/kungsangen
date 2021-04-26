@@ -106,8 +106,7 @@ tar_plan(
               paste("VSEARCH 99% clusters after singleton removal:",
                     sum(nosingle_vs), "reads in", ncol(nosingle_vs), "OTUs")
           ),
-          "logs/otu_tables.log",
-          "txt"
+          "logs/otu_tables.log"
       )
   )
 ) -> otu_table_plan
