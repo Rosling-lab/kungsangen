@@ -90,14 +90,15 @@ venn_targets <- list(
     names = ext,
     tar_file(
       vennplotfile,
-      file.path(figdir, sprintf("venn.%s", ext)) %T>%
-        ggplot2::ggsave(filename = ., plot = venn_fullplot, device = fun,
-                        width = 4, height = 7, dpi = 150)
+      write_and_return_file(
+        venn_fullplot,
+        file.path(figdir, sprintf("venn.%s", ext)),
+        device = fun, width = 4, height = 7, dpi = 150
+      )
     )
   ),
   tar_file(
     venn_xlsx,
-    "output/data/venn.xlsx" %T>%
-      openxlsx::write.xlsx(venn_data, .)
+    write_and_return_file(venn_data, "output/data/venn.xlsx", "xlsx")
   )
 )

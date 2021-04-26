@@ -84,12 +84,7 @@ concat_targets <- tar_plan(
     ),
     tar_file(
       write_aln,
-      {
-        if (!dir.exists(comparedir)) dir.create(comparedir)
-        alnfile <- file.path(comparedir, sprintf("%s.fasta", file))
-        Biostrings::writeXStringSet(aln, alnfile)
-        alnfile
-      }
+      write_and_return_file(aln, file.path(comparedir, sprintf("%s.fasta", file)))
     ),
     names = id
   ),
@@ -273,9 +268,12 @@ phyloseq_targets <- tar_plan(
     ),
     tar_file(
       tree_fig_file,
-      sprintf("%s/treemap_%s.pdf", figdir, id) %T>%
-        ggplot2::ggsave(., plot = tree_fig, device = "pdf", width = 12,
-                        height = tree_height, limitsize = FALSE)
+      write_and_return_file(
+        tree_fig,
+        sprintf("%s/treemap_%s.pdf", figdir, id),
+        device = "pdf", width = 12,
+        height = tree_height, limitsize = FALSE
+      )
     ),
     # clusters
     tar_target(
@@ -307,21 +305,21 @@ phyloseq_targets <- tar_plan(
     ),
     tar_file(
       tree_cluster_fig_file,
-      sprintf("%s/tree_clusters_%s.pdf", figdir, id) %T>%
-        ggplot2::ggsave(
-          .,
-          plot = tree_fig +
-            cluster_geoms +
-            ggplot2::annotate("text", x = max(tree_fig$data$x) * 1.13, y = 0,
-                              label = "GH 90", angle = 90, hjust = 1, size = 2) +
-            ggplot2::annotate("text", x = max(tree_fig$data$x) * 1.155, y = 0,
-                              label = "SH 97", angle = 90, hjust = 1, size = 2) +
-            ggplot2::annotate("text", x = max(tree_fig$data$x) * 1.18, y = 0,
-                              label = "SH 99", angle = 90, hjust = 1, size = 2),
-            # cluster_annotation(label = "SH 0.90", x = max(tree_fig$data$x) * 1.12) +
-            # cluster_annotation(label = "SH 0.97", x = max(tree_fig$data$x) * 1.14) +
-            # cluster_annotation(label = "SH 0.99", x = max(tree_fig$data$x) * 1.16),
-          device = "pdf", width = 12, height = tree_height, limitsize = FALSE)
+      write_and_return_file(
+        tree_fig +
+          cluster_geoms +
+          ggplot2::annotate("text", x = max(tree_fig$data$x) * 1.13, y = 0,
+                            label = "GH 90", angle = 90, hjust = 1, size = 2) +
+          ggplot2::annotate("text", x = max(tree_fig$data$x) * 1.155, y = 0,
+                            label = "SH 97", angle = 90, hjust = 1, size = 2) +
+          ggplot2::annotate("text", x = max(tree_fig$data$x) * 1.18, y = 0,
+                            label = "SH 99", angle = 90, hjust = 1, size = 2),
+        # cluster_annotation(label = "SH 0.90", x = max(tree_fig$data$x) * 1.12) +
+        # cluster_annotation(label = "SH 0.97", x = max(tree_fig$data$x) * 1.14) +
+        # cluster_annotation(label = "SH 0.99", x = max(tree_fig$data$x) * 1.16),
+        sprintf("%s/tree_clusters_%s.pdf", figdir, id),
+        device = "pdf", width = 12, height = tree_height, limitsize = FALSE
+      )
     ),
     names = id
   )

@@ -87,9 +87,11 @@ taxplot_targets <- tar_map(
     names = ext,
     tar_file(
       taxplotfile,
-      file.path(figdir, sprintf("taxonomy_%s.%s", group, ext)) %T>%
-        ggplot2::ggsave(filename = ., plot = taxplot, device = fun,
-                        width = 6.25, height = 4, dpi = 150)
+      write_and_return_file(
+        taxplot,
+        file.path(figdir, sprintf("taxonomy_%s.%s", group, ext)),
+        device = fun, width = 6.25, height = 4, dpi = 150
+      )
     )
   )
 )

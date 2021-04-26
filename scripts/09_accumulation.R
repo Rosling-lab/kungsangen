@@ -325,15 +325,19 @@ accumulation_targets <- c(
       ),
       tar_file(
         accumplot1,
-        file.path(figdir, sprintf("accum1.%s", ext)) %T>%
-          ggplot2::ggsave(filename = ., plot = sample_accum_plot, device = fun,
-                          width = 6.25, height = 4, dpi = 150)
+        write_and_return_file(
+          sample_accum_plot,
+          file.path(figdir, sprintf("accum1.%s", ext)),
+          device = fun, width = 6.25, height = 4, dpi = 150
+        )
       ),
       tar_file(
         accumplot2,
-        file.path(figdir, sprintf("accum2.%s", ext)) %T>%
-          ggplot2::ggsave(filename = ., plot = fig_accum_site, device = fun,
-                          width = 6.25, height = 6, dpi = 150)
+        write_and_return_file(
+          fig_accum_site,
+          file.path(figdir, sprintf("accum2.%s", ext)),
+          device = fun, width = 6.25, height = 6, dpi = 150
+        )
       ),
       names = ext
     )

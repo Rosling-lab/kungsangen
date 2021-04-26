@@ -42,56 +42,55 @@ tar_plan(
         dplyr::select(OTU, dplyr::everything()) %>%
         dplyr::arrange(readr::parse_number(OTU))
     ),
-    tar_file(
-      table_xlsx,
-      file.path(datadir, paste0(cluster_type, "_table.xlsx")) %T>%
-        openxlsx::write.xlsx(table, .)
+    tar_map(
+      values = list(type = c("rds", "xlsx")),
+      tar_file(
+        tableout,
+        write_and_return_file(
+          table,
+          file.path(datadir, paste0(cluster_type, "_table.", type)),
+          type = type
+        )
+      ),
+      names = id
     ),
-    tar_file(
-      table_rds,
-      file.path(datadir, paste0(cluster_type, "_table.rds")) %T>%
-        saveRDS(table, .)
-    ),
-    names = id
-  ),
 
     #### Ampliseq ####
     tar_file(ampliseq_rawtable_file, "processReads/ampliseq/feature-table.tsv"),
     ampliseq_table = readr::read_tsv(
-        ampliseq_rawtable_file,
-        skip = 1,
-        col_types = readr::cols(
-            .default = readr::col_integer(),
-            `#ASV_ID` = readr::col_character()
-        )) %>%
-        dplyr::rename_if(
-            is.integer,
-            ~stringr::str_match(., "([1-5g])([EW])([FN])S.*") %>%
-                as.data.frame() %>%
-                dplyr::mutate(
-                    V2 = ifelse(V2 == "g", "5", V2),
-                    V3 = ifelse(V3 == "E", "Dry", "Wet")
-                ) %$%
-                paste(V3, V4, V2, sep = "_")
-        ) %>%
-        dplyr::rename(OTU = "#ASV_ID"),
-
-    tar_file(
-        ampliseq_table_xlsx,
-        file.path(datadir, "ampliseq_table.xlsx") %T>%
-        openxlsx::write.xlsx(ampliseq_table, .)
-    ),
-    tar_file(
-        ampliseq_table_rds,
-        file.path(datadir, "ampliseq_table.rds") %T>%
-            saveRDS(ampliseq_table, .)
+      ampliseq_rawtable_file,
+      skip = 1,
+      col_types = readr::cols(
+        .default = readr::col_integer(),
+        `#ASV_ID` = readr::col_character()
+      )) %>%
+      dplyr::rename_if(
+        is.integer,
+        ~stringr::str_match(., "([1-5g])([EW])([FN])S.*") %>%
+          as.data.frame() %>%
+          dplyr::mutate(
+            V2 = ifelse(V2 == "g", "5", V2),
+            V3 = ifelse(V3 == "E", "Dry", "Wet")
+          ) %$%
+          paste(V3, V4, V2, sep = "_")
+      ) %>%
+      dplyr::rename(OTU = "#ASV_ID"),
+    tar_map(
+      values = list(type = c("rds", "xlsx")),
+      tar_file(
+        ampliseq_tableout,
+        write_and_return_file(
+          ampliseq_table,
+          file.path(datadir, paste0("ampliseq_table", type)),
+          type = type
+        )
+      )
     ),
 
     #### log file
     tar_file(
         otu_log,
-        "logs/otu_tables.log" %T>%
-        writeLines(
+        write_and_return_file(
             c(
                 paste("Single linkage clusters:", sum(seqtab_sl), "reads in",
                       ncol(seqtab_sl), "OTUs"),
@@ -108,9 +107,8 @@ tar_plan(
                 paste("VSEARCH 99% clusters after singleton removal:",
                       sum(nosingle_vs), "reads in", ncol(nosingle_vs), "OTUs")
             ),
-            .
+            "logs/otu_tables.log",
+            "txt"
         )
     )
 ) -> otu_table_plan
-
-

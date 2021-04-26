@@ -52,9 +52,12 @@ detection_targets <- c(
       names = ext,
       tar_file(
         detection_plotfile,
-        file.path(figdir, sprintf("detection.%s", ext)) %T>%
-          ggplot2::ggsave(filename = ., plot = detection_plot, device = fun,
-                          width = 6.25, height = 4, dpi = 150)
+        write_and_return_file(
+          detection_plot,
+          file.path(figdir, sprintf("detection.%s", ext)),
+          device = fun,
+          width = 6.25, height = 4, dpi = 150
+        )
       )
     )
   )

@@ -4,8 +4,10 @@
 its2_cluster_targets <- tar_plan(
   tar_file(
     its2_file,
-    file.path(comparedir, "ITS2.fasta.gz") %T>%
-      Biostrings::writeXStringSet(Biostrings::DNAStringSet(allseqs_ITS2), .)
+    write_and_return_file(
+      Biostrings::DNAStringSet(allseqs_ITS2),
+      file.path(comparedir, "ITS2.fasta.gz")
+    )
   ),
 
   tar_file(
@@ -74,8 +76,11 @@ its2_cluster_targets <- c(
     ),
     tar_file(
       write_cluster_fraction_table,
-      file.path(datadir, "cluster_fractions.xlsx") %T>%
-        openxlsx::write.xlsx(file = ., cluster_fraction_table)
+      write_and_return_file(
+        cluster_fraction_table,
+        file.path(datadir, "cluster_fractions.xlsx"),
+        "xlsx"
+      )
     )
   )
 )

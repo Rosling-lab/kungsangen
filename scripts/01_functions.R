@@ -27,6 +27,42 @@ load_rawtable <- function(table_file, seqs) {
     )
 }
 
+#### convenience function for writing a file and returning its name ####
+
+ensure_directory <- function(file) {
+  d <- dirname(file)
+  if (!dir.exists(d)) dir.create(d)
+}
+
+write_and_return_file <- function(x, file, ...) {
+  UseMethod("write_and_return_file")
+}
+
+write_and_return_file.XStringSet <- function(x, file, ...) {
+  ensure_directory(file)
+  Biostrings::writeXStringSet(x, file, ...)
+  file
+}
+
+write_and_return_file.data.frame <- function(x, file, type = c("rds", "xlsx", "txt"), ...) {
+  ensure_directory(file)
+  type = match.arg(type)
+  switch(
+    type,
+    rds = saveRDS(x, file, ...),
+    xlsx = openxlsx::write.xlsx(x, file, ...),
+    txt = writeLines(x, file, ...),
+    stop("Unknown file type: ", type)
+  )
+  file
+}
+
+write_and_return_file.ggplot <- function(x, file, ...) {
+  ensure_directory(file)
+  ggplot2::ggsave(file, plot = x, ...)
+  file
+}
+
 #### Functions for Taxonomy assignment ####
 cumcollapse <- function(x) {
   purrr::map_chr(
