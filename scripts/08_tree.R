@@ -115,7 +115,59 @@ concat_targets <- tar_plan(
   tree_protists = tree_rooted %>%
     ape::drop.tip(tree_fungi$tip.label) %>%
     ape::drop.tip(tree_animals$tip.label) %>%
-    ape::drop.tip(tree_plants$tip.label)
+    ape::drop.tip(tree_plants$tip.label),
+
+  # pick the most abundant nonfungal obazoan to use as an outgroup for Fungi
+  fungi_outgroup = phyloseq::subset_taxa(
+    physeq_alleuks,
+    grepl("Ichthyosporia|Choanoflagello|Meta-", taxon_label)
+  ) %>%
+    phyloseq::otu_table() %>%
+    rowSums() %>%
+    which.max() %>%
+    names() %>%
+    strsplit("_") %>%
+    unlist() %>%
+    set_names(c("5_8S", "LSU")),
+
+  # pick out the
+  regions_fungi = tibble::tibble(label = tree_fungi$tip.label) %>%
+    tidyr::separate(label, c("5_8S", "LSU")) %>%
+    as.list(),
+
+  tar_map(
+    values = tibble::tibble(
+      region = c("5_8S", "LSU"),
+      allseqs = paste0("allseqs_", region) %>% rlang::syms()
+    ),
+    tar_file(
+      realign,
+      align_mafft_ginsi(
+        seqs = allseqs[c(fungi_outgroup[[region]], unique(regions_fungi[[region]]))],
+        out_file = file.path(comparedir, sprintf("fungi_realign_%s.fasta", region)),
+        ncpu = local_cpus(),
+        log = file.path("logs", sprintf("fungi_realign_%s.log", region))
+      )
+    ),
+    tar_target(
+      realign_copies,
+      Biostrings::readDNAStringSet(realign)[
+        c(fungi_outgroup[[region]], regions_fungi[[region]])
+        ]
+    ),
+    unlist = TRUE
+  ),
+  tar_file(
+    reconcat,
+    paste(realign_copies_5_8S, realign_copies_LSU, sep = "") %>%
+    set_names(paste(names(realign_copies_5_8S), names(realign_copies_LSU), sep = "_")) %>%
+    Biostrings::DNAStringSet() %>%
+      write_and_return_file(file.path(comparedir, "fungi_realign.fasta"))
+  ),
+  tar_file(
+    iqtree_fungi,
+    iqtree(reconcat, local_cpus())
+  )
 )
 
 #### Community matrix ####

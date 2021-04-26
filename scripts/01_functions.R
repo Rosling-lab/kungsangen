@@ -1,5 +1,28 @@
 # Functions to use in targets pipeline
 
+#### Utility functions ####
+
+# are we running slurm?
+is_slurm <- function() nchar(Sys.which("sbatch")) > 0
+is_local <- function() !is_slurm()
+
+# are we running snakemake?
+is_snakemake <- function() !interactive() && exists("snakemake")
+
+# how many cpus do we have on the local machine?
+# if we're not running on the cluster, leave one cpu free.
+local_cpus <- function() {
+  if (is_snakemake()) {
+    snakemake@threads
+  } else if (is_slurm()) {
+    out <- as.integer(Sys.getenv("SLURM_JOB_CPUS_PER_NODE"))
+    assertthat::assert_that(assertthat::is.count(out))
+    out
+  } else {
+    max(parallel::detectCores() - 1, 1)
+  }
+}
+
 #### Functions for loading data ####
 
 load_cons_seqs <- function(seq_file, prefix) {
@@ -193,6 +216,33 @@ fasttree <- function(aln_file, out_file, constraints = NULL) {
     ) == 0
   )
   out_file
+}
+
+# align with MAFFT-ginsi
+align_mafft_ginsi <- function(seqs, out_file, ncpu, log = "") {
+  seqs_file <- tempfile(fileext = ".fasta")
+  Biostrings::writeXStringSet(seqs, seqs_file)
+  on.exit(unlink(seqs_file))
+  args <- c("--globalpair", "--maxiterate", "1000", seqs_file)
+  stopifnot(system2("mafft", args = args, stdout = out_file, stderr = log) == 0)
+  out_file
+}
+
+# ML tree with IQtree
+iqtree <- function(aln, ncpu, log = "") {
+  args <- c(
+    "-s", aln,
+    "-ntmax", ncpu, # max number of CPUs, it will use less if it needs less.
+    "-seed", .Random.seed[1],
+    "-m", "MFP", # model finder plus
+    "-B", "1000" # 1000 ultrafast bootstrap
+  )
+  stopifnot(system2("iqtree", args = args, stdout = log) == 0)
+  paste(
+    aln,
+    c("treefile", "iqtree", "log", "model", "splits.nex"),
+    sep = "."
+  )
 }
 
 #### Unite SH clustering ####
