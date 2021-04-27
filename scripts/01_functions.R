@@ -228,7 +228,7 @@ align_mafft_ginsi <- function(seqs, out_file, ncpu, log = "") {
   seqs_file <- tempfile(fileext = ".fasta")
   Biostrings::writeXStringSet(seqs, seqs_file)
   on.exit(unlink(seqs_file))
-  args <- c("--globalpair", "--maxiterate", "1000", seqs_file)
+  args <- c("--globalpair", "--maxiterate", "1000", "--thread", ncpu, seqs_file)
   stopifnot(system2("mafft", args = args, stdout = out_file, stderr = log) == 0)
   out_file
 }
@@ -237,6 +237,7 @@ align_mafft_ginsi <- function(seqs, out_file, ncpu, log = "") {
 iqtree <- function(aln, ncpu, log = "") {
   args <- c(
     "-s", aln,
+    "-T", "AUTO",
     "-ntmax", ncpu, # max number of CPUs, it will use less if it needs less.
     "-seed", .Random.seed[1],
     "-m", "MFP", # model finder plus
