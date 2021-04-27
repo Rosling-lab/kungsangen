@@ -80,10 +80,7 @@ taxplot_targets <- tar_map(
     packages = "ggplot2"
   ),
   tar_map(
-    values = list(
-      ext = c("pdf", "png", "eps"),
-      fun = list(rlang::sym("cairo_pdf"), "png", "eps")
-    ),
+    values = plot_type_meta,
     names = ext,
     tar_file(
       taxplotfile,

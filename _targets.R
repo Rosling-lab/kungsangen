@@ -11,6 +11,12 @@ if (!dir.exists(datadir)) dir.create(datadir, recursive = TRUE)
 comparedir <- file.path("processReads", "compare")
 if (!dir.exists(comparedir)) dir.create(comparedir)
 
+# define which plot types to generate
+plot_type_meta <- tibble::tibble(
+  ext = c("pdf", "png", "eps"),
+  fun = list(rlang::sym("cairo_pdf"), "png", "eps")
+)
+
 # defines lsux_plan
 source(here::here("scripts", "01_functions.R"))
 # source(here::here("scripts", "02_lsux.R"))

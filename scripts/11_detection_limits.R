@@ -45,10 +45,7 @@ detection_targets <- c(
       packages = "ggplot2"
     ),
     detection_plotfile = tar_map(
-      values = list(
-        ext = c("pdf", "png", "eps"),
-        fun = list(rlang::sym("cairo_pdf"), "png", "eps")
-      ),
+      values = plot_type_meta,
       names = ext,
       tar_file(
         detection_plotfile,

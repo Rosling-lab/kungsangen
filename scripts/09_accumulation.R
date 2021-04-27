@@ -142,10 +142,7 @@ tar_plan(
 
     #### write graphics files ####
     tar_map(
-      values = list(
-        ext = c("pdf", "png", "eps"),
-        fun = list(rlang::sym("cairo_pdf"), "png", "eps")
-      ),
+      values = plot_type_meta,
       tar_file(
         accumplot1,
         file.path(figdir, sprintf("accum1_%s.%s", clustype, ext)) %T>%
@@ -319,10 +316,7 @@ accumulation_targets <- c(
                         legend = "bottom")
     ),
     tar_map(
-      values = list(
-        ext = c("pdf", "png", "eps"),
-        fun = list(rlang::sym("cairo_pdf"), "png", "eps")
-      ),
+      values = plot_type_meta,
       tar_file(
         accumplot1,
         write_and_return_file(
