@@ -6,7 +6,7 @@
 #SBATCH -A snic2020-5-142
 #SBATCH -p node
 #SBATCH -N 1
-#SBATCH -t 0-04:00:00
+#SBATCH -t 4-00:00:00
 #SBATCH -J kungsängen
 #SBATCH -C usage_mail
 #SBATCH -M rackham
@@ -20,4 +20,5 @@ module load snakemake &&
 snakemake -pr --jobs $SLURM_JOB_CPUS_PER_NODE\
   --use-envmodules\
   --use-conda\
-  --shadow-prefix /scratch
+  --shadow-prefix /scratch\
+  r_targets
