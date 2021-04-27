@@ -152,7 +152,7 @@ concat_targets <- tar_plan(
     ),
     tar_target(
       realign_copies,
-      Biostrings::readDNAStringSet(realign)[
+      Biostrings::readRNAStringSet(realign)[
         c(fungi_outgroup[[region]], regions_fungi[[region]])
         ]
     ),
@@ -162,6 +162,7 @@ concat_targets <- tar_plan(
     reconcat,
     paste(realign_copies_5_8S, realign_copies_LSU, sep = "") %>%
     set_names(paste(names(realign_copies_5_8S), names(realign_copies_LSU), sep = "_")) %>%
+    chartr(old = "Uu", new = "Tt") %>%
     Biostrings::DNAStringSet() %>%
       write_and_return_file(file.path(comparedir, "fungi_realign.fasta"))
   ),
