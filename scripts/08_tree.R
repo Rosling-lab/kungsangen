@@ -379,11 +379,40 @@ phyloseq_targets <- tar_plan(
   )
 )
 
+constraint_targets <- list(
+  constraint_tree_file = tar_file(
+    constraint_tree_file,
+    file.path("reference", "constraints.tree")
+  ),
+  constraint_tree_plot = tar_target(
+    constraint_tree_plot,
+    ape::read.tree(constraint_tree_file) %>%
+      purrr::modify_at("node.label", chartr, old = "_", new = " ") %>%
+      ggtree(layout = "rectangular", ladderize = FALSE) +
+      geom_tiplab(hjust = 1, nudge_y = 0.3, size = 1.7) +
+      geom_nodelab(hjust = 1, nudge_y = 0.3, nudge_x = -0.1, size = 1.7),
+    packages = "ggtree"
+  ),
+  constraint_tree_write = tar_map(
+    values = plot_type_meta,
+    names = ext,
+    tar_file(
+      constraint_tree,
+      write_and_return_file(
+        constraint_tree_plot,
+        file.path(figdir, paste0("constraint_tree.", ext)),
+        device = fun, width = 3, height = 2, dpi = 150
+      )
+    )
+  )
+)
+
 tree_targets <- c(
   align_targets,
   concat_targets,
   reads_targets,
-  phyloseq_targets
+  phyloseq_targets,
+  constraint_targets
 )
 
 # colSums(phyloseq::otu_table(physeq_glom) > 0)

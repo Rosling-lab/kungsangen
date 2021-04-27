@@ -1,0 +1,31 @@
+(
+ (
+  (
+   (
+    (Stramenopila,Alveolata,Rhizaria)SAR,
+    Telamonia
+   )TSAR,
+   (Haptista,Centroheliozoa)Haptista_s.l.,
+   Cryptophyta,
+   Viridiplantae
+  )Diaphoretickes,
+  (
+   Amoebozoa,
+   (
+    Breviatae,
+    (
+     Fungi,
+     (
+      Metazoa,
+      Ichthyosporia,
+      Choanoflagellozoa
+     )Holozoa
+    )Opisthokonta
+   )Obazoa
+  )Amorphea
+ ),
+ (
+  Euglenozoa,
+  Heterolobosa
+ )Discoba
+);
