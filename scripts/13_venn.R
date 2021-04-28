@@ -1,4 +1,20 @@
-venn_targets <- list(
+venn_meta <- tibble::tibble(
+  group_var_name = c("moisture", "Fritillaria"),
+  group_var = rlang::syms(c("Sites", "Sample_type")),
+  level1 = c("Dry", "Fritillaria"),
+  level1label = c('Dry', 'Fritillaria'),
+  level1parselabel = c('"Dry"', 'italic("Fritillaria")'),
+  level2 = c("Wet", "Non_Fritillaria"),
+  level2label = c('Wet', 'Non-Fritillaria'),
+  level2parselabel = c('"Wet"', '"Non-"*italic("Fritillaria")'),
+  both = sprintf("%s&%s", level1, level2),
+  only1 = paste0(sub("illaria", "", level1label), "-only"),
+  only2 = paste0(sub("illaria", "", level2label), "-only")
+)
+
+venn_targets <- tar_map(
+  values = venn_meta,
+  names = group_var_name,
   venn_data = tar_fst_tbl(
     venn_data,
     list(
@@ -17,17 +33,17 @@ venn_targets <- list(
         tibble::rownames_to_column(samples_df, "sample"),
         by = "sample"
       ) %>%
-      dplyr::group_by(group, OTU, Sites) %>%
+      dplyr::group_by(group, OTU, group_var) %>%
       dplyr::summarize(reads = mean(reads)) %>%
       dplyr::mutate(
         category = dplyr::case_when(
-          sum(reads > 0 & Sites == "Dry") == 0 ~ "Wet-only",
-          sum(reads > 0 & Sites == "Wet") == 0 ~ "Dry-only",
+          sum(reads > 0 & group_var == level1) == 0 ~ only2,
+          sum(reads > 0 & group_var == level2) == 0 ~ only1,
           TRUE ~ "Common"
         ) %>%
-          factor(levels = c("Dry-only", "Common", "Wet-only"))
+          factor(levels = c(only1, "Common", only2))
       ) %>%
-      dplyr::group_by(group, Sites, category) %>%
+      dplyr::group_by(group, group_var, category) %>%
       dplyr::summarize(OTUs = sum(reads > 0), reads = sum(reads)) %>%
       dplyr::filter(reads > 0)
   ),
@@ -35,20 +51,26 @@ venn_targets <- list(
     venn_barplot,
     venn_data %>%
       dplyr::mutate(
-        Sites = paste(Sites, "sites")#,
+        facetvar = factor(group_var, levels = c(level1, level2),
+                          labels = paste0(c(level1parselabel, level2parselabel), '~"sites"')),
+        group = stringr::str_to_title(group),
         # category = forcats::fct_relabel(category, paste, "OTUs")
       ) %>%
-      ggplot(aes(x = category, y = reads, fill = group, label = formatC(reads, digits = 2, format = "f"))) +
-      geom_col(position = "stack", width = 0.5) +
+      ggplot(aes(x = category, y = reads, fill = group,
+                 label = formatC(reads, digits = 2, format = "f"))) +
+      geom_col(position = "stack", width = 0.5, color = "white") +
       geom_text(position = position_stack(vjust = 0.5)) +
-      scale_fill_discrete(name = NULL) +
-      facet_wrap(~Sites, scales = "free_x", strip.position = "bottom", ) +
+      scale_fill_manual(values = list(Fungi = "tomato3", Protists = "cyan3"),
+                        name = NULL) +
+      facet_wrap(~facetvar, scales = "free_x", strip.position = "bottom",
+                 labeller = label_parsed) +
       ylab("Relative abundance") +
       xlab(NULL) +
       theme(strip.placement = "outside",
             strip.background = element_rect(fill = NA, color = "black"),
             legend.position = "bottom"),
-    packages = "ggplot2"
+    packages = "ggplot2",
+    tidy_eval = FALSE
   ),
   tar_map(
     values = list(
@@ -63,12 +85,15 @@ venn_targets <- list(
         dplyr::group_by(category) %>%
         dplyr::summarize(OTUs = max(OTUs)) %$%
         eulerr::euler(
-          combinations = c(Dry = OTUs[1], "Dry&Wet" = OTUs[2], Wet = OTUs[3])
+          combinations = set_names(OTUs, c(level1, both, level2))
         ) %>%
         plot(
           quantities = TRUE,
-          fills = list(fill = paste(color, c(1, 4)), alpha = c(0.5, 0.5))
-        )
+          fills = list(fill = paste(color, c(1, 4))),
+          edges = list(col = "white", lex = 2),
+          labels = c(level1label, level2label)
+        ),
+      tidy_eval = TRUE
     )
   ),
   tar_target(
@@ -89,7 +114,7 @@ venn_targets <- list(
       vennplotfile,
       write_and_return_file(
         venn_fullplot,
-        file.path(figdir, sprintf("venn.%s", ext)),
+        file.path(figdir, sprintf("venn_%s.%s", group_var_name, ext)),
         device = fun, width = 4, height = 7, dpi = 150
       )
     )
