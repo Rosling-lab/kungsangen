@@ -17,8 +17,19 @@
 module load bioinfo-tools &&
 module load snakemake &&
 
+outofdate=$(snakemake --list-code-changes)
+
+if [ -n "$outofdate" ]; then
+  snakemake -pr --jobs $SLURM_JOB_CPUS_PER_NODE\
+    --use-envmodules\
+    --use-conda\
+    --shadow-prefix /scratch\
+    -R $outofdate
+fi    
+
 snakemake -pr --jobs $SLURM_JOB_CPUS_PER_NODE\
   --use-envmodules\
   --use-conda\
   --shadow-prefix /scratch\
-  r_targets
+  r_targets \
+  all
