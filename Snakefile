@@ -366,7 +366,7 @@ rule gefast:
             --threshold 30\\
             --sep-abundance ";size="\\
             --swarm-output {output}\\
-            --swarm-fastidious\\
+            --swarm-fastidious 0\\
             --swarm-no-otu-breaking\\
             --swarm-num-explorers {threads}\\
             --swarm-num-grafters {threads}\\
