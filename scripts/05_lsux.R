@@ -41,7 +41,7 @@ positions_targets <-  tar_map(
       seq = seq[table$OTU],
       cm_32S = cm_32S_trunc,
       ITS1 = TRUE,
-      cpu = 8,
+      cpu = local_cpus(),
       # allow 2 Gb ram (per process)
       mxsize = 2048
     )

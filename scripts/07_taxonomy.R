@@ -29,7 +29,7 @@ taxonomy_targets <- tar_plan(
         seq = allseqs,
         reference = reference_file,
         min_confidence = 80,
-        multithread = 8
+        multithread = local_cpus()
       ) %>%
         phylotax::taxtable_sintax()
     ),
