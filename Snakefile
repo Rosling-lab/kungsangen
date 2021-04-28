@@ -232,7 +232,7 @@ rule orient:
     shell:
         """
         cutadapt\\
-            -a "TCCGTAGGTGAACCTGC;e=0.15...CGAAGTTTCCCTCAGGA;required;e=0.15"\\
+            -a "TCCGTAGGTGAACCTGC;e=0.15;o=10...CGAAGTTTCCCTCAGGA;required;e=0.15;o=10"\\
             --action=none\\
             --revcomp\\
             -o {output.orient}\\
@@ -271,7 +271,7 @@ rule derep:
          trap 'rm ${{fastq}} ${{tooshort}} ${{toolong}} ${{toopoor}}' EXIT &&
          cat {input} > {output.fastq} &&
          cutadapt \\
-            -a "TCCGTAGGTGAACCTGC;e=0.15...CGAAGTTTCCCTCAGGA;required;e=0.15"\\
+            -a "TCCGTAGGTGAACCTGC;e=0.15;o=10...CGAAGTTTCCCTCAGGA;required;e=0.15;o=10"\\
             -o -\\
             -j 1\\
             {output.fastq} |
