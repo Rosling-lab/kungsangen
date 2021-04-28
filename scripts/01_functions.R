@@ -204,6 +204,23 @@ taxon_abbrevs <- tibble::tribble(
 
 #### Tree building ####
 
+# trim LSU alignment at the point just before the introns start
+trim_LSU_intron <- function(aln) {
+  consensus <- DECIPHER::ConsensusSequence(
+    aln,
+    threshold = 0.5,
+    ambiguity = FALSE
+  )
+  consensus <- as.character(consensus)
+  consensus <- toupper(consensus)
+  consensus <- chartr("T", "U", consensus)
+  site <- stringi::stri_locate_first_regex(
+    consensus,
+    "C-*U-*C-*G-*U-*A-*G-*C-*G-*.-*U-*.-*C-*U-*G-*A-*C-*G-*U"
+  )[1, 'end']
+  IRanges::narrow(aln, start = 1, end = site)
+}
+
 # make an (optionally constrainted) ML tree with fasttree
 fasttree <- function(aln_file, out_file, constraints = NULL) {
   args <- character(0)

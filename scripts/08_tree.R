@@ -63,7 +63,7 @@ concat_targets <- tar_plan(
   # paste together the 5.8S and LSU sequences for each.
   align_both = paste(
     align_5_8S[align_key$`5_8S_hash`],
-    align_LSU[align_key$LSU_hash],
+    trim_LSU_intron(align_LSU)[align_key$LSU_hash],
     sep = ""
   ) %>%
     set_names(align_key$label) %>%
@@ -101,6 +101,7 @@ concat_targets <- tar_plan(
     )
   ),
 
+  #### separate out Fungi and protist trees ####
   tree_raw = treeio::read.newick(tree_file),
   tree_rooted = root_with_kingdoms(tree_raw, kingdoms, c("Euglenozoa", "Heterolobosa")),
   tree_fungi = dplyr::filter(kingdoms, taxon == "Fungi")$label %>%
@@ -117,6 +118,7 @@ concat_targets <- tar_plan(
     ape::drop.tip(tree_animals$tip.label) %>%
     ape::drop.tip(tree_plants$tip.label),
 
+  #### Realign and retree for Fungi ####
   # pick the most abundant nonfungal obazoan to use as an outgroup for Fungi
   fungi_outgroup = phyloseq::subset_taxa(
     physeq_alleuks,
@@ -160,7 +162,11 @@ concat_targets <- tar_plan(
   ),
   tar_file(
     reconcat,
-    paste(realign_copies_5_8S, realign_copies_LSU, sep = "") %>%
+    paste(
+      realign_copies_5_8S,
+      trim_LSU_intron(realign_copies_LSU),
+      sep = ""
+    ) %>%
     set_names(paste(names(realign_copies_5_8S), names(realign_copies_LSU), sep = "_")) %>%
     chartr(old = "Uu", new = "Tt") %>%
     Biostrings::DNAStringSet() %>%
