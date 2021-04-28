@@ -277,20 +277,20 @@ rule derep:
             {output.fastq} |
          vsearch --fastq_filter - \\
             --threads 1 \\
-            --fastq_maxee_rate 0.01 \\
+            --fastq_maxee 12 \\
             --fastq_qmax 93 \\
             --fastqout_discarded ${{toopoor}} \\
             --fastqout - |
          vsearch --fastq_filter - \\
             --threads 1 \\
             --fastq_qmax 93 \\
-            --fastq_minlen 1000 \\
+            --fastq_minlen 50 \\
             --fastqout_discarded ${{tooshort}} \\
             --fastqout - |
          vsearch --fastq_filter - \\
             --threads 1 \\
             --fastq_qmax 93 \\
-            --fastq_maxlen 2000 \\
+            --fastq_maxlen 2999 \\
             --fastqout_discarded ${{toolong}} \\
             --fastqout ${{fastq}}\\
             --fastaout - |
