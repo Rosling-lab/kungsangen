@@ -251,7 +251,7 @@ iqtree <- function(aln, ncpu, log = "") {
   alndir <- dirname(aln)
   alnext <- sub(".+\\.", "", basename(aln))
   tempaln <- file.path(alndir, paste(commandhash, alnext, sep = "."))
-  file.symlink(aln, tempaln)
+  file.symlink(basename(aln), tempaln)
   on.exit(unlink(tempaln))
 
   # now add the alignment name and the cpu specification
