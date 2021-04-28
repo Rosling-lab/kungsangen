@@ -233,22 +233,47 @@ align_mafft_ginsi <- function(seqs, out_file, ncpu, log = "") {
   out_file
 }
 
-# ML tree with IQtree
+iqtree_extensions <- c("treefile", "iqtree", "mldist", "contree", "log", "model.gz", "splits.nex")
+
+# ML tree with IQ-TREE
 iqtree <- function(aln, ncpu, log = "") {
   args <- c(
-    "-s", aln,
-    "-T", "AUTO",
-    "-ntmax", ncpu, # max number of CPUs, it will use less if it needs less.
     "-seed", .Random.seed[1],
     "-m", "MFP", # model finder plus
     "-B", "1000" # 1000 ultrafast bootstrap
   )
-  stopifnot(system2("iqtree", args = args, stdout = log) == 0)
-  paste(
-    aln,
-    c("treefile", "iqtree", "mldist", "contree", "log", "model.gz", "splits.nex"),
-    sep = "."
+  # IQ-TREE will auto-resume or just return the old result if called again
+  # with the same output prefix.  Generate an output prefix which is unique to
+  # the alignment and args (but not necessarily the number of cores)
+
+  alnhash <- tools::md5sum(aln)
+  commandhash <- digest::digest(c(alnhash, args))
+  alndir <- dirname(aln)
+  alnext <- sub(".+\\.", "", basename(aln))
+  tempaln <- file.path(alndir, paste(commandhash, alnext, sep = "."))
+  file.symlink(aln, tempaln)
+  on.exit(unlink(tempaln))
+
+  # now add the alignment name and the cpu specification
+  args <- c(
+    args,
+  "-s", aln,
+  "-T", ncpu # max number of CPUs, it might not use them efficiently
   )
+
+  # check that all the output files exist; if not force IQ-TREE to run
+  tempfiles <- paste(tempaln, iqtree_extensions, sep = ".")
+  if (!all(file.exists(tempfiles))) args <- c(args, "-redo")
+
+  stopifnot(
+    system2("iqtree", args = args, stdout = log) == 0 ||
+      any(grepl("indicates that a previous run successfully finished", readLines(log)))
+  )
+
+  # make links from the temp files to the output files.
+  outfiles <- paste(aln, iqtree_extensions, sep = ".")
+  unlink(outfiles)
+  file.link(tempfiles, outfiles)
 }
 
 #### Unite SH clustering ####
