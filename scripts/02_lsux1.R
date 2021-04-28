@@ -34,7 +34,7 @@ lsux_plan <-
                 cm_32 = cm_32S_trunc,
                 # include ITS1
                 ITS1 = TRUE,
-                cpu = 8,
+                cpu = local_cpus(),
                 # allow 2 Gb ram (per process)
                 mxsize = 2048
             ) %>%
