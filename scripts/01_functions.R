@@ -246,7 +246,7 @@ iqtree <- function(aln, ncpu, log = "") {
   stopifnot(system2("iqtree", args = args, stdout = log) == 0)
   paste(
     aln,
-    c("treefile", "iqtree", "log", "model", "splits.nex"),
+    c("treefile", "iqtree", "mldist", "contree", "log", "model.gz", "splits.nex"),
     sep = "."
   )
 }
