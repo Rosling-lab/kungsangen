@@ -257,7 +257,7 @@ iqtree <- function(aln, ncpu, log = "") {
   # now add the alignment name and the cpu specification
   args <- c(
     args,
-  "-s", aln,
+  "-s", tempaln,
   "-T", ncpu # max number of CPUs, it might not use them efficiently
   )
 
