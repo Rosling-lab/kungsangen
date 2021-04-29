@@ -291,6 +291,7 @@ iqtree <- function(aln, ncpu, log = "") {
   outfiles <- paste(aln, iqtree_extensions, sep = ".")
   unlink(outfiles)
   file.link(tempfiles, outfiles)
+  outfiles
 }
 
 #### Unite SH clustering ####
