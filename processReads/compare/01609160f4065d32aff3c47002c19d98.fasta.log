@@ -1,0 +1,1576 @@
+IQ-TREE multicore version 2.0.3 for Linux 64-bit built Dec 20 2020
+Developed by Bui Quang Minh, Nguyen Lam Tung, Olga Chernomor,
+Heiko Schmidt, Dominik Schrempf, Michael Woodhams.
+
+Host:    r260.uppmax.uu.se (AVX2, FMA3, 125 GB RAM)
+Command: iqtree -seed 10403 -m MFP -B 1000 -s processReads/compare/01609160f4065d32aff3c47002c19d98.fasta -T 20 -redo
+Seed:    10403 (Using SPRNG - Scalable Parallel Random Number Generator)
+Time:    Thu Apr 29 01:46:25 2021
+Kernel:  AVX+FMA - 20 threads (20 CPU cores detected)
+
+Reading alignment file processReads/compare/01609160f4065d32aff3c47002c19d98.fasta ... Fasta format detected
+Alignment most likely contains DNA/RNA sequences
+Alignment has 1299 sequences with 3375 columns, 2511 distinct patterns
+1919 parsimony-informative, 430 singleton sites, 1026 constant sites
+                   Gap/Ambiguity  Composition  p-value
+   1  1996e147_69915e95   63.91%    passed     99.02%
+   2  f26db9ee_c5f5073f   66.37%    failed      4.65%
+   3  012b627c_33747117   64.39%    passed     80.43%
+   4  875ce11a_bce60bcd   64.09%    passed     86.85%
+   5  875ce11a_e9f65bf7   64.12%    passed     85.04%
+   6  095adeac_d0a20c39   64.36%    passed     58.28%
+   7  fd147a0c_8f2fc002   63.82%    passed     45.28%
+   8  e7141f68_4362243c   63.70%    passed     75.65%
+   9  fe1a74f4_44886a5c   63.64%    passed     35.67%
+  10  625595ae_a38487c1   63.38%    passed     44.78%
+  11  625595ae_b6b735e0   63.38%    passed     41.11%
+  12  8d2a0167_2d4e0907   64.03%    passed     82.45%
+  13  5c8b05f7_f2e1d0ef   64.06%    passed     53.86%
+  14  5c8b05f7_936ffcd3   64.06%    passed      9.64%
+  15  00864851_ed5cfa18   61.72%    failed      0.00%
+  16  00864851_f11089ed   61.75%    failed      0.00%
+  17  2346f16a_71fd860d   62.07%    failed      0.00%
+  18  bad81d24_9c8f6918   61.54%    failed      0.90%
+  19  bad81d24_ab21558f   61.60%    failed      1.03%
+  20  04baa90e_f02fee99   62.58%    passed      7.11%
+  21  b1ec9830_01187111   62.61%    passed     13.27%
+  22  552d6e54_2bad8a9b   61.99%    passed      9.05%
+  23  552d6e54_625188ed   61.99%    passed      8.08%
+  24  552d6e54_79cacd94   62.07%    passed      6.66%
+  25  552d6e54_97c05179   62.07%    passed      5.93%
+  26  552d6e54_56ae01ca   62.07%    passed      6.66%
+  27  552d6e54_d69e8348   62.16%    passed      6.92%
+  28  f6db733d_ea6b015c   62.31%    failed      0.00%
+  29  d5ab3f5f_a3df54a8   61.90%    failed      0.00%
+  30  d5ab3f5f_38efd47b   61.81%    failed      0.00%
+  31  d5ab3f5f_67078b57   61.84%    failed      0.00%
+  32  1eff0f7d_de5b77b8   62.22%    failed      1.91%
+  33  1eff0f7d_47762eff   62.25%    failed      2.58%
+  34  1eff0f7d_52f36ae3   62.28%    failed      4.01%
+  35  ef0d20eb_e6521f19   61.93%    passed      8.12%
+  36  1571976c_911f248d   60.77%    failed      0.02%
+  37  49dc7c54_964fc985   61.63%    failed      0.00%
+  38  f50c8b33_a3e6e561   61.51%    failed      0.11%
+  39  f50c8b33_95e26bc5   61.07%    failed      0.03%
+  40  f50c8b33_f5bab26c   61.04%    failed      0.04%
+  41  505cc2b3_84a5e5ec   61.27%    passed     32.96%
+  42  df012950_6bcf730b   62.04%    passed     75.72%
+  43  df012950_db1b580b   61.87%    failed      0.21%
+  44  df012950_103883ec   62.10%    failed      0.11%
+  45  df012950_6f0f797f   61.72%    failed      0.00%
+  46  d75d90cb_2eea387e   62.07%    failed      0.00%
+  47  d75d90cb_cc32eac6   62.04%    failed      0.00%
+  48  e2356c11_9293aaed   61.72%    passed     20.58%
+  49  9824a040_03b4fcc4   61.75%    failed      0.08%
+  50  9824a040_5bf06100   61.72%    failed      0.09%
+  51  9498573e_3b97cf95   62.19%    failed      0.01%
+  52  b3f56092_894e1d2a   62.40%    failed      0.03%
+  53  b3f56092_9987243a   62.31%    failed      0.01%
+  54  b3f56092_ddb80aca   62.34%    failed      0.03%
+  55  b3f56092_c71deb95   62.34%    failed      0.02%
+  56  b3f56092_822158d8   62.28%    failed      0.01%
+  57  c0c0163d_61f03cdb   62.13%    passed      8.27%
+  58  a107251c_c1f5a076   60.86%    failed      0.03%
+  59  c2853441_2e27c324   61.93%    failed      0.95%
+  60  c2853441_2a5bedda   61.78%    failed      2.50%
+  61  429c4fb5_98bebe09   64.44%    passed     13.83%
+  62  429c4fb5_4de443b8   64.47%    passed     12.64%
+  63  429c4fb5_772f2480   64.50%    passed     11.52%
+  64  429c4fb5_e3f5af34   64.47%    passed     13.55%
+  65  f56bb125_63a76e2b   69.45%    passed     43.73%
+  66  f56bb125_68495093   69.81%    passed     45.31%
+  67  9802a648_88b5cf1a   69.57%    passed     44.26%
+  68  b9bc627f_2e788448   69.78%    passed     51.11%
+  69  b9bc627f_ed4de251   70.01%    passed     34.49%
+  70  a7658d84_26b6038b   66.31%    failed      0.00%
+  71  b54ea4ce_337f233e   66.76%    failed      0.00%
+  72  23270d30_2098bedc   67.44%    failed      0.00%
+  73  37188b79_9227f251   64.27%    passed     36.74%
+  74  4e3c94be_65522b4a   64.59%    passed     83.42%
+  75  7e8672c0_4ff6b8a5   64.56%    passed     73.28%
+  76  ba47718e_fbf9426f   65.36%    passed     73.27%
+  77  025c9dfe_96cde0fe   64.86%    passed     28.89%
+  78  025c9dfe_20f6989a   64.86%    passed     25.98%
+  79  d9381f47_ce06b327   64.53%    passed     88.49%
+  80  a562559e_bc8c9181   65.13%    passed     42.10%
+  81  f616c846_232f7282   65.16%    passed     38.11%
+  82  138b224d_1ff81781   64.06%    passed     93.83%
+  83  1ed23b9d_4589640b   64.39%    failed      0.00%
+  84  d534a5e1_3a847599   64.65%    passed     13.09%
+  85  2d8be9d4_d9dbbdf1   65.13%    passed     39.76%
+  86  afd31d99_3436d130   66.22%    passed     97.06%
+  87  2ee8d47c_654b7acf   66.19%    passed     98.55%
+  88  257e93d0_a1e91f08   66.90%    passed     97.99%
+  89  cfc1e484_83c3cb0d   65.99%    passed     89.51%
+  90  04c8cd03_3710fa95   66.04%    passed     65.96%
+  91  cfc1e484_4eb1bb7a   65.93%    passed     69.83%
+  92  25899c3a_f1a47113   65.84%    passed     86.46%
+  93  25899c3a_e9be3de3   65.84%    passed     89.42%
+  94  25899c3a_4e719b9d   65.90%    passed     86.57%
+  95  25899c3a_f005eb25   65.96%    passed     75.70%
+  96  209608da_5ed9726c   65.96%    passed     91.67%
+  97  e882aa59_254286c7   65.96%    passed     78.47%
+  98  e882aa59_d8c24d8c   65.84%    passed     85.13%
+  99  e882aa59_dd7ab433   65.87%    passed     91.31%
+ 100  e882aa59_d900da82   66.04%    passed     48.71%
+ 101  d491acda_34b00730   65.93%    passed     35.88%
+ 102  d491acda_249198c1   65.93%    passed     35.42%
+ 103  d491acda_d6de4594   65.93%    passed     39.14%
+ 104  604efce6_6fd3d677   66.01%    passed     85.07%
+ 105  d8b151ea_ed28f6ee   65.96%    passed     31.75%
+ 106  c20c9346_cf13757c   65.96%    passed     86.05%
+ 107  c20c9346_1e2c3fde   65.96%    passed     89.89%
+ 108  c20c9346_92fda9a3   65.96%    passed     86.99%
+ 109  1f6299a7_c8ad6c71   66.01%    passed     95.81%
+ 110  c704ed01_b1e6fbb2   66.01%    passed     95.31%
+ 111  e882aa59_ba59e684   66.07%    passed     80.31%
+ 112  3ad64771_00c21bd1   65.99%    passed     59.19%
+ 113  109e951c_a6f7add1   66.01%    passed     77.43%
+ 114  109e951c_bcdff21d   66.01%    passed     73.28%
+ 115  e882aa59_da1793e4   65.96%    passed     70.01%
+ 116  e882aa59_07bbdefd   66.01%    passed     78.13%
+ 117  e882aa59_e20e1951   66.01%    passed     80.87%
+ 118  ecfe4d87_72b5b84c   66.34%    passed     84.19%
+ 119  4c151440_b42a45b4   66.34%    failed      0.35%
+ 120  b25fba23_012fa3a0   67.79%    passed     76.45%
+ 121  b25fba23_c7c51414   67.79%    passed     76.45%
+ 122  b25fba23_afdec968   67.79%    passed     85.28%
+ 123  ecc9a402_030374fa   67.59%    passed     31.89%
+ 124  da6d1f7c_98b47cb9   67.73%    passed     93.31%
+ 125  da6d1f7c_f5dec552   67.73%    passed     94.41%
+ 126  e5ea7d3e_999c6a04   67.35%    passed     73.93%
+ 127  ae8faf1c_b4fa503c   66.40%    passed     42.50%
+ 128  315ae9d4_cc719e2e   66.55%    passed     70.14%
+ 129  a8a7ea09_fa8c840b   68.41%    failed      2.51%
+ 130  3eb1f1f1_e2bdca3a   68.59%    passed     18.42%
+ 131  4f2ceab7_48171253   68.59%    passed     41.67%
+ 132  4f2ceab7_c42db528   68.59%    passed     36.74%
+ 133  f28b0ca4_722d0257   68.50%    passed     55.30%
+ 134  f28b0ca4_66704d4c   68.50%    passed     50.01%
+ 135  e5247857_5eb59c23   67.88%    passed     81.74%
+ 136  59237646_d5bcde2f   68.00%    failed      0.17%
+ 137  fa354f97_7323fe96   68.39%    failed      0.81%
+ 138  1ef447a5_abc6cdbf   67.29%    failed      0.20%
+ 139  03a802f0_a5197a7b   66.81%    failed      0.19%
+ 140  b5e17804_e07cb0da   66.84%    failed      0.18%
+ 141  fba75920_1ccc516f   64.50%    failed      4.96%
+ 142  f308e8dd_9632854f   64.65%    failed      0.05%
+ 143  704ab257_eb3a9710   65.27%    passed      6.01%
+ 144  361ba850_84bcf06a   66.22%    passed     24.94%
+ 145  568ceb64_75f22615   67.47%    failed      0.48%
+ 146  4a22a1d0_4e621e34   67.08%    passed      5.02%
+ 147  dc0ca243_96d92081   69.27%    failed      0.07%
+ 148  54fb1d2d_eadfea5c   69.27%    failed      1.03%
+ 149  ff59c3e3_f5e142f4   69.75%    passed     77.52%
+ 150  85f708e8_3867072d   72.47%    passed     13.43%
+ 151  85f708e8_24ddc489   72.50%    passed     10.33%
+ 152  85f708e8_5f907905   72.47%    passed      6.25%
+ 153  84d8111d_b67c9cea   69.27%    failed      0.55%
+ 154  c8f85f5e_edf3d89a   67.35%    passed     22.73%
+ 155  17df75d6_5a97007b   67.29%    passed      5.89%
+ 156  f0378ebf_3d6daa15   68.89%    passed     94.79%
+ 157  1637ee33_f79c002b   68.95%    passed     28.42%
+ 158  c244b566_9ea6b7b8   68.65%    passed     31.35%
+ 159  391c8c42_6f3cdbad   68.83%    passed     49.53%
+ 160  6816ebfc_d3486576   68.59%    passed     41.55%
+ 161  23d3a96f_60346152   68.89%    passed     90.95%
+ 162  2e58ed16_beb59d43   68.89%    passed     75.03%
+ 163  3cfa3cba_ec24b2c4   68.89%    passed     64.03%
+ 164  70df1bf4_f23a3dce   68.89%    passed     78.23%
+ 165  3cfa3cba_a0ba9447   68.89%    passed     63.93%
+ 166  ae598bf1_c7c1c6e0   68.86%    passed     91.07%
+ 167  73734537_2628c8b6   68.89%    passed     93.88%
+ 168  622d57ff_e0738a45   68.92%    passed     88.66%
+ 169  fb77e8b1_6a9a0096   68.89%    passed     91.41%
+ 170  89eeb51b_65efff16   68.83%    passed     77.04%
+ 171  18c9f942_2252012c   68.86%    passed     76.79%
+ 172  b9649247_979a92d0   68.89%    passed     36.91%
+ 173  e49532d1_54fc21fd   68.95%    passed     24.20%
+ 174  39aacb73_801d0a6c   68.24%    passed     75.36%
+ 175  5273c826_fc19caa4   68.12%    failed      0.06%
+ 176  62cf8384_d582422e   68.27%    failed      0.09%
+ 177  f910b810_e7bbff9a   68.50%    failed      0.04%
+ 178  05913108_6fe9445a   69.13%    passed     91.41%
+ 179  26e163d8_5e9c5cd7   68.65%    passed     90.96%
+ 180  d3dc5c62_f8a79760   66.87%    failed      0.32%
+ 181  2d00a3d6_065a1580   66.81%    failed      0.01%
+ 182  3e58987f_a216a2d9   65.72%    failed      0.11%
+ 183  0324c662_b0eb1f30   65.13%    passed     67.96%
+ 184  e56870fb_8fe6bb8b   71.23%    failed      0.00%
+ 185  f56a75d5_4cde0f51   61.13%    failed      0.00%
+ 186  08c66f65_3fb7fb28   69.07%    failed      0.00%
+ 187  e5e351e7_7291df69   62.25%    failed      3.68%
+ 188  e5e351e7_9f8f63be   62.25%    passed      7.45%
+ 189  74f0ebc9_e65ed123   67.41%    passed     46.41%
+ 190  861abb5d_ccd5b44e   67.41%    passed     28.81%
+ 191  861abb5d_5aa1260c   58.37%    passed     46.30%
+ 192  8c983d62_b0f1ae08   67.41%    passed     30.79%
+ 193  56038c41_5cc33e16   67.41%    passed     33.66%
+ 194  56038c41_e56eefee   67.41%    passed     70.57%
+ 195  74f0ebc9_6001636a   67.41%    passed     24.63%
+ 196  74f0ebc9_e9dd9127   67.41%    passed     14.59%
+ 197  74f0ebc9_24bcde9e   67.41%    passed     17.75%
+ 198  56038c41_156deaf5   67.41%    passed     14.59%
+ 199  74f0ebc9_d4af801d   67.41%    passed     18.49%
+ 200  31c792ab_e2e61536   67.41%    passed     20.24%
+ 201  74f0ebc9_156deaf5   67.41%    passed     16.15%
+ 202  74f0ebc9_21d2d2a2   67.41%    passed     18.49%
+ 203  74f0ebc9_7da1438a   67.41%    passed     31.55%
+ 204  74f0ebc9_7f7433f1   67.41%    passed     32.63%
+ 205  47eb48d5_38bd2722   69.99%    passed     24.19%
+ 206  47eb48d5_a283bf87   69.93%    passed     60.44%
+ 207  55af30a9_3f7a88de   63.61%    failed      0.40%
+ 208  47f5b128_998bc4ad   63.47%    failed      0.40%
+ 209  47f5b128_71a3b6b0   63.47%    failed      0.46%
+ 210  21cc35d4_1ea5dc50   65.45%    failed      0.40%
+ 211  bbb595cb_87f2efb4   66.07%    failed      2.46%
+ 212  dce16779_e3bda676   64.95%    failed      1.01%
+ 213  14228205_9d87eda0   65.21%    failed      0.82%
+ 214  14228205_b7a2ae3a   65.24%    failed      0.46%
+ 215  6b37740a_705f5d2e   66.40%    passed     97.26%
+ 216  4b2827c2_d19615eb   62.93%    failed      0.01%
+ 217  5d8932da_03596e7e   70.79%    failed      0.00%
+ 218  5adef154_d89e61d1   70.84%    failed      1.08%
+ 219  da6a2611_c04570b9   70.84%    failed      0.90%
+ 220  016a0904_cad720d0   70.19%    failed      3.21%
+ 221  3694c1e0_9ab49fb0   70.19%    failed      4.09%
+ 222  a7a3296c_32bd4292   70.10%    passed     33.85%
+ 223  1461dbdc_4588c784   66.87%    passed     83.06%
+ 224  c3214e3b_1d2ea026   66.25%    passed     35.24%
+ 225  0966247f_ebbf0c90   66.84%    passed     52.82%
+ 226  0966247f_810d06cb   66.79%    passed     70.20%
+ 227  0966247f_68479492   66.79%    passed     69.77%
+ 228  33629c70_46e693ab   66.52%    passed     79.21%
+ 229  af04d0f4_34a027d1   65.90%    failed      0.83%
+ 230  9f4a6b48_6e332a6e   66.84%    failed      0.33%
+ 231  76cba479_39cb7100   66.84%    failed      0.15%
+ 232  dc31a50b_14fe41b2   69.66%    passed     18.59%
+ 233  316bec5c_d191c308   68.89%    passed     13.39%
+ 234  a96aeb56_98cb1f40   69.75%    passed      9.48%
+ 235  a96aeb56_4525025d   69.90%    passed     18.36%
+ 236  6340c483_0f656184   66.84%    passed     28.59%
+ 237  56612541_6cece681   66.90%    passed     57.18%
+ 238  56612541_dcda775f   66.87%    passed     56.40%
+ 239  56612541_10197997   66.84%    passed     47.01%
+ 240  56612541_29a90de0   66.84%    passed     50.46%
+ 241  56612541_47d3fdf3   66.87%    passed     62.93%
+ 242  56612541_5a100a0a   66.84%    passed     68.10%
+ 243  57a74460_b8c18a63   67.79%    passed     92.40%
+ 244  57a74460_eff490b4   67.61%    passed     91.08%
+ 245  57a74460_bcf5ec98   67.59%    passed     89.60%
+ 246  5e5d7bd9_770414a2   67.64%    passed     42.86%
+ 247  9f92c0cc_a02353c2   67.73%    passed     50.75%
+ 248  9f92c0cc_c8b99f53   67.73%    passed     54.79%
+ 249  451f06d8_ee2d4b19   66.70%    failed      0.00%
+ 250  152fa421_d75f658d   66.79%    failed      0.69%
+ 251  2d909676_bc0fde73   67.73%    failed      0.12%
+ 252  2d909676_160747f9   67.82%    failed      0.45%
+ 253  9c7ac5a8_29cee2dd   66.81%    passed     69.26%
+ 254  cfb19096_aba57812   64.83%    passed     86.27%
+ 255  325414a5_125a1b7a   64.68%    failed      0.03%
+ 256  3d5a78a8_7c961bd1   67.14%    passed      9.04%
+ 257  84879d37_5e3517f0   67.32%    passed     41.73%
+ 258  fd2580eb_e12ed32f   67.14%    passed      5.58%
+ 259  6b7f9b29_a001674e   67.14%    passed     37.64%
+ 260  7b1035b9_a41ad228   67.14%    passed     31.26%
+ 261  7b1035b9_d872a9e0   67.11%    passed     40.23%
+ 262  19e77396_b516907b   69.84%    failed      0.08%
+ 263  3047d7b4_3f777930   69.93%    passed      6.04%
+ 264  b6c2f51e_8827228a   69.96%    failed      3.28%
+ 265  736c9429_202ab564   69.96%    failed      2.87%
+ 266  e4a8a3f5_a6a69f9c   69.96%    passed      5.38%
+ 267  b6c2f51e_b95e014a   69.96%    failed      4.66%
+ 268  365a60b9_dc7779e2   70.10%    passed      7.44%
+ 269  947c08ab_0eea891e   70.10%    passed      6.41%
+ 270  0271ca8c_0eea891e   70.10%    passed      7.50%
+ 271  c8a05c68_98e19365   69.75%    passed      6.81%
+ 272  c8a05c68_4b4522d6   69.75%    passed     11.80%
+ 273  2eb2cde9_007ddf2a   69.75%    failed      3.07%
+ 274  2eb2cde9_7b04d194   69.75%    failed      3.55%
+ 275  2eb2cde9_53846128   69.75%    failed      3.16%
+ 276  2eb2cde9_f5fb1919   69.78%    failed      2.89%
+ 277  2eb2cde9_f9caa065   69.78%    failed      2.88%
+ 278  2eb2cde9_089eb62a   69.78%    failed      2.38%
+ 279  2eb2cde9_292fd37d   69.78%    failed      3.37%
+ 280  c89f480f_a8e26fa0   69.75%    passed      9.04%
+ 281  c8a05c68_3071853a   69.69%    failed      4.35%
+ 282  cd9dd3cd_db212e4d   69.78%    passed      7.51%
+ 283  c89f480f_78c4d256   69.78%    failed      2.79%
+ 284  8527c0be_8f76eaa7   70.37%    failed      4.93%
+ 285  0a43aafa_c7fdc786   70.37%    failed      4.33%
+ 286  1455925d_165bb236   70.40%    failed      4.81%
+ 287  1455925d_4207cd12   70.40%    passed      5.40%
+ 288  1455925d_4ee263f3   70.43%    passed      5.67%
+ 289  01866874_520a057b   68.95%    failed      0.00%
+ 290  39ec7f43_b94d6e6a   68.95%    failed      0.00%
+ 291  da3c4bab_c89c0535   68.95%    failed      0.04%
+ 292  da3c4bab_2ccba480   68.95%    failed      0.04%
+ 293  6486cb4a_04c0a103   68.95%    failed      0.04%
+ 294  e40970c9_2555c047   68.89%    failed      0.00%
+ 295  4d1f435d_13b004e4   68.89%    failed      0.00%
+ 296  b29b68ec_13b004e4   68.89%    failed      0.00%
+ 297  b29b68ec_39e311cb   68.89%    failed      0.00%
+ 298  b29b68ec_1007ab1e   68.89%    failed      0.01%
+ 299  b29b68ec_22c7f32d   68.89%    failed      0.00%
+ 300  b29b68ec_9b246ae4   68.89%    failed      0.01%
+ 301  23692ebf_94fa9a77   66.99%    failed      0.65%
+ 302  062c8c98_a6282fae   66.93%    failed      0.49%
+ 303  5334340e_56842ee3   67.23%    passed     13.95%
+ 304  3ca4f6d3_7016c76d   67.05%    passed     11.49%
+ 305  f9424926_542d1257   67.11%    passed     85.18%
+ 306  59fce84e_77fcc8cf   66.16%    passed     35.33%
+ 307  d6e1fdc8_cd4703b5   67.23%    passed     52.23%
+ 308  fdc89b27_cb148e32   67.23%    passed     29.26%
+ 309  fdc89b27_4f1e258a   67.23%    passed     26.07%
+ 310  2b68be15_df1eb965   67.20%    passed     27.84%
+ 311  8ab3ed9b_f6de77c9   67.14%    passed     29.23%
+ 312  766400be_370b6fd9   66.99%    passed     34.11%
+ 313  7699bfbb_690a00d5   66.84%    passed     55.65%
+ 314  24e234ad_ce3d5c55   66.81%    passed     80.58%
+ 315  0841ed1d_54ae2abd   66.73%    passed      7.73%
+ 316  0841ed1d_0af74dec   66.73%    passed     17.16%
+ 317  61fdaeda_5d5f50ac   66.93%    passed     38.43%
+ 318  03efb268_53f9a085   66.04%    passed     96.43%
+ 319  03efb268_fc9282fb   66.04%    passed     94.97%
+ 320  6bade734_c3a78e4b   66.37%    passed     22.07%
+ 321  6bade734_2b12a144   66.37%    passed     16.37%
+ 322  19482f17_444ba33f   66.34%    passed     61.16%
+ 323  35ec8be5_f335183c   66.40%    passed     76.54%
+ 324  a80a901a_d4784306   66.40%    passed     24.10%
+ 325  bebe29dc_784fea7b   66.37%    passed     97.97%
+ 326  ccd7b674_2607809e   66.43%    passed     34.95%
+ 327  37dc4357_96611ac0   66.37%    passed     69.19%
+ 328  37dc4357_cbc3f96c   66.37%    passed     82.25%
+ 329  37dc4357_0d705ec0   66.40%    passed     83.04%
+ 330  a39f462e_1d2b06bd   66.37%    passed      9.31%
+ 331  2c99eb09_fec68240   66.49%    passed      6.30%
+ 332  19482f17_37d411f7   66.40%    passed     16.41%
+ 333  0b185860_3fa29964   67.05%    failed      2.23%
+ 334  26774909_021a9e63   69.78%    failed      0.25%
+ 335  4e39c7da_bb837a63   70.49%    failed      3.39%
+ 336  b64ae109_a98d3f7b   70.28%    passed     12.35%
+ 337  98bd42f5_a978bb12   70.28%    passed     17.65%
+ 338  98bd42f5_32c35405   70.28%    passed     18.62%
+ 339  b270a94f_0211c1ca   65.42%    failed      0.54%
+ 340  c5683bfd_f25a3d7f   66.90%    passed     19.80%
+ 341  4d4bf957_efd32484   67.02%    passed     26.87%
+ 342  8d9c5163_0253ef72   66.84%    failed      1.85%
+ 343  6d57baa7_0b43469c   66.99%    failed      4.16%
+ 344  d0f245bf_695a2c18   66.99%    failed      3.47%
+ 345  d0f245bf_4d2559b5   66.99%    failed      4.90%
+ 346  b81cbca2_89cec4b4   67.02%    failed      4.35%
+ 347  b81cbca2_3a998bd2   67.02%    passed      9.89%
+ 348  32323814_5f6ca6df   67.02%    failed      2.82%
+ 349  d19e3218_89894edc   67.02%    failed      3.62%
+ 350  42b86c47_38184c9b   67.35%    failed      3.67%
+ 351  4c013652_e815906b   67.14%    passed      8.92%
+ 352  2b070737_7f884503   66.99%    failed      3.06%
+ 353  76c63a67_c2032b23   67.02%    failed      2.72%
+ 354  76c63a67_79d99311   67.02%    failed      2.19%
+ 355  76c63a67_4b4c2670   67.02%    failed      1.96%
+ 356  9290dca0_adc2b8e5   66.76%    passed      9.33%
+ 357  11be42c5_55ead185   66.61%    failed      0.42%
+ 358  11be42c5_4dff266a   66.64%    failed      0.45%
+ 359  eefabc05_9ff9e938   66.22%    failed      0.10%
+ 360  eefabc05_c5258cd7   66.31%    failed      0.12%
+ 361  cd07f4dc_fe6508f2   66.76%    failed      0.01%
+ 362  bb6e3d7b_0e0e8e1e   67.05%    failed      3.13%
+ 363  1972e55a_851d9af7   64.59%    passed     94.78%
+ 364  1972e55a_4f2c0e86   64.59%    passed     94.00%
+ 365  c6f3a3ee_3119766e   66.79%    passed     29.77%
+ 366  fc9ac2c1_29cc26c4   66.81%    passed     89.79%
+ 367  c6f3a3ee_ec6392ea   66.79%    passed     99.23%
+ 368  c6f3a3ee_141b60f2   66.79%    passed     98.42%
+ 369  c6f3a3ee_82c22689   66.76%    passed     98.78%
+ 370  776c4b05_60d52a82   67.14%    failed      4.60%
+ 371  5d224984_3d825a2c   66.96%    passed      5.64%
+ 372  619f6a9b_982dc335   66.96%    passed      9.74%
+ 373  619f6a9b_79429698   66.96%    passed     21.09%
+ 374  619f6a9b_f7adb7eb   66.96%    passed     27.10%
+ 375  93539a98_b1f5daeb   64.65%    passed      9.38%
+ 376  90d0332a_bfb72c4f   64.21%    passed     40.64%
+ 377  90d0332a_f2cf1d4c   64.21%    passed     33.92%
+ 378  90d0332a_73da2224   64.21%    passed     31.60%
+ 379  90d0332a_d2d22732   64.21%    passed     35.33%
+ 380  90d0332a_045541ec   64.24%    passed     33.12%
+ 381  90d0332a_1c6c1ea6   64.21%    passed     29.05%
+ 382  ef4ef277_4fd9a116   64.92%    passed     50.27%
+ 383  ad6db26a_8756ffb1   64.80%    failed      0.12%
+ 384  ad6db26a_72760e16   64.77%    failed      0.09%
+ 385  ad6db26a_a8239239   64.77%    failed      0.06%
+ 386  aef37e32_7d79ff88   64.74%    passed     36.96%
+ 387  aef37e32_48954fca   64.74%    passed     33.66%
+ 388  aef37e32_d4338215   64.74%    passed     30.82%
+ 389  753543e4_21326f4b   64.77%    passed     16.53%
+ 390  753543e4_041cd955   64.77%    passed      9.99%
+ 391  753543e4_59ce548d   64.77%    passed     11.50%
+ 392  753543e4_ac13b162   64.77%    passed     14.56%
+ 393  753543e4_f864a215   64.77%    passed     15.18%
+ 394  ad6db26a_d7c3d1c4   59.14%    failed      0.18%
+ 395  ad6db26a_2cd9c63f   64.77%    failed      3.74%
+ 396  ad6db26a_b3514804   64.77%    failed      3.92%
+ 397  ad6db26a_652c3641   64.77%    failed      4.50%
+ 398  ad6db26a_d0e36ea2   65.07%    failed      3.19%
+ 399  ad6db26a_020d9c64   64.77%    failed      4.53%
+ 400  ad6db26a_9f8aa3ed   64.80%    failed      2.02%
+ 401  ad6db26a_55a44621   64.80%    failed      1.69%
+ 402  ad6db26a_290a4a74   64.80%    failed      3.18%
+ 403  ad6db26a_0a7f001b   64.80%    failed      1.42%
+ 404  ad6db26a_ac74e93e   64.77%    failed      3.20%
+ 405  ad6db26a_709c388d   64.77%    failed      4.32%
+ 406  ad6db26a_9434c90a   64.77%    failed      3.29%
+ 407  ad6db26a_786123cc   64.77%    failed      2.97%
+ 408  ad6db26a_069f9334   64.74%    failed      3.90%
+ 409  ad6db26a_53462fdf   64.74%    failed      4.30%
+ 410  ad6db26a_bf021311   65.66%    failed      3.21%
+ 411  ad6db26a_4011fc4d   64.74%    passed      6.22%
+ 412  ad6db26a_906b7e62   64.74%    failed      3.90%
+ 413  ad6db26a_745624c6   64.74%    failed      3.90%
+ 414  ad6db26a_116af4fc   64.71%    failed      2.93%
+ 415  ad6db26a_cb9c11ef   64.71%    failed      3.47%
+ 416  ad6db26a_37cb9540   64.71%    failed      3.47%
+ 417  ad6db26a_91ecbbf4   64.71%    failed      3.47%
+ 418  ad6db26a_e268bc73   64.71%    failed      3.47%
+ 419  ad6db26a_d9fd5e25   64.71%    failed      2.79%
+ 420  ad6db26a_1c89d485   64.71%    failed      2.79%
+ 421  ad6db26a_62ac138d   64.71%    failed      2.35%
+ 422  ad6db26a_6267a076   64.71%    failed      3.47%
+ 423  ad6db26a_f221bbee   64.71%    failed      2.96%
+ 424  ad6db26a_a27ad0b7   64.71%    failed      3.47%
+ 425  a3493660_2b75987a   64.71%    failed      0.08%
+ 426  ad6db26a_dfae6de9   64.71%    failed      2.35%
+ 427  70a7c3f2_b7636806   64.68%    passed     82.45%
+ 428  a1ed7d63_53cbaaaa   64.03%    failed      0.00%
+ 429  a1ed7d63_02a6eb88   64.03%    failed      0.00%
+ 430  e9d356c2_0b6940fe   66.37%    failed      1.71%
+ 431  6f5d1f2b_ffdd2e26   65.99%    passed      9.13%
+ 432  6f5d1f2b_613f8597   65.99%    passed      8.77%
+ 433  640e077e_ca975b82   63.61%    failed      1.86%
+ 434  3bb53d05_d9e13a4c   65.30%    passed     97.46%
+ 435  963e77db_57007d8c   66.16%    failed      0.54%
+ 436  51802753_adc3ea41   65.87%    passed     86.87%
+ 437  9633e268_68797951   65.96%    passed     62.65%
+ 438  9633e268_a58cb7af   65.96%    passed     46.85%
+ 439  9633e268_c89946d6   66.01%    passed     59.08%
+ 440  9633e268_5b49f8cd   65.99%    passed     65.39%
+ 441  9633e268_842b51d8   65.96%    passed     63.19%
+ 442  9633e268_49861015   65.96%    passed     67.22%
+ 443  7b5d8d03_d22ffb0d   65.99%    passed     73.20%
+ 444  9633e268_1b3e60d0   65.99%    passed     67.14%
+ 445  15c6b745_92ea0fe3   69.57%    passed     14.11%
+ 446  2f66d7c0_80f00c11   69.45%    passed     18.99%
+ 447  8306e52b_92a2a398   69.33%    passed     20.66%
+ 448  885dd080_2ba936e0   69.72%    failed      0.02%
+ 449  5fc01bb7_5ea9737c   69.30%    failed      0.00%
+ 450  739a1d2d_b10e77be   69.27%    failed      2.39%
+ 451  30ec2829_43f0515d   69.21%    failed      0.28%
+ 452  e9c1d817_78090c09   69.51%    passed     87.60%
+ 453  9041d27b_4f562225   69.48%    passed     90.42%
+ 454  727d7ffe_cc477e79   69.36%    passed     91.35%
+ 455  727d7ffe_6b0ea806   69.42%    passed     90.59%
+ 456  727d7ffe_4b48ec5e   69.42%    passed     90.57%
+ 457  727d7ffe_3c8a36f3   69.42%    passed     93.15%
+ 458  e4bdc3a6_33c7f2f9   69.42%    passed     95.74%
+ 459  4caaddb8_032385c8   68.95%    passed     42.74%
+ 460  4caaddb8_c0e7f75d   69.01%    passed     53.33%
+ 461  4caaddb8_540f1cfd   69.01%    passed     53.50%
+ 462  4caaddb8_eaabd49b   69.01%    passed     48.83%
+ 463  4caaddb8_93b1b9c8   69.07%    passed     82.12%
+ 464  8e97681e_21dff3d3   69.01%    passed     92.92%
+ 465  7dfe289d_006945aa   69.33%    passed     96.20%
+ 466  245954ae_a3431d57   69.24%    failed      0.00%
+ 467  a8bac9bc_ab2aba44   69.42%    passed      5.27%
+ 468  ba44c9aa_add08f3e   70.01%    failed      0.00%
+ 469  ba44c9aa_dc5bb1c7   70.01%    failed      0.00%
+ 470  ba44c9aa_8a377eac   70.01%    failed      0.00%
+ 471  04b17939_b8518cd9   69.81%    failed      0.09%
+ 472  3a1d4fe4_ef99ee34   69.69%    passed     96.23%
+ 473  3a1d4fe4_94f93cd5   69.69%    passed     86.30%
+ 474  3a1d4fe4_08c95be0   69.69%    passed     83.10%
+ 475  f7e1ceb1_86943341   69.84%    failed      0.09%
+ 476  257a20b2_2be42743   69.90%    passed     43.22%
+ 477  f321240d_5a5a09b9   69.90%    passed     54.45%
+ 478  d5c59672_0313301a   69.87%    failed      3.98%
+ 479  d5c59672_21c3b4ca   69.87%    failed      3.72%
+ 480  d5c59672_4a6d6532   69.87%    passed      6.95%
+ 481  53b47db0_22a3106b   69.90%    passed      5.40%
+ 482  06d56ecb_a0855223   69.87%    passed     10.13%
+ 483  24e6a96c_7459e273   69.90%    passed      7.66%
+ 484  b23a34f3_34506134   69.81%    failed      1.73%
+ 485  06d56ecb_50c59749   69.63%    failed      0.53%
+ 486  0a339d31_0afcf7a3   69.84%    passed     40.58%
+ 487  24e6a96c_e3680660   69.69%    passed     23.34%
+ 488  6942bcf8_c1fa3bc2   69.99%    passed     48.97%
+ 489  ef08fbc9_2d6b48fe   69.84%    passed     15.86%
+ 490  b21a0b70_a5258c34   69.81%    passed     73.27%
+ 491  24e6a96c_73d73719   69.87%    passed     59.92%
+ 492  24e6a96c_0686f1ea   69.84%    passed     54.15%
+ 493  06d56ecb_2890bf34   69.84%    passed     62.40%
+ 494  24e6a96c_210c20c4   69.84%    passed     75.18%
+ 495  1d1c4763_c45c3666   69.84%    passed     82.82%
+ 496  1d1c4763_561215c2   69.84%    passed     75.74%
+ 497  2c69c884_db36b72d   69.72%    passed     19.70%
+ 498  d4b154f1_3312bca8   69.99%    passed     26.97%
+ 499  1527c8b5_9365cd36   69.60%    failed      0.42%
+ 500  1527c8b5_078a5b88   69.60%    failed      0.28%
+ 501  1527c8b5_11f68ba5   69.60%    failed      0.42%
+ 502  5bb23514_49467226   69.57%    passed      5.18%
+ 503  33b0ebd6_cb94616a   68.62%    failed      0.00%
+ 504  c39c7cf2_8348525b   69.81%    passed     98.00%
+ 505  367237fe_12a3b4d5   69.93%    passed     93.70%
+ 506  3700607a_73f1bb04   69.57%    passed     99.66%
+ 507  5897e012_a42c9a3b   69.60%    passed     98.26%
+ 508  6e2f62ef_6d2c9cc9   69.57%    passed     90.46%
+ 509  deba4697_6d3e4d97   69.51%    failed      0.02%
+ 510  fcb20f89_3240a691   69.36%    passed     65.29%
+ 511  fbb63483_2e9c8977   69.30%    passed     83.59%
+ 512  e8f2ada9_d626f00c   69.42%    failed      1.93%
+ 513  77fddd49_52d78600   69.42%    failed      0.23%
+ 514  77fddd49_dae6e5e2   69.42%    failed      0.69%
+ 515  15fd7413_bdb723fa   69.51%    passed     61.71%
+ 516  15fd7413_77cdb867   69.51%    passed     64.46%
+ 517  15fd7413_1aafeb05   69.51%    passed     73.61%
+ 518  15fd7413_9edb2dff   69.51%    passed     72.96%
+ 519  15fd7413_6f3b2ed0   69.51%    passed     75.89%
+ 520  15fd7413_f9185acb   69.51%    passed     70.02%
+ 521  4c2af114_d15ab28c   69.51%    passed     57.80%
+ 522  4c2af114_6803d9f6   69.51%    passed     52.43%
+ 523  5c48de9d_c1fcb5d5   69.51%    passed     77.08%
+ 524  4c2af114_f90d6972   69.51%    passed     39.38%
+ 525  857c98cd_888601d9   69.39%    passed     90.84%
+ 526  15fd7413_97a641ba   69.39%    passed     91.98%
+ 527  c84708dd_db85abc4   69.39%    passed     74.31%
+ 528  c84708dd_5f4e15de   69.39%    passed     91.55%
+ 529  c84708dd_723cbfae   69.39%    passed     81.88%
+ 530  c84708dd_1bf6b60c   69.39%    passed     59.92%
+ 531  c84708dd_1b6657f9   69.39%    passed     62.22%
+ 532  c84708dd_a11a5c5e   69.39%    passed     82.36%
+ 533  c84708dd_0f70a8c6   69.39%    passed     82.36%
+ 534  c84708dd_64f384ce   69.39%    passed     80.99%
+ 535  c84708dd_01e1f880   69.39%    passed     84.52%
+ 536  c84708dd_7b0f6d11   69.39%    passed     81.26%
+ 537  c84708dd_86a6273c   69.39%    passed     78.81%
+ 538  c84708dd_e04eeaaf   69.39%    passed     74.86%
+ 539  c84708dd_251ca2c1   69.39%    passed     87.59%
+ 540  c84708dd_ee19df4f   69.39%    passed     88.09%
+ 541  c84708dd_b323e8a7   69.39%    passed     85.46%
+ 542  c84708dd_b81a5f29   69.39%    passed     85.46%
+ 543  c84708dd_69699641   69.39%    passed     85.99%
+ 544  c84708dd_f5c70590   69.39%    passed     88.43%
+ 545  c84708dd_1b26357d   69.39%    passed     88.43%
+ 546  c84708dd_41247c94   69.39%    passed     90.39%
+ 547  c84708dd_c34403fa   69.39%    passed     87.85%
+ 548  c84708dd_32a87722   69.39%    passed     85.94%
+ 549  c84708dd_ab56ebb7   69.39%    passed     92.49%
+ 550  e73c5f62_5373321e   69.39%    passed     95.40%
+ 551  e73c5f62_3c008292   69.39%    passed     91.64%
+ 552  e73c5f62_127e7f39   69.39%    passed     91.86%
+ 553  87a8e6d0_47850dc5   69.39%    passed     92.25%
+ 554  87a8e6d0_a0b97469   69.39%    passed     91.86%
+ 555  87a8e6d0_51fcd270   69.39%    passed     92.25%
+ 556  e73c5f62_86be74dd   69.39%    passed     91.86%
+ 557  e73c5f62_81a0ce33   69.39%    passed     91.86%
+ 558  857c98cd_86f13608   69.39%    passed     89.18%
+ 559  857c98cd_c4745196   69.39%    passed     88.79%
+ 560  857c98cd_7089450f   69.48%    passed     93.42%
+ 561  857c98cd_392cc692   69.48%    passed     94.11%
+ 562  857c98cd_5aaaa94b   69.39%    passed     84.65%
+ 563  857c98cd_6310b6d5   69.39%    passed     83.08%
+ 564  15fd7413_df85ab1f   69.39%    passed     74.67%
+ 565  857c98cd_d7200991   69.39%    passed     83.33%
+ 566  857c98cd_3c674406   69.39%    passed     83.33%
+ 567  02ee9927_de229310   69.39%    passed     94.07%
+ 568  184b8658_4bb5cfb5   69.36%    passed     48.91%
+ 569  1ea7a1c3_84848eec   69.39%    passed     79.62%
+ 570  b9ad4915_8825647a   69.39%    passed     75.80%
+ 571  54a2d3a2_73b4cac4   69.39%    passed     80.55%
+ 572  54a2d3a2_c1f22289   69.39%    passed     82.26%
+ 573  b555a999_99cd3a75   69.39%    passed     60.85%
+ 574  b555a999_9ed251fa   69.39%    passed     95.62%
+ 575  b555a999_eac53b91   69.39%    passed     94.76%
+ 576  914f11ea_54720691   69.39%    passed     49.60%
+ 577  c24cbf74_6ae495ca   69.39%    passed     95.65%
+ 578  c24cbf74_0fb97995   69.39%    passed     92.23%
+ 579  fa545cab_2facb709   69.39%    passed     88.79%
+ 580  fa545cab_f8ca2158   69.39%    passed     88.18%
+ 581  c24cbf74_df9b3194   69.39%    passed     96.09%
+ 582  c24cbf74_99d1e158   69.36%    passed     93.47%
+ 583  c24cbf74_6117896d   69.39%    passed     94.81%
+ 584  4b5ab61a_88cd4016   69.42%    passed     81.92%
+ 585  4b5ab61a_aa4575ad   69.42%    passed     87.86%
+ 586  de028c32_1d2997dd   69.39%    passed     81.86%
+ 587  de028c32_95accad9   69.39%    passed     85.52%
+ 588  fc90636b_1f800653   69.39%    passed     91.31%
+ 589  fc90636b_152e9867   69.39%    passed     88.47%
+ 590  6a64dbee_2fc35819   69.39%    passed     90.57%
+ 591  de028c32_e3f84fa0   69.39%    passed     88.77%
+ 592  de028c32_ac54663d   69.36%    passed     77.36%
+ 593  de028c32_35e7abbe   69.39%    passed     86.65%
+ 594  de028c32_3cd74758   69.39%    passed     74.07%
+ 595  de028c32_5db8f8e6   69.39%    passed     72.15%
+ 596  de028c32_1736ffec   69.39%    passed     73.04%
+ 597  de028c32_62aec08f   69.39%    passed     73.51%
+ 598  de028c32_1fec2f34   69.39%    passed     73.21%
+ 599  de028c32_8526564d   69.39%    passed     73.51%
+ 600  de028c32_6437a23b   69.39%    passed     81.91%
+ 601  02ee9927_4ec91353   69.39%    passed     82.26%
+ 602  207e22d8_221a4019   69.36%    passed     81.33%
+ 603  ce8e6a67_4af53572   69.27%    passed     89.35%
+ 604  ce8e6a67_ab4fdcfd   69.27%    passed     82.38%
+ 605  798cd721_d5944b8d   69.45%    failed      0.87%
+ 606  44884fa1_ecd3db62   69.45%    failed      0.55%
+ 607  34538e3a_6ab42014   69.45%    failed      1.21%
+ 608  798cd721_c2581975   69.45%    failed      0.71%
+ 609  c5494ec9_0450c5d9   69.36%    failed      0.57%
+ 610  c5494ec9_7a1217a7   69.36%    failed      0.41%
+ 611  c5494ec9_f43532d4   69.39%    failed      0.46%
+ 612  7b095120_97398a8a   69.42%    failed      4.05%
+ 613  798cd721_ec766c7f   69.45%    failed      0.37%
+ 614  4b7c9faa_62fcd6ed   69.42%    failed      0.02%
+ 615  3c3efe64_7604bf49   69.39%    failed      0.08%
+ 616  bed88795_4fc62ff3   69.07%    passed     26.17%
+ 617  4b2f3a10_c6f6c235   68.86%    passed     66.20%
+ 618  b85ad1e4_249421c6   69.27%    passed     20.66%
+ 619  c846f3c1_33d1e361   69.27%    failed      0.24%
+ 620  6dd03f30_72aa6796   69.42%    failed      4.50%
+ 621  0049155c_41faed8e   69.33%    failed      2.97%
+ 622  6282d9c3_bf417381   69.39%    failed      3.35%
+ 623  633920e4_f421f029   69.39%    failed      0.30%
+ 624  10c6da11_5cf6ffed   69.33%    passed      9.38%
+ 625  10c6da11_6884d3fc   69.39%    passed     16.79%
+ 626  db962775_3fc3ae1e   69.39%    passed     49.21%
+ 627  6e11d52a_efdd2c24   69.42%    passed     57.50%
+ 628  6e11d52a_9859ac46   69.42%    passed     57.50%
+ 629  f960bfcd_d513cd9a   69.42%    passed     48.71%
+ 630  30d796da_1afd0ee7   69.42%    passed     53.73%
+ 631  30d796da_d92f1cb6   69.39%    passed     55.88%
+ 632  b1bd62eb_438faed2   69.42%    passed     71.95%
+ 633  a1bdc0e9_ee9d30a9   69.42%    passed     76.18%
+ 634  341b60ac_cc285207   69.42%    passed     43.98%
+ 635  341b60ac_8af1094d   69.42%    passed     50.10%
+ 636  341b60ac_5f8b9fbe   69.42%    passed     46.45%
+ 637  30d796da_fc8492ef   69.45%    passed     58.44%
+ 638  30d796da_79596640   69.45%    passed     56.02%
+ 639  30d796da_569369c9   69.45%    passed     64.40%
+ 640  30d796da_d63c8baf   69.45%    passed     66.45%
+ 641  30d796da_dd6b9cdb   69.42%    passed     69.69%
+ 642  30d796da_4613861c   69.45%    passed     75.17%
+ 643  30d796da_a88f60da   69.45%    passed     73.15%
+ 644  30d796da_d84f0e7b   69.42%    passed     60.01%
+ 645  76ac6297_8ef41cea   69.42%    passed     78.82%
+ 646  30d796da_e792e32b   69.42%    passed     77.23%
+ 647  30d796da_116f5d0e   69.42%    passed     73.56%
+ 648  11c3fdbd_1c9551ec   69.39%    passed     45.69%
+ 649  11c3fdbd_0bce8df5   69.39%    passed     51.40%
+ 650  c14dcd8d_097cfc1d   69.39%    passed     60.47%
+ 651  b67ef467_65aa77f5   69.39%    passed     58.74%
+ 652  0f869f97_46e64fd4   69.36%    passed     15.58%
+ 653  0f869f97_1104df4c   69.39%    passed     39.81%
+ 654  0f869f97_809218fd   69.39%    passed     46.34%
+ 655  0f869f97_7c4f51b4   69.39%    passed     40.62%
+ 656  0f869f97_2721c4d9   69.39%    passed     37.11%
+ 657  8f68ccb5_720931db   69.19%    passed     36.53%
+ 658  c0d06fe1_6a8d70d9   69.30%    passed     16.99%
+ 659  7ef735bb_49dcaacc   69.99%    passed     52.60%
+ 660  67c8b8c9_27162abc   70.13%    passed     86.90%
+ 661  3971c678_775d0c8f   69.42%    passed     35.09%
+ 662  8a103054_77cd9ad5   69.42%    passed     40.24%
+ 663  9affa3ac_adb806a2   69.45%    passed     59.72%
+ 664  bf506d5c_463c637f   69.48%    passed     67.35%
+ 665  a409dec9_e7c697e4   69.48%    passed     61.56%
+ 666  bf506d5c_e5f60b85   69.48%    passed     58.15%
+ 667  bf506d5c_eae98f3f   69.48%    passed     58.15%
+ 668  bf506d5c_e7c697e4   69.48%    passed     62.80%
+ 669  bf506d5c_6288098e   69.51%    passed     64.59%
+ 670  5fcee558_79bdb52f   69.39%    passed     14.52%
+ 671  5fcee558_175e6594   69.36%    passed     13.73%
+ 672  df0a4ab9_fb4ae4c9   69.36%    passed     32.15%
+ 673  d8cefc8c_6343fa36   69.19%    passed     26.12%
+ 674  71c0702d_d22e3cb9   69.48%    passed     98.95%
+ 675  6120a652_8cc666bd   69.66%    passed     77.45%
+ 676  6120a652_d02e07ac   69.66%    passed     85.75%
+ 677  6f342efc_cfe3720b   69.75%    passed     10.00%
+ 678  6f342efc_4a2ed8d5   69.69%    passed     16.01%
+ 679  32ecd162_19aadb0b   69.48%    passed     53.41%
+ 680  32ecd162_4af60886   69.48%    passed     49.17%
+ 681  32ecd162_d2b4efce   69.48%    passed     49.45%
+ 682  32ecd162_85cf656c   69.48%    passed     52.63%
+ 683  2874751b_905ef29d   69.48%    passed     51.29%
+ 684  6614c523_1e89151d   69.60%    passed     16.83%
+ 685  51936860_a32a09ef   69.33%    passed     91.03%
+ 686  cc95c185_ca366782   69.33%    passed     72.98%
+ 687  df592423_412ae9f3   69.30%    failed      3.97%
+ 688  02c8ea96_8a726e24   69.39%    passed     78.09%
+ 689  02c8ea96_b94e0683   69.39%    passed     71.96%
+ 690  02c8ea96_b4fe581d   69.42%    passed     74.06%
+ 691  02c8ea96_8bd42004   69.39%    passed     83.52%
+ 692  02c8ea96_7ca4a44c   69.39%    passed     76.88%
+ 693  02c8ea96_6423e159   69.19%    passed     46.54%
+ 694  02c8ea96_d6e9de2b   69.27%    passed     38.56%
+ 695  02c8ea96_c06e05c5   69.39%    passed     23.93%
+ 696  6bad7b69_ab6750aa   69.30%    passed     71.54%
+ 697  7223e867_f9834941   69.39%    passed     69.52%
+ 698  04c3570d_435f6cfc   69.42%    passed     96.35%
+ 699  be2c1369_dbffe856   69.42%    passed     98.85%
+ 700  285628f1_3574fa04   69.13%    passed     99.70%
+ 701  04c3570d_3432fd3a   69.42%    passed     89.74%
+ 702  e0e9089a_5f615bb2   69.36%    passed     82.73%
+ 703  e0e9089a_43c77745   69.36%    passed     86.64%
+ 704  e0e9089a_58442c04   69.36%    passed     89.46%
+ 705  ba921f76_71471394   69.39%    passed     98.67%
+ 706  ba921f76_5326ae0f   69.39%    passed     98.03%
+ 707  02c8ea96_4503e6a0   69.39%    passed     99.37%
+ 708  83b1ef3c_0a740ecb   69.13%    failed      1.31%
+ 709  56297e75_4f3e3707   69.27%    failed      4.14%
+ 710  52c4295a_3fa4bb9e   69.30%    failed      2.71%
+ 711  8d33b9a5_581fb9af   69.21%    failed      3.92%
+ 712  cc399fcd_85075305   69.21%    passed     12.42%
+ 713  6ad14fa6_4ad72af7   69.33%    passed     10.16%
+ 714  7ad9ddf1_84bdace7   69.48%    passed      7.44%
+ 715  073fcdca_87533bb8   69.48%    passed     18.81%
+ 716  ea892a5f_a2c0f9b9   68.53%    passed     92.24%
+ 717  7d6200b2_4247c171   68.68%    passed     84.35%
+ 718  99dd0f27_95213dfc   68.65%    passed     66.82%
+ 719  a4961a28_6e501532   67.91%    passed     68.81%
+ 720  1d7a4361_567ea4e8   68.36%    passed     84.50%
+ 721  da14f33d_8e6135a9   68.59%    passed     78.46%
+ 722  6b946403_a12ca924   68.65%    passed     74.65%
+ 723  6b946403_bf10d0de   68.65%    passed     71.34%
+ 724  4347bce1_15b9c716   69.51%    passed     76.33%
+ 725  bbe53e58_bf311161   69.54%    passed     86.19%
+ 726  bbe53e58_b5f0d9df   69.54%    passed     86.41%
+ 727  bbe53e58_aeb2502d   69.51%    passed     85.22%
+ 728  bbe53e58_adc5f47d   69.51%    passed     86.06%
+ 729  9235f00d_a84abfff   69.54%    passed     88.20%
+ 730  bbe53e58_61aff8a4   69.54%    passed     90.16%
+ 731  bbe53e58_79ee508e   69.54%    passed     93.23%
+ 732  bbe53e58_1bc26ade   69.54%    passed     91.76%
+ 733  bbe53e58_ec5b6370   69.54%    passed     93.01%
+ 734  cb4f3537_5ff819d5   68.41%    passed     64.47%
+ 735  030bd08c_d013a5e7   68.56%    failed      2.53%
+ 736  12ed74a2_bb64cde5   68.92%    passed     77.83%
+ 737  12ed74a2_31445360   68.80%    passed     45.24%
+ 738  3d484ee4_15436462   68.95%    passed     71.78%
+ 739  032f5e50_6b3102a8   68.83%    failed      2.25%
+ 740  137be9bd_9fdd3e1e   68.92%    passed     49.02%
+ 741  137be9bd_49058f21   68.95%    passed     58.00%
+ 742  137be9bd_36635fd4   68.92%    passed     64.63%
+ 743  137be9bd_775b4cda   68.92%    passed     66.25%
+ 744  137be9bd_d21dd96c   68.92%    passed     56.20%
+ 745  1a64e859_3529c121   68.68%    passed     81.34%
+ 746  a96f9272_34c262a2   69.16%    passed     56.03%
+ 747  017720ca_fd341771   68.62%    passed     61.54%
+ 748  a68d0860_31fc1fa7   68.39%    passed     59.77%
+ 749  34c9d485_aeb388b1   68.77%    passed     23.45%
+ 750  112d591f_f15934af   68.68%    passed     97.83%
+ 751  112d591f_457e2b56   68.68%    passed     96.38%
+ 752  754a7eea_5c6be758   68.56%    failed      4.08%
+ 753  01d700d2_1aff30fb   68.71%    passed     84.59%
+ 754  01d700d2_e1bcfb7a   68.71%    passed     91.06%
+ 755  01d700d2_e5ccc43d   68.92%    passed     66.70%
+ 756  e6593cf2_5cab5994   68.62%    passed     67.51%
+ 757  258c0b79_f8eb7f01   68.68%    passed     18.45%
+ 758  ddb14d5d_465a5d7a   68.74%    passed     93.25%
+ 759  ddb14d5d_a1e2975c   68.74%    passed     91.10%
+ 760  a1e0251b_9fec63a6   68.56%    passed     15.17%
+ 761  9f2c60d4_570a68a0   68.56%    passed     57.13%
+ 762  ac4af03a_e95ac2c2   77.01%    failed      1.16%
+ 763  9f2c60d4_8f9c6974   68.53%    passed     59.08%
+ 764  58d5a426_1ec4f5f3   68.03%    passed     19.54%
+ 765  ea54e2c6_0865aef1   68.06%    passed     60.68%
+ 766  9af0fabd_f1df534e   68.24%    passed     72.03%
+ 767  7f4d7016_43bb269d   68.39%    passed     73.57%
+ 768  7f4d7016_2a879b9d   68.41%    passed     71.43%
+ 769  7f4d7016_1372d6da   68.36%    passed     71.34%
+ 770  7f4d7016_1261eb5e   68.36%    passed     73.39%
+ 771  49562aa9_0216d0eb   67.82%    passed      7.94%
+ 772  bedc782a_ee3aab8f   68.44%    passed     26.58%
+ 773  37aaee96_fffaf5a4   68.50%    passed     44.40%
+ 774  cab0e105_6f2854b2   68.50%    passed     33.94%
+ 775  cab0e105_3c70e190   68.50%    passed     28.07%
+ 776  cab0e105_a662b63f   68.53%    passed     29.77%
+ 777  f266010b_33946565   69.24%    passed     14.37%
+ 778  f266010b_9380a4e6   68.95%    passed     30.95%
+ 779  f266010b_77cd1b74   69.01%    passed     32.67%
+ 780  f266010b_bb23ad87   69.04%    passed     34.55%
+ 781  f266010b_2f5f9f68   69.01%    passed     36.27%
+ 782  cf6794b2_642ef3f2   69.13%    passed     78.35%
+ 783  ef3dea93_fab03915   68.27%    failed      4.23%
+ 784  72c246c6_7718dfa5   68.33%    passed     97.22%
+ 785  88d689a8_214237bf   68.50%    passed     99.78%
+ 786  f39491e1_bdf6c7d2   68.50%    passed     97.60%
+ 787  f39491e1_ced2daaa   69.19%    passed     89.67%
+ 788  f39491e1_c2e5bb32   68.44%    passed     99.19%
+ 789  f39491e1_d8dc5276   68.47%    passed     97.86%
+ 790  51fd803a_be91e097   68.50%    passed     98.86%
+ 791  51fd803a_63351e19   68.47%    passed     96.89%
+ 792  a9c2cf03_1dc240f9   68.50%    passed     97.50%
+ 793  51fd803a_93c5c825   68.27%    passed     96.43%
+ 794  f39491e1_f70566ce   68.47%    passed     69.25%
+ 795  1a64e859_cfb1ecd7   68.50%    passed     89.80%
+ 796  1a64e859_e9de02cd   68.47%    passed     77.45%
+ 797  edfb667b_ed186b84   68.44%    passed     86.05%
+ 798  edfb667b_83d4aed9   68.44%    passed     87.73%
+ 799  38d66080_8f9faabc   68.21%    passed     11.93%
+ 800  af6676e9_64c3979b   68.30%    passed     12.79%
+ 801  af6676e9_a7c964eb   68.24%    passed     14.31%
+ 802  aeb2d852_a499c8c4   68.33%    passed     14.90%
+ 803  350cb9eb_71d1ed5f   68.33%    passed     27.95%
+ 804  af6676e9_42bbf3b9   68.33%    passed     12.39%
+ 805  5dda492c_8f70e1c6   68.33%    failed      3.28%
+ 806  3762d0a6_404de42c   67.97%    failed      0.25%
+ 807  a7de25c0_e19bfa66   68.33%    failed      0.00%
+ 808  2829560c_c1960341   68.39%    failed      0.03%
+ 809  2829560c_e6b0e764   68.36%    failed      0.03%
+ 810  51fd803a_bf46b9d3   68.47%    passed     80.33%
+ 811  51fd803a_dd4164fb   68.53%    passed     85.51%
+ 812  1a64e859_9fd7da41   68.39%    passed     84.82%
+ 813  3361cb9b_f1b18f72   68.44%    passed     95.25%
+ 814  f39491e1_232b7d09   68.44%    passed     84.30%
+ 815  eeec4c16_6eeb7076   68.47%    passed     91.20%
+ 816  ecb36945_0fa60cc3   68.50%    passed     85.00%
+ 817  80129321_7f332756   68.47%    passed     90.43%
+ 818  02243005_559ffd72   68.47%    passed     70.21%
+ 819  02243005_eb8be7b3   68.47%    passed     72.55%
+ 820  947e701d_3f37646a   68.47%    passed     83.72%
+ 821  947e701d_e3312dd8   68.39%    passed     86.74%
+ 822  21852fc0_bf46816e   68.41%    passed     87.89%
+ 823  757667ff_893c2ed3   69.21%    passed     63.27%
+ 824  113190c9_86546e02   69.16%    passed     90.42%
+ 825  d7b41710_c633d551   69.13%    passed     95.87%
+ 826  7f2cad85_4fbe9112   69.13%    passed     77.36%
+ 827  7f2cad85_882bb7c7   69.10%    passed     88.71%
+ 828  e11112cb_1d0c3bce   68.59%    passed     98.82%
+ 829  0fe05404_205b0f89   68.41%    passed     16.25%
+ 830  0fe05404_ff018625   68.41%    passed     16.25%
+ 831  e9f1b8ef_87f5bd15   69.45%    failed      4.98%
+ 832  e9f1b8ef_2c991a40   69.51%    passed     11.83%
+ 833  90897378_39bbeaec   69.27%    failed      0.17%
+ 834  47072f1e_7822333b   69.90%    passed     13.77%
+ 835  f99aaba8_0da4ed26   63.91%    passed     15.23%
+ 836  ef2f1b86_0c7d0925   64.47%    passed     81.79%
+ 837  f0abc271_b73180bb   64.41%    passed     37.15%
+ 838  1e6776cf_8a70c254   64.44%    passed      9.76%
+ 839  f6a55893_1cb1499b   63.11%    passed     55.08%
+ 840  c52a2b25_85f7be1f   63.70%    passed     49.77%
+ 841  dd5c1659_3971eea5   63.79%    passed     68.60%
+ 842  2ff81706_c239d98b   63.79%    passed     52.14%
+ 843  2ff81706_887a891d   63.79%    passed     62.78%
+ 844  2ff81706_4b623c0f   63.79%    passed     58.47%
+ 845  e0c0929d_479a5f66   63.47%    passed     37.82%
+ 846  aebf166b_e3e46d7d   63.70%    passed     46.86%
+ 847  1daf0d0c_c4198a3d   63.61%    passed      9.89%
+ 848  e0c0929d_162059aa   63.61%    passed     32.55%
+ 849  f9a0668b_6d0e47c2   63.79%    passed     39.55%
+ 850  90ae9dba_0bbf8b25   63.85%    passed     92.38%
+ 851  121deb89_e5b7e522   64.24%    passed     92.15%
+ 852  272105a9_d80efbb3   64.09%    passed     63.80%
+ 853  272105a9_1fda8d97   64.03%    passed     63.50%
+ 854  b2f98b71_9bb794ef   63.26%    passed     75.81%
+ 855  97ed1298_4331599d   63.41%    passed     87.44%
+ 856  d84083cc_5065624f   60.12%    passed     25.04%
+ 857  8bf73261_7bafc5a7   63.59%    passed     18.38%
+ 858  ffd5e2a5_0fea6650   63.23%    failed      4.78%
+ 859  5d82531b_ee8dc47e   63.79%    passed     74.06%
+ 860  708d1c6e_4badf6a2   63.85%    passed     73.97%
+ 861  25ae9fc1_941664a7   63.38%    failed      3.42%
+ 862  c0894342_65dbf003   63.73%    passed     71.12%
+ 863  61cc490d_d04757fb   63.73%    passed     92.32%
+ 864  ad524a04_001ef968   63.88%    passed     63.88%
+ 865  c0894342_a7f5338c   63.76%    passed     91.23%
+ 866  c0894342_be78d479   63.73%    passed     89.10%
+ 867  ed15df2d_0cfe4a90   63.76%    passed     89.41%
+ 868  c0894342_0cfe4a90   63.76%    passed     86.39%
+ 869  10e74dd8_0fc7a463   63.56%    passed     56.63%
+ 870  506c1722_80c83ee6   63.59%    passed     44.63%
+ 871  05283489_5e074246   63.59%    passed     36.99%
+ 872  05283489_2909222b   63.59%    passed     40.98%
+ 873  00823636_8969a000   62.58%    passed     58.36%
+ 874  b7a305b9_a97aba56   62.37%    passed      5.90%
+ 875  86e57652_d31c30d7   62.61%    passed     38.49%
+ 876  86e57652_d30bdac2   62.61%    passed     38.49%
+ 877  a5e6bf71_11441180   78.93%    failed      0.00%
+ 878  4dad8526_d70434dc   69.96%    passed     22.83%
+ 879  34f80cc7_d95d59fa   70.01%    passed     25.29%
+ 880  b6013084_86423a18   73.60%    failed      0.00%
+ 881  b6013084_26c882aa   73.54%    failed      0.00%
+ 882  90c60177_781728f5   73.60%    failed      0.00%
+ 883  90c60177_1beaffe4   73.60%    failed      0.00%
+ 884  222cb082_d85774b5   71.38%    failed      0.00%
+ 885  0c029984_605ed5c4   71.82%    failed      0.00%
+ 886  35cdd6f7_c82c24bf   60.68%    failed      0.00%
+ 887  35cdd6f7_cac673b4   60.62%    failed      0.00%
+ 888  8bf188fe_cac673b4   60.62%    failed      0.00%
+ 889  41c9aadd_e947d898   60.62%    failed      0.00%
+ 890  a993447d_fd642ac2   60.62%    failed      0.00%
+ 891  41c9aadd_9972022c   60.62%    failed      0.00%
+ 892  41c9aadd_8d6c8680   60.62%    failed      0.00%
+ 893  ed6ddd49_c42e27b9   61.21%    failed      0.00%
+ 894  ed6ddd49_6bc6ca95   61.30%    failed      0.00%
+ 895  ed6ddd49_6efc1b7c   61.30%    failed      0.00%
+ 896  ed6ddd49_70e22d67   61.30%    failed      0.00%
+ 897  dd7eaaf7_bdf25c52   60.98%    passed     63.37%
+ 898  2f871642_29bcdaf0   61.13%    passed     12.42%
+ 899  c3e8a08e_109c5104   61.13%    passed      5.10%
+ 900  6eb910b6_3df08f80   61.19%    passed     22.03%
+ 901  b4b79f9f_b595bee4   61.13%    passed     62.29%
+ 902  2bb0f7ef_ef25f982   61.16%    passed     33.71%
+ 903  2bb0f7ef_991ca17b   61.16%    passed     30.69%
+ 904  1b912989_677f1ac5   60.98%    failed      0.00%
+ 905  08aa5513_e8558bab   63.44%    passed     61.88%
+ 906  03b5ad0d_ca4bcee8   65.16%    passed     89.18%
+ 907  e5874c26_5601bf37   60.77%    failed      0.00%
+ 908  1124a6a6_a89b5c0a   66.49%    failed      0.98%
+ 909  fc9e229d_daca3d6a   67.41%    failed      0.00%
+ 910  e90529a2_dd5e1f0f   67.35%    failed      0.00%
+ 911  e90529a2_42fedfaf   67.35%    failed      0.00%
+ 912  e90529a2_a78362a0   67.35%    failed      0.00%
+ 913  38472c2c_8b5a58b9   66.99%    passed     51.98%
+ 914  38472c2c_94469f04   67.05%    passed     54.57%
+ 915  28c2e22a_ccc654ec   67.79%    passed      8.77%
+ 916  ba5b20d7_490b36b9   68.09%    passed      7.77%
+ 917  0292cc9d_79276fd5   67.44%    passed     89.27%
+ 918  0ff8fccc_6f9ca327   67.44%    passed     97.44%
+ 919  1a7553f8_2d9b3c66   67.44%    passed     97.64%
+ 920  1a7553f8_06103759   67.44%    passed     97.71%
+ 921  6b839a13_ea11792e   67.64%    passed     83.09%
+ 922  7ee67d87_3adac8f2   67.53%    passed     88.73%
+ 923  e8898448_b83f3a88   67.47%    passed     84.08%
+ 924  7e5a3e1a_5de0ea1c   67.47%    passed     88.92%
+ 925  057c8be3_3cbda1a7   67.29%    passed     56.71%
+ 926  057c8be3_99b01b4a   67.29%    passed     59.93%
+ 927  057c8be3_7b46d968   67.20%    passed     65.79%
+ 928  b07659a8_f9e82573   66.79%    passed      5.97%
+ 929  b07659a8_8af9cd54   66.79%    passed      6.62%
+ 930  b07659a8_eef5c54e   66.79%    passed      5.97%
+ 931  320cdbed_20a258c6   67.38%    passed     54.61%
+ 932  00bcb0c8_4d4f3a50   67.32%    passed     63.79%
+ 933  8ff6decf_7b7d00ac   67.50%    passed     30.06%
+ 934  4f38a53d_b5cb1f07   67.53%    passed      6.26%
+ 935  4f38a53d_98d75d0a   67.53%    passed      9.60%
+ 936  4f38a53d_b0f54aa8   67.53%    passed      8.06%
+ 937  fa5298b8_1a22bb4f   67.08%    passed     82.64%
+ 938  05195479_06b1314f   67.41%    failed      0.03%
+ 939  b4a1acf3_bc8e724a   67.53%    failed      0.01%
+ 940  b4a1acf3_d1627916   67.53%    failed      0.02%
+ 941  776bc18e_fc51f1b1   67.59%    passed     24.59%
+ 942  045de01b_a4da1601   67.47%    passed     10.48%
+ 943  75ab975a_77703d79   67.50%    passed     63.30%
+ 944  75ab975a_710c33d6   67.50%    passed     67.13%
+ 945  c5b419a8_2657c949   67.53%    passed     62.51%
+ 946  6fd422bd_fbbb33d4   67.50%    passed     40.24%
+ 947  d278c4e2_ccbe0294   67.41%    passed     14.34%
+ 948  c7a1c37b_f4a0dea8   66.79%    failed      2.84%
+ 949  39930e5f_2a7ccdfa   68.27%    passed      7.84%
+ 950  39930e5f_17e7d084   68.41%    passed      6.12%
+ 951  39930e5f_f3484bc0   68.36%    passed      7.78%
+ 952  39930e5f_8c4e5475   68.36%    passed     10.27%
+ 953  79e02ce5_395855e9   67.26%    failed      1.03%
+ 954  20e57b4e_c52e4af4   67.94%    failed      0.05%
+ 955  18ce01f4_e0912d61   65.90%    failed      3.72%
+ 956  18ce01f4_a3592126   66.01%    failed      4.37%
+ 957  18ce01f4_2cc72ebf   65.90%    failed      3.09%
+ 958  18ce01f4_0c8b717b   66.01%    failed      3.59%
+ 959  18ce01f4_20e952cd   65.66%    failed      2.63%
+ 960  18ce01f4_d11e66a1   65.66%    failed      3.04%
+ 961  18ce01f4_87edf4f4   65.72%    failed      2.47%
+ 962  18ce01f4_caa9d5ab   65.69%    failed      2.78%
+ 963  18ce01f4_fb22a786   65.72%    failed      3.08%
+ 964  18ce01f4_345865ab   65.93%    failed      3.44%
+ 965  18ce01f4_02611718   65.99%    failed      3.09%
+ 966  18ce01f4_6de558fa   65.84%    failed      2.52%
+ 967  18ce01f4_9b307302   65.90%    failed      2.80%
+ 968  f89c7810_21536f8d   66.01%    failed      1.95%
+ 969  f1460bc1_63ae27e9   65.13%    passed     56.93%
+ 970  c91c0bcc_19aeb68d   64.44%    passed     78.89%
+ 971  c91c0bcc_f8436377   64.44%    passed     79.07%
+ 972  c91c0bcc_a2d73f92   64.47%    passed     80.77%
+ 973  fb35402a_27d9b168   65.04%    passed      8.87%
+ 974  fb35402a_7fa0d7f9   65.04%    passed      6.53%
+ 975  fb35402a_95d3e8fc   65.07%    failed      4.41%
+ 976  44356346_63b6e270   65.04%    failed      4.73%
+ 977  44356346_d905e60b   65.04%    failed      4.12%
+ 978  0b2bf474_da7c1092   65.04%    failed      3.09%
+ 979  44356346_da7c1092   65.04%    failed      3.57%
+ 980  921246d6_71d3bf7d   65.24%    passed     14.56%
+ 981  34e04013_974c0dcc   65.19%    passed     10.83%
+ 982  e620a62b_f30ce7a3   65.21%    passed     30.58%
+ 983  e620a62b_23b8ccf9   65.21%    passed     28.06%
+ 984  69f80110_764c10bf   65.78%    failed      0.00%
+ 985  69f80110_53839757   65.78%    failed      0.00%
+ 986  69f80110_7669036b   65.72%    failed      0.00%
+ 987  69f80110_3dbe39d3   65.72%    failed      0.00%
+ 988  69f80110_792787b1   65.72%    failed      0.00%
+ 989  69f80110_4892189e   65.72%    failed      0.00%
+ 990  69f80110_9821eb45   65.72%    failed      0.00%
+ 991  69f80110_75a65d0e   65.72%    failed      0.00%
+ 992  69f80110_882c0670   65.72%    failed      0.00%
+ 993  69f80110_f1761cf2   65.66%    failed      0.00%
+ 994  69f80110_26aa3bbd   65.69%    failed      0.00%
+ 995  54f1ccb2_82b39507   65.81%    failed      0.00%
+ 996  358cbbc8_3acfec35   65.36%    failed      0.00%
+ 997  a32fae4f_6aad09c4   64.59%    failed      0.00%
+ 998  a32fae4f_a3c41ee6   64.59%    failed      0.00%
+ 999  a32fae4f_a518cb6d   64.50%    failed      0.00%
+1000  4663ed00_bd8f0f31   66.13%    passed     93.18%
+1001  4663ed00_259e4cf7   66.22%    passed     91.10%
+1002  4663ed00_d6fbbfbf   66.22%    passed     86.03%
+1003  4663ed00_29851dab   66.13%    passed     94.06%
+1004  4663ed00_d46bf7aa   66.13%    passed     93.64%
+1005  4663ed00_2d48746c   66.13%    passed     93.64%
+1006  4663ed00_69d9660d   66.13%    passed     95.52%
+1007  4663ed00_952eb27c   66.13%    passed     94.65%
+1008  4663ed00_4eb46764   66.16%    passed     95.59%
+1009  4663ed00_491b692c   66.13%    passed     94.22%
+1010  d4df70bd_17b3e583   66.28%    passed     33.28%
+1011  d4df70bd_de3fbaab   66.28%    passed     32.28%
+1012  d4df70bd_11eb402b   66.37%    passed     99.86%
+1013  d4df70bd_88fc8a80   66.37%    passed     99.79%
+1014  d4df70bd_300372aa   66.34%    passed     99.91%
+1015  d4df70bd_1dfbb765   66.34%    passed     99.73%
+1016  0fc5a112_1dfbb765   66.34%    passed     99.46%
+1017  cc779658_b2f35eea   66.37%    passed     99.96%
+1018  d4df70bd_2c691684   66.37%    passed     99.97%
+1019  d4df70bd_708ab6ea   66.37%    passed     99.87%
+1020  d4df70bd_5e2cb869   66.37%    passed     99.89%
+1021  d4df70bd_98e23d2c   66.34%    passed     99.84%
+1022  d4df70bd_5ff17401   66.28%    passed     90.68%
+1023  d4df70bd_7897fbf6   66.16%    passed     85.43%
+1024  53a92100_002192ca   65.54%    failed      2.13%
+1025  fbf0a52e_603bd952   65.01%    failed      0.02%
+1026  7c0c22fe_603bd952   65.01%    failed      0.02%
+1027  7c0c22fe_8deae276   65.57%    failed      0.04%
+1028  7c0c22fe_13412b12   65.60%    failed      0.04%
+1029  7c0c22fe_2c197f05   65.60%    failed      0.03%
+1030  7c0c22fe_39fa42af   65.54%    failed      0.04%
+1031  7c0c22fe_0ce1dc85   65.54%    failed      0.03%
+1032  7c0c22fe_cd1c47f2   65.60%    failed      0.04%
+1033  7c0c22fe_7709e931   65.60%    failed      0.04%
+1034  c92e5eec_6bf8630d   65.66%    failed      0.99%
+1035  c92e5eec_a3a6dec8   65.66%    failed      0.79%
+1036  b5c83607_58f0d4e5   65.48%    failed      0.31%
+1037  b5c83607_fc359091   65.48%    failed      0.27%
+1038  b5c83607_4aa4c46f   65.48%    failed      0.30%
+1039  b5c83607_34aaf421   65.63%    failed      0.39%
+1040  b5c83607_b9b92793   65.45%    failed      0.32%
+1041  b5c83607_9feceb00   65.51%    failed      0.43%
+1042  b5c83607_0d3949ee   65.51%    failed      0.55%
+1043  b5c83607_9f9c3b6c   65.45%    failed      0.41%
+1044  defa1f55_71e274e8   65.54%    failed      0.35%
+1045  defa1f55_50e72b04   65.48%    failed      0.35%
+1046  defa1f55_19b3c8fd   65.51%    failed      0.36%
+1047  defa1f55_f86b758a   65.45%    failed      0.31%
+1048  b5c83607_3cbcc482   65.51%    failed      0.42%
+1049  e07934c6_ce7a7cad   66.55%    passed     18.30%
+1050  ddd8d0fd_f22e2295   66.19%    passed     20.84%
+1051  7cc32ece_56b499e8   66.16%    passed     54.83%
+1052  7cc32ece_2d098c43   66.19%    passed     57.54%
+1053  36c27990_cb2a34a3   66.55%    passed     71.26%
+1054  8ed64ba0_97b93b98   66.58%    passed      5.03%
+1055  2b52a5b3_17da7081   66.31%    passed      6.11%
+1056  8ed64ba0_eb3d7d0c   66.58%    passed      5.14%
+1057  8ed64ba0_9f542725   66.49%    passed      5.36%
+1058  755e907b_479e7f47   66.13%    passed     23.02%
+1059  755e907b_540d242e   66.13%    passed     27.74%
+1060  b10da624_2a7256cd   66.79%    failed      0.61%
+1061  a0c3ef5b_eb06dee8   66.55%    failed      1.44%
+1062  4872fb5f_dea02623   68.71%    failed      0.00%
+1063  7906fe6f_f27a88aa   68.89%    failed      0.00%
+1064  91e2b1ee_7dae02c2   68.89%    failed      0.00%
+1065  91e2b1ee_b0ff6934   68.89%    failed      0.00%
+1066  91e2b1ee_8380832b   68.89%    failed      0.00%
+1067  103a46ab_e2432108   68.95%    failed      0.00%
+1068  103a46ab_876ce844   68.98%    failed      0.00%
+1069  103a46ab_aaeab9d8   68.95%    failed      0.00%
+1070  0197316c_9678da56   74.64%    failed      0.23%
+1071  83678739_c62dbe57   74.52%    failed      0.00%
+1072  1444f087_ef0e3f20   76.36%    failed      0.00%
+1073  b3adcf4a_33c351c3   77.27%    failed      0.00%
+1074  6e7c3f09_eea15a56   71.44%    passed      8.32%
+1075  9a7a2288_102baf3c   71.64%    failed      0.16%
+1076  6d4f30b8_d0ef4c24   71.59%    failed      0.00%
+1077  e1ebb46f_072ada76   71.29%    failed      2.92%
+1078  febdb536_56c1b697   71.29%    failed      1.24%
+1079  febdb536_3c071eea   71.29%    failed      0.92%
+1080  febdb536_e62c8853   71.29%    failed      1.14%
+1081  083f6cc4_cd14a0b4   71.29%    failed      1.03%
+1082  c9be2d04_945a5209   71.23%    failed      1.17%
+1083  febdb536_e154ca1c   71.32%    failed      1.24%
+1084  febdb536_503b59ae   71.29%    failed      0.63%
+1085  e1ebb46f_37b8036d   70.73%    failed      2.61%
+1086  e1ebb46f_0acf7a9b   70.73%    failed      2.45%
+1087  5eeea06d_fb598059   71.76%    passed     36.25%
+1088  3538d7ae_e9c31677   69.30%    passed     21.77%
+1089  e1ef6aa3_a481ad7f   68.83%    passed     75.35%
+1090  5b4666cc_10c5e83d   68.92%    passed     37.03%
+1091  74f3194b_3a5d3708   68.83%    passed     47.60%
+1092  ec36786e_b0d47c11   68.21%    passed     61.90%
+1093  6398975a_bd056aed   68.15%    passed     95.31%
+1094  bf967227_efbbf889   67.97%    passed     97.26%
+1095  bf967227_82458c2b   68.39%    passed     97.08%
+1096  b46acc24_edbeaa2f   68.09%    passed     58.60%
+1097  b46acc24_eff0d60a   68.12%    passed     62.20%
+1098  48c2f207_967a6524   68.18%    passed     24.99%
+1099  45dd4e92_ac2b7c07   67.82%    passed     93.25%
+1100  acf52e01_60187960   67.79%    passed     95.88%
+1101  86e115ea_db694235   68.30%    passed     95.24%
+1102  86e115ea_6eba96de   68.30%    passed     96.07%
+1103  3ca67f8f_8ee7b01d   68.33%    passed     97.63%
+1104  968650af_55c24b6f   68.15%    passed     89.52%
+1105  968650af_b5c056f3   68.15%    passed     81.49%
+1106  5faf8efa_8c86b48e   68.15%    passed     82.45%
+1107  968650af_8c86b48e   68.15%    passed     85.20%
+1108  81bad219_b1329d3d   68.21%    passed     73.49%
+1109  81bad219_2d007749   68.18%    passed     68.17%
+1110  81bad219_b65d8ec2   68.21%    passed     69.43%
+1111  81bad219_195f9c7c   68.21%    passed     63.86%
+1112  81bad219_d685e5fb   68.21%    passed     60.71%
+1113  81bad219_315d210e   68.24%    passed     57.60%
+1114  81bad219_be180c1a   68.24%    passed     60.23%
+1115  81bad219_4d16e08c   68.21%    passed     60.27%
+1116  64287303_de41a559   67.88%    passed     62.64%
+1117  58121530_e3accd29   67.67%    passed     62.17%
+1118  d0384e3f_df20a044   67.91%    passed     87.36%
+1119  89b3d21b_5aac2b5d   67.91%    passed     96.41%
+1120  cf45712d_b5144c37   67.61%    passed     85.43%
+1121  7f51c3df_99e440d4   67.61%    passed     93.40%
+1122  73910d30_82c61b50   67.64%    passed     98.07%
+1123  73910d30_4f37678a   67.61%    passed     98.36%
+1124  73910d30_ff0d3783   67.61%    passed     98.72%
+1125  b9268f34_e0f77737   73.36%    failed      0.00%
+1126  94875ce6_1256cf10   71.02%    failed      0.00%
+1127  c5be48ed_0136a11b   76.71%    failed      0.00%
+1128  ff7096c1_1b52ebc4   76.71%    failed      0.00%
+1129  8474afa5_1caae0c2   76.92%    failed      0.00%
+1130  bc8ec2c9_4e5c100c   65.93%    failed      0.21%
+1131  0eeb4fd8_b35cfdbb   65.90%    passed      5.49%
+1132  87cb04a6_221f59a7   66.22%    passed     76.66%
+1133  d0b8c63c_3c0406da   67.20%    passed     71.60%
+1134  8cf01a84_0fa2374d   67.76%    passed     78.70%
+1135  43d03d07_4dc0d8ad   65.54%    passed     97.17%
+1136  59f5231a_c19e50a0   65.33%    passed     29.09%
+1137  6b882f27_670255ad   65.24%    passed     15.54%
+1138  35a1d74d_04871101   69.81%    failed      4.37%
+1139  a8215bc9_9b81ba5f   65.33%    failed      0.49%
+1140  d52e0b80_ce4fa1a9   74.22%    passed     53.58%
+1141  35a1d74d_5791afc6   78.70%    passed     13.91%
+1142  35a1d74d_9e2c709d   78.70%    passed     26.53%
+1143  2375df5f_f8b34891   74.22%    passed     40.78%
+1144  628e053b_6c4fdefb   74.37%    passed     77.73%
+1145  e780eda2_6c4fdefb   74.37%    passed     76.54%
+1146  af752c77_bc6cc036   74.40%    passed     85.59%
+1147  94d9bb18_3922a5db   72.18%    passed     17.98%
+1148  f445234d_53de8c7a   70.67%    passed     30.52%
+1149  7b35a4f3_d6ec1f04   70.61%    passed     67.64%
+1150  fc3c878c_554e2721   70.52%    passed     55.57%
+1151  2454eba2_9b2bdcef   70.16%    passed     94.13%
+1152  5105c2ff_e91723ca   70.19%    passed     71.82%
+1153  227083d6_28d726b4   70.25%    passed     87.87%
+1154  b9bb7365_a95cd65e   70.64%    passed     62.93%
+1155  6ef8c54d_b8a596d6   70.73%    passed     75.48%
+1156  05f877a3_055d8ccd   70.73%    passed     80.79%
+1157  0745a56f_9b876dd5   70.73%    passed     79.56%
+1158  4a2dcbb2_af54985c   70.67%    passed     46.45%
+1159  7481d581_1427396d   70.67%    passed     70.42%
+1160  82bf2a93_11af6891   70.67%    passed     74.24%
+1161  dcc02f54_41d73c07   70.70%    passed     86.89%
+1162  4c872d82_058aad00   79.85%    passed      9.40%
+1163  f609f5ed_92828809   80.12%    passed     53.04%
+1164  bad69053_89612ef2   80.09%    passed     63.10%
+1165  337e4514_ca171cc0   64.21%    passed     68.30%
+1166  337e4514_ae1ba65c   64.83%    passed     94.08%
+1167  09586701_bfeba0e2   57.48%    failed      0.00%
+1168  ab29ac17_35404d8a   60.86%    passed     30.63%
+1169  09586701_d696f9fe   60.56%    passed     74.25%
+1170  6330411b_35b4e811   60.50%    passed     87.21%
+1171  c603fab8_78dbf0f0   60.09%    passed     34.98%
+1172  f0f4ce28_86d1183d   60.03%    passed     33.38%
+1173  fd1de642_773e8974   60.06%    passed     38.90%
+1174  fd1de642_b9049eac   60.24%    passed     50.78%
+1175  20d4d61c_bc338d9a   60.06%    passed     30.65%
+1176  7ac04301_e20a8dc2   60.03%    passed     27.39%
+1177  d8b28637_54ab269f   60.03%    passed     38.17%
+1178  430e8b16_4609a19c   60.06%    passed     40.74%
+1179  430e8b16_11c600de   64.53%    passed     79.75%
+1180  430e8b16_8cb17c01   64.68%    passed     81.18%
+1181  09ce41eb_a243b626   64.62%    passed     86.00%
+1182  09ce41eb_ecb4c3eb   64.65%    passed     50.29%
+1183  09ce41eb_0ba50cbd   64.65%    passed     55.13%
+1184  09ce41eb_5a6d4d6d   64.50%    passed     49.33%
+1185  72243425_f4f7f17f   68.27%    passed     48.49%
+1186  5bd5ffa9_74d71a38   65.27%    passed     87.15%
+1187  5bd5ffa9_181d3a09   65.27%    passed     66.45%
+1188  4e760c20_eb31ce42   64.62%    passed     18.99%
+1189  e4fc6fee_cf07dea7   70.46%    failed      0.03%
+1190  a47d4fa9_280d95e5   64.50%    failed      3.97%
+1191  f6d5cc01_1d804e19   64.62%    failed      4.02%
+1192  0f8ff1b5_e9651c95   64.44%    passed     69.66%
+1193  f38c7196_97c6430e   64.21%    passed     74.72%
+1194  8c73176d_91000104   64.41%    passed     37.61%
+1195  8c73176d_23202a3c   64.41%    passed     29.77%
+1196  8c73176d_3ce75fdf   64.41%    passed     18.96%
+1197  ebbaef43_1b2c38fb   64.44%    failed      2.71%
+1198  40a27d97_c2fd09b5   64.44%    failed      4.25%
+1199  40a27d97_9200222e   64.44%    failed      0.58%
+1200  40a27d97_fc727d87   64.41%    failed      1.07%
+1201  40a27d97_6b3ac6ff   64.41%    passed     30.23%
+1202  4649908c_46088c49   64.36%    failed      0.60%
+1203  e88a887c_8d4d566a   64.41%    failed      0.01%
+1204  e88a887c_2393becf   64.41%    failed      0.00%
+1205  83be590a_42169caf   64.47%    passed     70.93%
+1206  83be590a_a935d059   64.30%    passed     35.99%
+1207  83be590a_7768aeee   64.65%    failed      2.73%
+1208  83be590a_f4902c52   64.21%    passed     14.24%
+1209  83be590a_c338a57e   64.18%    passed     15.50%
+1210  83be590a_0dec90f9   64.18%    passed     18.71%
+1211  83be590a_0df1effa   64.18%    passed     17.60%
+1212  292714f1_c3d59485   63.97%    passed     45.96%
+1213  16aceaa5_b6a6d382   74.61%    failed      0.00%
+1214  dda09f7e_8c8ee6d8   62.70%    passed      9.15%
+1215  dcec2992_22e53dbd   60.83%    failed      0.00%
+1216  273b96ee_665f48ac   63.32%    passed     81.95%
+1217  5741dd65_6f62aed6   62.73%    passed     20.59%
+1218  5741dd65_d530b943   62.67%    passed     67.13%
+1219  475ab23b_fbd4bfee   62.87%    passed     36.23%
+1220  c822b40b_f20bb283   62.79%    passed     31.83%
+1221  c822b40b_49d6f358   62.79%    passed     13.77%
+1222  c822b40b_972dad28   62.79%    passed     12.52%
+1223  c822b40b_034a5c34   62.25%    failed      0.00%
+1224  0d7c7bf3_a1d3f4fe   62.84%    failed      3.85%
+1225  c657e919_457b8b54   62.01%    passed     83.57%
+1226  32d94f6b_589e9b5b   62.37%    failed      0.34%
+1227  3429b561_d7f030d1   53.48%    failed      0.03%
+1228  5574fbba_1f0d3828   62.31%    failed      4.57%
+1229  c1de4c85_c85a3581   62.31%    failed      1.49%
+1230  0ff5fc72_03533926   62.40%    failed      0.17%
+1231  2feeca75_26bfe9bd   63.56%    failed      0.00%
+1232  d392b805_da6790ce   63.61%    failed      0.00%
+1233  78fa55a7_254fb531   63.61%    failed      0.00%
+1234  20da69e4_6c157169   63.61%    failed      0.00%
+1235  19c41fba_e05837c4   63.61%    failed      0.00%
+1236  3058238c_9f9ca554   63.97%    failed      0.00%
+1237  924dea99_b63dad36   63.50%    passed     28.26%
+1238  8623dda8_66dc6efc   63.53%    passed     16.91%
+1239  abcb822b_3a1fe1ca   63.67%    passed     36.76%
+1240  b681d916_c49f5106   63.67%    passed     49.74%
+1241  ab79ce67_98ba6c8c   63.67%    passed     50.94%
+1242  90317b0d_32690ee2   62.49%    failed      0.57%
+1243  fbaae625_13122812   62.49%    failed      0.52%
+1244  21680dc5_a1693dc3   62.55%    failed      1.50%
+1245  939fd9a7_6acee5e3   62.37%    failed      2.83%
+1246  8ed83adf_2c1490f4   63.23%    passed      7.98%
+1247  293e6d4b_3df265b3   63.38%    failed      0.13%
+1248  5c3c5fd3_2aee5eb9   63.44%    failed      0.33%
+1249  c2dbb41e_29a8ad0b   63.44%    failed      0.20%
+1250  c2dbb41e_78053fcb   63.44%    failed      0.20%
+1251  52a99b87_059f4e09   63.38%    failed      3.16%
+1252  52a99b87_532346df   63.38%    failed      3.05%
+1253  52a99b87_1f284902   63.38%    failed      3.82%
+1254  753f8f75_c2a5ed2c   63.32%    passed      5.77%
+1255  7154ca61_7331ca33   63.08%    failed      3.81%
+1256  7154ca61_6d79cd5e   63.23%    passed     15.87%
+1257  7154ca61_e75b0f71   63.11%    passed     72.42%
+1258  87b4a413_deb37a13   64.56%    passed      8.22%
+1259  7154ca61_42cb3087   63.26%    passed     22.21%
+1260  c4029ead_4e6ae234   63.29%    failed      1.96%
+1261  466374a0_fa419ee4   63.29%    failed      1.85%
+1262  8d7c0951_8ce777d4   63.23%    failed      0.93%
+1263  8d7c0951_3177e56c   63.23%    failed      1.08%
+1264  8d7c0951_295bb278   63.20%    failed      0.63%
+1265  dbb28271_d3c0be4d   63.23%    failed      2.57%
+1266  9ff76868_319bf012   63.23%    failed      1.20%
+1267  dbb28271_bcef91a1   63.23%    failed      1.99%
+1268  dbb28271_1b5a9652   63.20%    failed      1.76%
+1269  cd921229_3f2b5001   63.20%    failed      0.73%
+1270  2c32390d_7530fd36   63.26%    failed      0.29%
+1271  165d765c_2ccb7cf2   63.20%    failed      0.23%
+1272  165d765c_024f261f   63.26%    passed     55.97%
+1273  165d765c_78149424   63.26%    passed     51.79%
+1274  6693b597_e24a11fd   63.26%    passed     47.59%
+1275  6693b597_f43a2e2f   63.26%    passed     49.66%
+1276  6693b597_3aefbe37   63.26%    passed     43.61%
+1277  18a5caee_69915e95   63.91%    passed     95.49%
+1278  2f559993_c5f5073f   66.31%    failed      2.20%
+1279  34295be6_33747117   64.36%    passed     76.88%
+1280  c44f1a86_bce60bcd   64.15%    passed     80.63%
+1281  0e6b8754_e9f65bf7   64.18%    passed     80.79%
+1282  0e6b8754_d0a20c39   64.41%    passed     70.36%
+1283  0e6b8754_8f2fc002   63.88%    passed     54.22%
+1284  0e6b8754_4362243c   63.76%    passed     75.34%
+1285  d299f6c4_44886a5c   63.70%    passed     23.40%
+1286  d299f6c4_a38487c1   63.47%    passed     46.58%
+1287  d299f6c4_b6b735e0   63.47%    passed     42.87%
+1288  d299f6c4_2d4e0907   64.09%    passed     95.61%
+1289  d299f6c4_f2e1d0ef   64.12%    passed     40.96%
+1290  d299f6c4_936ffcd3   64.12%    failed      3.91%
+1291  d299f6c4_ed5cfa18   61.78%    failed      0.00%
+1292  d299f6c4_f11089ed   61.81%    failed      0.00%
+1293  d299f6c4_71fd860d   62.13%    failed      0.00%
+1294  d299f6c4_9c8f6918   61.60%    passed      6.21%
+1295  3f79cce6_ab21558f   61.66%    passed      5.42%
+1296  3f79cce6_f02fee99   62.64%    passed     20.50%
+1297  3f79cce6_01187111   62.67%    passed     28.78%
+1298  3f79cce6_2bad8a9b   62.04%    passed     21.44%
+1299  3f79cce6_625188ed   62.04%    passed     19.61%
+WARNING: 1299 sequences contain more than 50% gaps/ambiguity
+****  TOTAL               67.06%  414 sequences failed composition chi2 test (p-value<5%; df=3)
+NOTE: b25fba23_c7c51414 is identical to b25fba23_012fa3a0 but kept for subsequent analysis
+NOTE: ad6db26a_1c89d485 is identical to ad6db26a_d9fd5e25 but kept for subsequent analysis
+NOTE: c84708dd_b81a5f29 is identical to c84708dd_b323e8a7 but kept for subsequent analysis
+NOTE: c84708dd_1b26357d is identical to c84708dd_f5c70590 but kept for subsequent analysis
+NOTE: e73c5f62_86be74dd is identical to e73c5f62_127e7f39 but kept for subsequent analysis
+NOTE: 857c98cd_3c674406 is identical to 857c98cd_d7200991 but kept for subsequent analysis
+NOTE: 6e11d52a_9859ac46 is identical to 6e11d52a_efdd2c24 but kept for subsequent analysis
+NOTE: 4663ed00_2d48746c is identical to 4663ed00_d46bf7aa but kept for subsequent analysis
+
+
+Create initial parsimony tree by phylogenetic likelihood library (PLL)... 2.164 seconds
+Perform fast likelihood tree search using GTR+I+G model...
+Estimate model parameters (epsilon = 5.000)
+Perform nearest neighbor interchange...
+Estimate model parameters (epsilon = 1.000)
+1. Initial log-likelihood: -310415.314
+2. Current log-likelihood: -310413.600
+Optimal log-likelihood: -310413.405
+Rate parameters:  A-C: 0.83408  A-G: 2.34740  A-T: 1.16784  C-G: 0.77758  C-T: 4.70981  G-T: 1.00000
+Base frequencies:  A: 0.272  C: 0.203  G: 0.285  T: 0.240
+Proportion of invariable sites: 0.034
+Gamma shape alpha: 0.640
+Parameters optimization took 2 rounds (1.991 sec)
+Time for fast ML tree search: 20.599 seconds
+
+NOTE: ModelFinder requires 1069 MB RAM!
+ModelFinder will test up to 286 DNA models (sample size: 3375) ...
+ No. Model         -LnL         df  AIC          AICc         BIC
+  1  GTR+F         353770.519   2603 712747.038   730329.948   728688.202
+  2  GTR+F+I       348775.808   2604 702759.616   720378.889   718706.904
+  3  GTR+F+G4      310796.749   2604 626801.497   644420.770   642748.785
+  4  GTR+F+I+G4    310413.339   2605 626036.678   643692.413   641990.090
+  5  GTR+F+R2      321195.296   2605 647600.591   665256.326   663554.004
+  6  GTR+F+R3      314512.163   2607 634238.325   651967.285   650203.986
+  7  GTR+F+R4      311866.040   2609 628950.079   646752.667   644927.988
+  8  GTR+F+R5      310540.960   2611 626303.919   644180.543   642294.076
+  9  GTR+F+R6      309806.987   2613 624839.974   642791.043   640842.379
+ 10  GTR+F+R7      309241.354   2615 623712.709   641738.638   639727.363
+ 11  GTR+F+R8      308928.954   2617 623091.907   641193.112   639118.809
+ 12  GTR+F+R9      308709.181   2619 622656.363   640833.264   638695.513
+ 13  GTR+F+R10     308592.722   2621 622427.444   640680.464   638478.843
+ 26  SYM+R10       308390.850   2618 622017.699   640156.699   638050.725
+ 39  TVM+F+R10     309535.753   2620 624311.506   642526.413   640356.780
+ 52  TVMe+R10      308731.464   2617 622696.927   640798.132   638723.829
+ 65  TIM3+F+R10    308341.985   2619 621921.971   640098.871   637961.121
+ 78  TIM3e+R10     308419.790   2616 622071.580   640135.095   638092.358
+ 91  TIM2+F+R10    308427.838   2619 622093.675   640270.576   638132.826
+104  TIM2e+R10     308673.998   2616 622579.996   640643.511   638600.774
+117  TIM+F+R10     308462.331   2619 622162.662   640339.563   638201.813
+130  TIMe+R10      308715.460   2616 622662.920   640726.435   638683.698
+143  TPM3u+F+R10   309596.715   2618 624429.431   642568.431   640462.457
+156  TPM3+F+R10    309596.732   2618 624429.464   642568.464   640462.490
+169  TPM2u+F+R10   309666.972   2618 624569.944   642708.944   640602.970
+182  TPM2+F+R10    309666.765   2618 624569.531   642708.531   640602.557
+195  K3Pu+F+R10    309712.475   2618 624660.950   642799.950   640693.976
+208  K3P+R10       309058.878   2615 623347.756   641373.685   639362.410
+221  TN+F+R10      308468.836   2618 622173.672   640312.672   638206.698
+234  TNe+R10       308716.798   2615 622663.596   640689.525   638678.250
+247  HKY+F+R10     309718.634   2617 624671.268   642772.472   640698.170
+260  K2P+R10       309060.202   2614 623348.405   641336.852   639356.935
+273  F81+F+R10     319816.480   2616 644864.959   662928.474   660885.737
+286  JC+R10        318845.852   2613 642917.704   660868.774   658920.110
+Akaike Information Criterion:           TIM3+F+R10
+Corrected Akaike Information Criterion: TIM3+F+R10
+Bayesian Information Criterion:         TIM3+F+R10
+Best-fit model: TIM3+F+R10 chosen according to BIC
+
+All model information printed to processReads/compare/01609160f4065d32aff3c47002c19d98.fasta.model.gz
+CPU time for ModelFinder: 55882.975 seconds (15h:31m:22s)
+Wall-clock time for ModelFinder: 4623.240 seconds (1h:17m:3s)
+Generating 1000 samples for ultrafast bootstrap (seed: 10403)...
+
+NOTE: 1069 MB RAM (1 GB) is required!
+Estimate model parameters (epsilon = 0.100)
+1. Initial log-likelihood: -308341.985
+2. Current log-likelihood: -308341.880
+Optimal log-likelihood: -308341.742
+Rate parameters:  A-C: 0.75330  A-G: 2.22046  A-T: 1.00000  C-G: 0.75330  C-T: 4.46380  G-T: 1.00000
+Base frequencies:  A: 0.272  C: 0.203  G: 0.285  T: 0.240
+Site proportion and rates:  (0.117,0.010) (0.085,0.056) (0.065,0.143) (0.077,0.263) (0.085,0.431) (0.098,0.691) (0.099,0.993) (0.126,1.412) (0.135,1.986) (0.113,2.803)
+Parameters optimization took 2 rounds (20.922 sec)
+Computing ML distances based on estimated model parameters... 211.286 sec
+Computing BIONJ tree...
+4.140 seconds
+Log-likelihood of BIONJ tree: -310544.400
+--------------------------------------------------------------------
+|             INITIALIZING CANDIDATE TREE SET                      |
+--------------------------------------------------------------------
+Generating 98 parsimony trees... 214.446 second
+Computing log-likelihood of 98 initial trees ... 99.847 seconds
+Current best score: -308341.742
+
+Do NNI search on 20 best initial trees
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 1: -308285.320
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 2: -308212.467
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 3: -308115.397
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 4: -308100.932
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 5: -307970.161
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 6: -307946.343
+Iteration 10 / LogL: -308009.021 / Time: 0h:21m:56s
+Iteration 20 / LogL: -308023.529 / Time: 0h:34m:25s
+Finish initializing candidate tree set (20)
+Current best tree score: -307946.343 / CPU time: 2006.979
+Number of iterations: 20
+--------------------------------------------------------------------
+|               OPTIMIZING CANDIDATE TREE SET                      |
+--------------------------------------------------------------------
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 25: -307922.639
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 27: -307894.455
+Iteration 30 / LogL: -308715.829 / Time: 0h:39m:40s (2h:12m:43s left)
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 33: -307880.316
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 38: -307852.767
+Iteration 40 / LogL: -308236.127 / Time: 0h:44m:53s (1h:52m:47s left)
+Iteration 50 / LogL: -308237.940 / Time: 0h:49m:2s (1h:28m:4s left)
+Log-likelihood cutoff on original alignment: -308118.302
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 57: -307814.063
+Iteration 60 / LogL: -307884.305 / Time: 0h:54m:9s (1h:29m:1s left)
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 67: -307775.144
+Iteration 70 / LogL: -307989.719 / Time: 0h:59m:3s (1h:23m:1s left)
+Iteration 80 / LogL: -308106.640 / Time: 1h:3m:15s (1h:9m:40s left)
+Iteration 90 / LogL: -308064.737 / Time: 1h:7m:24s (0h:58m:19s left)
+Iteration 100 / LogL: -308122.407 / Time: 1h:11m:22s (0h:48m:18s left)
+Log-likelihood cutoff on original alignment: -308075.836
+NOTE: Bootstrap correlation coefficient of split occurrence frequencies: 0.959
+NOTE: UFBoot does not converge, continue at least 100 more iterations
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 102: -307765.657
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 109: -307738.531
+Iteration 110 / LogL: -307973.205 / Time: 1h:17m:16s (1h:10m:11s left)
+Iteration 120 / LogL: -307800.635 / Time: 1h:22m:4s (1h:1m:23s left)
+Iteration 130 / LogL: -307793.695 / Time: 1h:26m:23s (0h:52m:54s left)
+Iteration 140 / LogL: -307956.447 / Time: 1h:30m:48s (0h:45m:4s left)
+Iteration 150 / LogL: -307893.981 / Time: 1h:35m:21s (0h:37m:45s left)
+Log-likelihood cutoff on original alignment: -308075.836
+Iteration 160 / LogL: -308002.082 / Time: 1h:40m:12s (0h:30m:52s left)
+Iteration 170 / LogL: -307942.029 / Time: 1h:45m:7s (0h:24m:15s left)
+Iteration 180 / LogL: -307842.331 / Time: 1h:49m:44s (0h:17m:46s left)
+Iteration 190 / LogL: -308394.899 / Time: 1h:53m:59s (0h:11m:27s left)
+Iteration 200 / LogL: -307939.688 / Time: 1h:58m:25s (0h:5m:21s left)
+Log-likelihood cutoff on original alignment: -308075.836
+NOTE: Bootstrap correlation coefficient of split occurrence frequencies: 0.969
+NOTE: UFBoot does not converge, continue at least 100 more iterations
+Iteration 210 / LogL: -307981.571 / Time: 2h:3m:22s (0h:53m:7s left)
+Iteration 220 / LogL: -307777.795 / Time: 2h:7m:53s (0h:46m:43s left)
+Iteration 230 / LogL: -307851.036 / Time: 2h:12m:14s (0h:40m:25s left)
+Iteration 240 / LogL: -307960.061 / Time: 2h:17m:25s (0h:34m:29s left)
+Iteration 250 / LogL: -308161.274 / Time: 2h:21m:30s (0h:28m:24s left)
+Log-likelihood cutoff on original alignment: -308075.836
+Iteration 260 / LogL: -307827.227 / Time: 2h:26m:43s (0h:22m:39s left)
+Iteration 270 / LogL: -307855.590 / Time: 2h:31m:34s (0h:16m:54s left)
+Iteration 280 / LogL: -307893.147 / Time: 2h:36m:38s (0h:11m:13s left)
+Iteration 290 / LogL: -307874.647 / Time: 2h:41m:29s (0h:5m:35s left)
+Iteration 300 / LogL: -308285.337 / Time: 2h:45m:49s (0h:0m:0s left)
+Log-likelihood cutoff on original alignment: -308075.836
+NOTE: Bootstrap correlation coefficient of split occurrence frequencies: 0.993
+TREE SEARCH COMPLETED AFTER 300 ITERATIONS / Time: 2h:45m:58s
+
+--------------------------------------------------------------------
+|                    FINALIZING TREE SEARCH                        |
+--------------------------------------------------------------------
+Performs final model parameters optimization
+Estimate model parameters (epsilon = 0.010)
+1. Initial log-likelihood: -307738.531
+2. Current log-likelihood: -307738.425
+3. Current log-likelihood: -307738.312
+4. Current log-likelihood: -307738.227
+5. Current log-likelihood: -307738.163
+6. Current log-likelihood: -307738.114
+7. Current log-likelihood: -307738.066
+8. Current log-likelihood: -307738.021
+9. Current log-likelihood: -307737.992
+10. Current log-likelihood: -307737.949
+11. Current log-likelihood: -307737.921
+12. Current log-likelihood: -307737.877
+13. Current log-likelihood: -307737.851
+14. Current log-likelihood: -307737.811
+15. Current log-likelihood: -307737.784
+16. Current log-likelihood: -307737.744
+17. Current log-likelihood: -307737.717
+18. Current log-likelihood: -307737.676
+19. Current log-likelihood: -307737.654
+20. Current log-likelihood: -307737.629
+21. Current log-likelihood: -307737.608
+22. Current log-likelihood: -307737.571
+23. Current log-likelihood: -307737.549
+24. Current log-likelihood: -307737.526
+25. Current log-likelihood: -307737.506
+26. Current log-likelihood: -307737.480
+27. Current log-likelihood: -307737.443
+28. Current log-likelihood: -307737.422
+29. Current log-likelihood: -307737.406
+30. Current log-likelihood: -307737.381
+31. Current log-likelihood: -307737.347
+32. Current log-likelihood: -307737.327
+33. Current log-likelihood: -307737.311
+34. Current log-likelihood: -307737.291
+35. Current log-likelihood: -307737.275
+36. Current log-likelihood: -307737.255
+37. Current log-likelihood: -307737.234
+38. Current log-likelihood: -307737.218
+39. Current log-likelihood: -307737.198
+40. Current log-likelihood: -307737.183
+41. Current log-likelihood: -307737.162
+42. Current log-likelihood: -307737.145
+43. Current log-likelihood: -307737.129
+44. Current log-likelihood: -307737.111
+45. Current log-likelihood: -307737.098
+46. Current log-likelihood: -307737.076
+47. Current log-likelihood: -307737.065
+48. Current log-likelihood: -307737.043
+49. Current log-likelihood: -307737.028
+50. Current log-likelihood: -307737.017
+51. Current log-likelihood: -307736.998
+Optimal log-likelihood: -307736.983
+Rate parameters:  A-C: 0.74554  A-G: 2.21725  A-T: 1.00000  C-G: 0.74554  C-T: 4.48699  G-T: 1.00000
+Base frequencies:  A: 0.272  C: 0.203  G: 0.285  T: 0.240
+Site proportion and rates:  (0.112,0.008) (0.086,0.051) (0.067,0.135) (0.077,0.254) (0.091,0.432) (0.093,0.700) (0.097,0.992) (0.128,1.410) (0.130,1.981) (0.117,2.775)
+Parameters optimization took 51 rounds (305.654 sec)
+BEST SCORE FOUND : -307736.983
+Creating bootstrap support values...
+Split supports printed to NEXUS file processReads/compare/01609160f4065d32aff3c47002c19d98.fasta.splits.nex
+Total tree length: 242.188
+
+Total number of iterations: 300
+CPU time used for tree search: 171293.293 sec (47h:34m:53s)
+Wall-clock time used for tree search: 9900.430 sec (2h:45m:0s)
+Total CPU time used: 175969.333 sec (48h:52m:49s)
+Total wall-clock time used: 10273.392 sec (2h:51m:13s)
+
+Computing bootstrap consensus tree...
+Reading input file processReads/compare/01609160f4065d32aff3c47002c19d98.fasta.splits.nex...
+1299 taxa and 5233 splits.
+Consensus tree written to processReads/compare/01609160f4065d32aff3c47002c19d98.fasta.contree
+Reading input trees file processReads/compare/01609160f4065d32aff3c47002c19d98.fasta.contree
+Log-likelihood of consensus tree: -307692.659
+
+Analysis results written to: 
+  IQ-TREE report:                processReads/compare/01609160f4065d32aff3c47002c19d98.fasta.iqtree
+  Maximum-likelihood tree:       processReads/compare/01609160f4065d32aff3c47002c19d98.fasta.treefile
+  Likelihood distances:          processReads/compare/01609160f4065d32aff3c47002c19d98.fasta.mldist
+
+Ultrafast bootstrap approximation results written to:
+  Split support values:          processReads/compare/01609160f4065d32aff3c47002c19d98.fasta.splits.nex
+  Consensus tree:                processReads/compare/01609160f4065d32aff3c47002c19d98.fasta.contree
+  Screen log file:               processReads/compare/01609160f4065d32aff3c47002c19d98.fasta.log
+
+Date and Time: Thu Apr 29 05:55:04 2021

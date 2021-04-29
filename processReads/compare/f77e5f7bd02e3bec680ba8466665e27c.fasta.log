@@ -1,0 +1,11 @@
+IQ-TREE multicore version 2.0.3 for Linux 64-bit built Dec 20 2020
+Developed by Bui Quang Minh, Nguyen Lam Tung, Olga Chernomor,
+Heiko Schmidt, Dominik Schrempf, Michael Woodhams.
+
+Host:    r379.uppmax.uu.se (AVX2, FMA3, 125 GB RAM)
+Command: iqtree -seed 10403 -m MFP -B 1000 -s processReads/compare/f77e5f7bd02e3bec680ba8466665e27c.fasta -T 20 -redo
+Seed:    10403 (Using SPRNG - Scalable Parallel Random Number Generator)
+Time:    Wed Apr 28 22:12:48 2021
+Kernel:  AVX+FMA - 20 threads (20 CPU cores detected)
+
+Reading alignment file processReads/compare/f77e5f7bd02e3bec680ba8466665e27c.fasta ... ERROR: File not found processReads/compare/f77e5f7bd02e3bec680ba8466665e27c.fasta
