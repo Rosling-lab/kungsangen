@@ -1,5 +1,22 @@
 # Run LSUx on the OTU representative sequences
 
+# get a linked copy of the truncated 32S CM from LSUx
+lsux_cm_32S <- system.file(
+  file.path("extdata", "fungi_32S_LR5.cm"),
+  package = "LSUx"
+)
+cm_32S_trunc_file <- file.path("reference", "fungi_32S_LR5.cm")
+if (file.exists(cm_32S_trunc_file) &&
+    tools::md5sum(cm_32S_trunc_file) != tools::md5sum(lsux_cm_32S)) {
+  unlink(cm_32S_trunc_file)
+}
+if (!file.exists(cm_32S_trunc_file)) {
+  file.link(
+    lsux_cm_32S,
+    cm32S_trunc_file
+  )
+}
+
 pre_positions_targets <-
   tar_plan(
 
@@ -7,10 +24,7 @@ pre_positions_targets <-
     # (included in LSUx)
     tar_file(
       cm_32S_trunc,
-      system.file(
-        file.path("extdata", "fungi_32S_LR5.cm"),
-        package = "LSUx"
-      )
+      cm_32S_trunc_file
     ),
 
     #### Ampliseq clusters ####
