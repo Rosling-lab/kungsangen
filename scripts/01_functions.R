@@ -253,7 +253,7 @@ align_mafft_ginsi <- function(seqs, out_file, ncpu, log = "") {
 iqtree_extensions <- c("treefile", "iqtree", "mldist", "contree", "log", "model.gz", "splits.nex")
 
 # ML tree with IQ-TREE
-iqtree <- function(aln, ncpu, log = "") {
+iqtree <- function(aln, ncpu, log = tempfile()) {
   args <- c(
     "-seed", .Random.seed[1],
     "-m", "MFP", # model finder plus
@@ -282,10 +282,16 @@ iqtree <- function(aln, ncpu, log = "") {
   tempfiles <- paste(tempaln, iqtree_extensions, sep = ".")
   if (!all(file.exists(tempfiles))) args <- c(args, "-redo")
 
-  stopifnot(
-    system2("iqtree", args = args, stdout = log) == 0 ||
-      any(grepl("indicates that a previous run successfully finished", readLines(log)))
-  )
+  # if the log was not given at the command line, don't save it
+  if (missing(log)) on.exit(unlink(log), add = TRUE)
+
+  # run iqtree
+  iqtree_return <- system2("iqtree", args = args, stdout = log, stderr = log)
+
+  # it gives a non-zero return value if it detects that a previous run finished.
+  # so use the log to check for success in that case
+  previous_complete <- any(grepl("indicates that a previous run successfully finished", readLines(log)))
+  stopifnot(iqtree_return == 0 || previous_complete)
 
   # make links from the temp files to the output files.
   outfiles <- paste(aln, iqtree_extensions, sep = ".")
