@@ -13,7 +13,7 @@ if (file.exists(cm_32S_trunc_file) &&
 if (!file.exists(cm_32S_trunc_file)) {
   file.link(
     lsux_cm_32S,
-    cm32S_trunc_file
+    cm_32S_trunc_file
   )
 }
 
