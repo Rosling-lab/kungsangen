@@ -100,7 +100,8 @@ wildcard_constraints:
 # in the headers for each sequence
 rule lima:
     output:
-        bam = temp("process/{movie}.subreads.demux.bam")
+        bam = temp("process/{movie}.subreads.demux.bam"),
+        expand("process/{{movie}}.subreads.demux.lima.{ext}", ext = ["clips", "counts", "guess", "report", "summary"])
     input:
         bam = "process/{movie}.subreads.bam",
         tags = "tags/fwd_rev_barcodes.fasta"
@@ -121,6 +122,40 @@ rule sortreport:
     output: "process/{infile}.sort.lima.report"
     input: "process/{infile}.lima.report"
     shell: "tail -n +1 {input} | sort -k 1b,1 >{output}"
+
+# count the number of reads, unique reads, and zmws in a BAM file
+rule bamstats:
+    output: "process/{base}.bamstats"
+    input: "process/{base}.bam"
+    wildcard_constraints:
+        base = "m.+"
+    threads: moviethreads
+    params: samthreads = lambda wildcards, threads: threads - 1
+    conda: "conda/samtools.yaml"
+    envmodules:
+        "bioinfo-tools",
+        "samtools"
+    shell:
+        """
+        samtools view -@{params.samthreads} {input} |
+        gawk -F'[/\t ]' '{{lc++; count[$1,$2]++; derep[$12]++}}; END{{print lc, length(derep), length(count)}}' >{output}
+        """
+
+rule allbamstats:
+    output: "process/all.bamstats"
+    input:
+        rawbamstats = expand("process/{movie}.subreads.bamstats", movie = moviefiles),
+        sievebamstats = expand("process/{movie}.subreads.demux.sieve.bamstats", movie = moviefiles),
+        ccsbamstats = expand("process/{movie}.ccs.bamstats", movie = moviefiles),
+        limastats = expand("process/{movie}.subreads.demux.lima.report", movie = moviefiles)
+    shell:
+        """
+        echo "step\treads\tzmw\tunique" >{output}
+        gawk 'BEGIN{OFS="\t"}; {reads+=$1; zmw+=$2; unique+=$3}; END{print "raw", reads, zmw, unique} {input.rawbamstats} >>{output}
+        gawm 'BEGIN{OFS="\t"}; FNR>1{reads+=$28+2; zmw++; unique=reads}; END{print "demux", reads, zmw, unique} {input.limastats} >>{output}
+        gawk 'BEGIN{OFS="\t"}; {reads+=$1; zmw+=$2; unique+=$3}; END{print "sieve", reads, zmw, unique} {input.sievebamstats} >>{output}
+        gawk 'BEGIN{OFS="\t"}; {reads+=$1; zmw+=$2; unique+=$3}; END{print "sieve", reads, zmw, unique} {input.sievebamstats} >>{output}        
+        """
 
 # filter out the samples which are not being used in this project.
 # bamsieve from pacbio looked like it would be a good way to do this,
@@ -573,8 +608,6 @@ rule laa_select:
         vsearch --fastx_getseqs {input.fastq} --labels $temp --notrunclabels --threads {threads} --fastqout - 2>{log} |
         gzip -c - >{output}
         """
-
-
 
 rule all_laa:
     output: touch("process/all_laa_{seqrun}_{type}")
