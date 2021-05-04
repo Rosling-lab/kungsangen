@@ -6,7 +6,7 @@ import os.path
 from glob import glob
 import re
 import subprocess
-from math import gcd
+from math import gcd, floor
 from snakemake.io import glob_wildcards
 
 # For testing, parse the yaml file (this is automatically done by Snakemake)
@@ -54,6 +54,7 @@ rule bax2bam:
                                .format(wildcards = wildcards),
                                recursive = True)
     shadow: "shallow"
+    group: "movie"
     params:
         prefix="process/{movie}"
     resources:
@@ -106,6 +107,7 @@ rule lima:
         bam = "process/{movie}.subreads.bam",
         tags = "tags/fwd_rev_barcodes.fasta"
     shadow: "shallow"
+    group: "movie"
     threads: moviethreads
     resources:
         walltime=20
@@ -169,9 +171,11 @@ rule sieve:
          bam="process/{movie}.subreads.demux.bam",
          samples = "tags/which_tags.txt"
     params:
-        samples = "{movie}.tags.txt"
+        samples = "{movie}.tags.txt",
+        samthreads = lambda wildcards, threads: max(floor(threads/2 - 1), 0)
     shadow: "shallow"
-    threads: 4
+    group: "movie"
+    threads: moviethreads
     resources:
         walltime=20
     log: "logs/sieve_{movie}.log"
@@ -184,10 +188,10 @@ rule sieve:
         sed 's/^/bc:B:S,/' {input.samples} > {params.samples} 2>{log}
         {{
             samtools view -H {input.bam}
-            samtools view -@1 {input.bam} |
+            samtools view -@{params.samthreads} {input.bam} |
             grep -f {params.samples}
         }} |
-        samtools view -@1 - -o {output} 2>>{log}
+        samtools view -@{params.samthreads} - -o {output} 2>>{log}
         rm {params}
         """
 
@@ -201,6 +205,7 @@ rule sievemovies:
 rule ccs:
     output: "process/{movie}.ccs.bam"
     input: "process/{movie}.subreads.demux.sieve.bam"
+    group: "movie"
     resources:
         walltime=120
     shadow: "shallow"
@@ -218,6 +223,7 @@ rule ccs2:
     resources:
         walltime=120
     shadow: "shallow"
+    group: "movie"
     threads: moviethreads
     log: "logs/nodemux_ccs_{movie}.log"
     conda: "conda/pacbio.yaml"
@@ -261,6 +267,7 @@ rule orient:
         noprimer = "process/{movie}.ccs.noprimer.fastq.gz"
     input:
         ccs = "process/{movie}.ccs.fastq.gz"
+    group: "movie"
     threads: moviethreads
     log: "logs/{movie}_orient.log"
     conda: "conda/orient.yaml"
