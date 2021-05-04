@@ -336,7 +336,12 @@ rule derep:
         walltime=10
     shadow: "shallow"
     threads: 2
-    log: "logs/derep_pb_363.log"
+    log:
+        trim = "logs/trim_pb_363.log",
+        maxee = "logs/maxee_pb_363.log",
+        minlen = "logs/minlen_pb_363.log",
+        maxlen = "logs/maxlen_pb_363.log",
+        derep = "logs/derep_pb_363.log"
     conda: "conda/orient.yaml"
     shell:
         """
@@ -350,32 +355,37 @@ rule derep:
             -a "TCCGTAGGTGAACCTGC;e=0.15;o=10...CGAAGTTTCCCTCAGGA;required;e=0.15;o=10"\\
             -o -\\
             -j 1\\
-            {output.fastq} |
+            {output.fastq} \\
+            2>{log.trim} |
          vsearch --fastq_filter - \\
             --threads 1 \\
             --fastq_maxee 12 \\
             --fastq_qmax 93 \\
             --fastqout_discarded ${{toopoor}} \\
-            --fastqout - |
+            --fastqout - \\
+            --log {log.maxee} |
          vsearch --fastq_filter - \\
             --threads 1 \\
             --fastq_qmax 93 \\
             --fastq_minlen 50 \\
             --fastqout_discarded ${{tooshort}} \\
-            --fastqout - |
+            --fastqout - \\
+            --log {log.minlen} |
          vsearch --fastq_filter - \\
             --threads 1 \\
             --fastq_qmax 93 \\
             --fastq_maxlen 2999 \\
             --fastqout_discarded ${{toolong}} \\
             --fastqout ${{fastq}}\\
-            --fastaout - |
+            --fastaout - \\
+            --log {log.maxlen} |
          vsearch --derep_fulllength - \\
             --threads 1 \\
             --sizeout \\
             --fasta_width 0\\
             --output {output.fasta} \\
-            --uc {output.uc} &&
+            --uc {output.uc} \\
+            --log {log.derep} &&
          gzip -c ${{fastq}} >{output.trimmed} &&
          gzip -c ${{tooshort}} >{output.tooshort} &&
          gzip -c ${{toolong}} >{output.toolong} &&
