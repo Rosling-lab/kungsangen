@@ -175,6 +175,11 @@ concat_targets <- tar_plan(
   tar_file(
     iqtree_fungi,
     iqtree(reconcat, local_cpus())
+  ),
+  tar_target(
+    tree_fungi_new,
+    ape::read.tree(iqtree_fungi[1]) %>%
+      ape::drop.tip(paste(fungi_outgroup, collapse = "_"))
   )
 )
 
@@ -251,7 +256,7 @@ phyloseq_targets <- tar_plan(
     phyloseq::tax_table(),
   tar_map(
     values = list(
-      tree = rlang::syms(c("tree_rooted", "tree_fungi")),
+      tree = rlang::syms(c("tree_rooted", "tree_fungi_new")),
       id = c("alleuks", "fungi")
     ),
     tar_target(

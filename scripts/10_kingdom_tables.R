@@ -4,7 +4,7 @@
 tar_map(
   values = list(
     group = c("protists", "fungi"),
-    tree = rlang::syms(c("tree_protists", "tree_fungi"))
+    tree = rlang::syms(c("tree_protists", "tree_fungi_new"))
   ),
   names = group,
   tar_map(
