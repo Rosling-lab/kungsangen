@@ -259,6 +259,40 @@ rule nodemux_combine:
     log: "logs/nodemux_ccs_pb_363.log"
     shell: "cat {input} >{output} 2>{log}"
 
+# remove concatamers by searching for repeated primers
+
+rule deconcatamer:
+    output:
+        deconcat = "process/{movie}.ccs.deconcat.fastq.gz",
+        concatamers = "process/{movie}.ccs.concatamers.fastq.gz"
+    input: "process/{movie}.ccs.fastq.gz"
+    group: "movie"
+    threads: moviethreads
+    log: "logs/{movie}_deconcat.log"
+    conda: "conda/orient.yaml"
+    shadow: "shallow"
+    shell:
+        """
+        cutadapt --action=none\\
+                 -e 0.15\\
+                 # ITS1...rcITS2
+                 -g "TCCGTAGGTGAACCTGC;o=17...GCAGGTTCACCTACGGA;o=17"\\
+                 # ITS1...ITS1
+                 -g "TCCGTAGGTGAACCTGC;o=17...TCCGTAGGTGAACCTGC;o=17"\\
+                 # rcITS1...ITS1
+                 -g "GCAGGTTCACCTACGGA;o=17...TCCGTAGGTGAACCTGC;o=17"\\
+                 # LR5...rcLR5
+                 -g "TCCTGAGGGAAACTTCG;o=17...CGAAGTTTCCCTCAGGA;o=17"\\
+                 # LR5...LR5
+                 -g "TCCTGAGGGAAACTTCG;o=17...TCCTGAGGGAAACTTCG;o=17"\\
+                 # rcLR5...LR5
+                 -g "CGAAGTTTCCCTCAGGA;o=17...TCCTGAGGGAAACTTCG;o=17"\\
+                 --untrimmed-output {output.deconcat}\\
+                 -o {output.concatamers}\\
+                 --log {log}\\
+                 {input}
+        """
+
 # lima doesn't store any information about orientation when run on subreads,
 # so orient using the primers
 rule orient:
@@ -266,7 +300,7 @@ rule orient:
         orient = "process/{movie}.ccs.orient.fastq.gz",
         noprimer = "process/{movie}.ccs.noprimer.fastq.gz"
     input:
-        ccs = "process/{movie}.ccs.fastq.gz"
+        ccs = "process/{movie}.ccs.deconcat.fastq.gz"
     group: "movie"
     threads: moviethreads
     log: "logs/{movie}_orient.log"
@@ -284,7 +318,7 @@ rule orient:
         """
 
 # quality filter the ccs and dereplicate
-# allow up to 1% expected errors, minimum length 1000, maximum length 2000
+# allow up to 12 expected errors, minimum length 50, maximum length 2999
 # the fasta output has only one entry for each unique sequence
 # the label is the ZMW name of one of the first appearance, followed by ";size=n"
 # "n" gives the number of times the sequence appears.
