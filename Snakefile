@@ -143,20 +143,72 @@ rule bamstats:
         gawk -F'[/\\t ]' '{{lc++; count[$1,$2]++; derep[$12]++}}; END{{print lc, length(derep), length(count)}}' >{output}
         """
 
+rule fastqstats:
+    output: "process/{base}.fastqstats"
+    input: "process/{base}.fastq.gz"
+    threads: moviethreads
+    conda: "conda/vsearch.yaml"
+    envmodules:
+        "bioinfo-tools",
+        "vsearch/2.14.1"
+    shell:
+        """
+        vsearch --derep_fulllength {input} \\
+                --output /dev/null \\
+                --threads {threads} \\
+                --log - |
+        sed -rn '$!{{H}}; ${{H; x; s/.+nt in ([0-9]+) seqs.+\\n([0-9]+) unique sequences.+/\\1\t\\2/ ; p}}' \\
+            > {output}
+        """
+
 rule allbamstats:
     output: "process/all.bamstats"
     input:
-        rawbamstats = expand("process/{movie}.subreads.bamstats", movie = moviefiles),
-        sievebamstats = expand("process/{movie}.subreads.demux.sieve.bamstats", movie = moviefiles),
-        ccsbamstats = expand("process/{movie}.ccs.bamstats", movie = moviefiles),
-        limastats = expand("process/{movie}.subreads.demux.lima.report", movie = moviefiles)
+        raw = expand("process/{movie}.subreads.bamstats", movie = moviefiles),
+        lima = expand("process/{movie}.subreads.demux.lima.report", movie = moviefiles),
+        sieve = expand("process/{movie}.subreads.demux.sieve.bamstats", movie = moviefiles),
+        ccs = expand("process/{movie}.ccs.bamstats", movie = moviefiles),
+        deconcat = expand("process/{movie}.ccs.deconcat.fastqstats", movie = moviefiles),
+        orient = expand("process/{movie}.ccs.orient.fastqstats", movie = moviefiles),
+        tooshort = "process/pb_363.ccs.orient.tooshort.fastqstats",
+        toolong = "process/pb_363.ccs.orient.toolong.fastqstats",
+        toopoor = "process/pb_363.ccs.orient.toopoor.fastqstats",
+        derep = "logs/derep_pb_363.log"
     shell:
         """
         echo "step\treads\tzmw\tunique" >{output}
-        gawk 'BEGIN{{OFS="\\t"}}; {{reads+=$1; zmw+=$3; unique+=$2}}; END{{print "raw", reads, zmw, unique}}' {input.rawbamstats} >>{output}
-        gawk 'BEGIN{{OFS="\\t"}}; FNR>1{{reads+=$28+2; zmw++; unique=reads}}; END{{print "demux", reads, zmw, unique}}' {input.limastats} >>{output}
-        gawk 'BEGIN{{OFS="\\t"}}; {{reads+=$1; zmw+=$3; unique+=$2}}; END{{print "sieve", reads, zmw, unique}}' {input.sievebamstats} >>{output}
-        gawk 'BEGIN{{OFS="\\t"}}; {{reads+=$1; zmw+=$3; unique+=$2}}; END{{print "ccs", reads, zmw, unique}}' {input.ccsbamstats} >>{output}
+        gawk 'BEGIN{{OFS="\\t"}}
+              {{reads+=$1; zmw+=$3; unique+=$2}}; END{{print "raw", reads, zmw, unique}}'\\
+             {input.raw} >>{output}
+        gawk 'FNR>1{{reads+=$28+2; zmw++; unique=reads}}
+              END{{OFS="\\t"; print "demux", reads, zmw, unique}}' \\
+             {input.lima} >>{output}
+        gawk '{{reads+=$1; zmw+=$3; unique+=$2}}
+              END{{OFS="\\t"; print "sieve", reads, zmw, unique}}' \\
+             {input.sieve} >>{output}
+        gawk '{{reads+=$1; zmw+=$3; unique+=$2}}
+              END{{OFS="\\t"; print "ccs", reads, zmw, unique}}' \\
+             {input.ccs} >>{output}
+        gawk '{{zmw+=$1; unique+=$2}}
+              END{{OFS="\\t"; print "deconcat", "", zmw, unique}}' \\
+             {input.deconcat} >>{output}
+        gawk '{{zmw+=$1; unique+=$2}}
+              END{{OFS="\\t"; print "orient", "", zmw, unique}}' \\
+             {input.orient} >>{output}
+        gawk 'NR=FNR{{zmw=$3; unique=$4}}
+              NR!=FNR{{zmw-=$1; unique-=$2}}
+              END{{OFS="\\t"; print "quality", "", zmw, unique}}' \\
+             {output} {input.toopoor} >>{output}
+        gawk 'NR=FNR{{zmw=$3; unique=$4}}
+              NR!=FNR{{zmw-=$1; unique-=$2}}
+              END{{OFS="\\t"; print "minlength", "", zmw, unique}}' \\
+             {output} {input.tooshort} >>{output}
+        gawk 'NR=FNR{{zmw=$3; unique=$4}}
+              NR!=FNR{{zmw-=$1; unique-=$2}}
+              END{{OFS="\\t"; print "maxlength", "", zmw, unique}}' \\
+             {output} {input.toolong} >>{output}
+        sed -rn '$!{{H}}; ${{H; x; s/.+nt in ([0-9]+) seqs.+\\n([0-9]+) unique sequences.+/\t\t\\1\t\\2/ ; p}}' \\
+            {input.derep} >>{output}
         """
 
 # filter out the samples which are not being used in this project.
