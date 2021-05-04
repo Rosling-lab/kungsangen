@@ -6,3 +6,5 @@ _targets/objects/* filter=lfs diff=lfs merge=lfs -text
 *.xlsx filter=lfs diff=lfs merge=lfs -text
 output/** linguist-generated
 process*/** linguist-generated
+*.png filter=lfs diff=lfs merge=lfs -text
+*.zip filter=lfs diff=lfs merge=lfs -text
