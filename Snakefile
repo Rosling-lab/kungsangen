@@ -100,8 +100,8 @@ wildcard_constraints:
 # in the headers for each sequence
 rule lima:
     output:
-        bam = temp("process/{movie}.subreads.demux.bam"),
-        expand("process/{{movie}}.subreads.demux.lima.{ext}", ext = ["clips", "counts", "guess", "report", "summary"])
+        expand("process/{{movie}}.subreads.demux.lima.{ext}", ext = ["clips", "counts", "guess", "report", "summary"]),
+        bam = temp("process/{movie}.subreads.demux.bam")
     input:
         bam = "process/{movie}.subreads.bam",
         tags = "tags/fwd_rev_barcodes.fasta"
@@ -138,7 +138,7 @@ rule bamstats:
     shell:
         """
         samtools view -@{params.samthreads} {input} |
-        gawk -F'[/\t ]' '{{lc++; count[$1,$2]++; derep[$12]++}}; END{{print lc, length(derep), length(count)}}' >{output}
+        gawk -F'[/\\t ]' '{{lc++; count[$1,$2]++; derep[$12]++}}; END{{print lc, length(derep), length(count)}}' >{output}
         """
 
 rule allbamstats:
@@ -151,10 +151,10 @@ rule allbamstats:
     shell:
         """
         echo "step\treads\tzmw\tunique" >{output}
-        gawk 'BEGIN{OFS="\t"}; {reads+=$1; zmw+=$2; unique+=$3}; END{print "raw", reads, zmw, unique} {input.rawbamstats} >>{output}
-        gawm 'BEGIN{OFS="\t"}; FNR>1{reads+=$28+2; zmw++; unique=reads}; END{print "demux", reads, zmw, unique} {input.limastats} >>{output}
-        gawk 'BEGIN{OFS="\t"}; {reads+=$1; zmw+=$2; unique+=$3}; END{print "sieve", reads, zmw, unique} {input.sievebamstats} >>{output}
-        gawk 'BEGIN{OFS="\t"}; {reads+=$1; zmw+=$2; unique+=$3}; END{print "sieve", reads, zmw, unique} {input.sievebamstats} >>{output}        
+        gawk 'BEGIN{{OFS="\\t"}}; {{reads+=$1; zmw+=$3; unique+=$2}}; END{{print "raw", reads, zmw, unique}}' {input.rawbamstats} >>{output}
+        gawk 'BEGIN{{OFS="\\t"}}; FNR>1{{reads+=$28+2; zmw++; unique=reads}}; END{{print "demux", reads, zmw, unique}}' {input.limastats} >>{output}
+        gawk 'BEGIN{{OFS="\\t"}}; {{reads+=$1; zmw+=$3; unique+=$2}}; END{{print "sieve", reads, zmw, unique}}' {input.sievebamstats} >>{output}
+        gawk 'BEGIN{{OFS="\\t"}}; {{reads+=$1; zmw+=$3; unique+=$2}}; END{{print "ccs", reads, zmw, unique}}' {input.ccsbamstats} >>{output}
         """
 
 # filter out the samples which are not being used in this project.
