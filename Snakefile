@@ -101,7 +101,7 @@ wildcard_constraints:
 # in the headers for each sequence
 rule lima:
     output:
-        expand("process/{{movie}}.subreads.demux.lima.{ext}", ext = ["clips", "counts", "guess", "report", "summary"]),
+        expand("process/{{movie}}.subreads.demux.lima.{ext}", ext = ["counts", "guess", "report", "summary"]),
         bam = temp("process/{movie}.subreads.demux.bam")
     input:
         bam = "process/{movie}.subreads.bam",
