@@ -244,7 +244,7 @@ rule sieve:
             grep -f {params.samples}
         }} |
         samtools view -@{params.samthreads} - -o {output} 2>>{log}
-        rm {params}
+        rm {params.samples}
         """
 
 # endpoint target: demultiplex and sieve all movies
