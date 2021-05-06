@@ -327,22 +327,17 @@ rule deconcatamer:
         """
         cutadapt --action=none\\
                  -e 0.15\\
-                 # ITS1...rcITS2
                  -g "TCCGTAGGTGAACCTGC;o=17...GCAGGTTCACCTACGGA;o=17"\\
-                 # ITS1...ITS1
                  -g "TCCGTAGGTGAACCTGC;o=17...TCCGTAGGTGAACCTGC;o=17"\\
-                 # rcITS1...ITS1
                  -g "GCAGGTTCACCTACGGA;o=17...TCCGTAGGTGAACCTGC;o=17"\\
-                 # LR5...rcLR5
                  -g "TCCTGAGGGAAACTTCG;o=17...CGAAGTTTCCCTCAGGA;o=17"\\
-                 # LR5...LR5
                  -g "TCCTGAGGGAAACTTCG;o=17...TCCTGAGGGAAACTTCG;o=17"\\
-                 # rcLR5...LR5
                  -g "CGAAGTTTCCCTCAGGA;o=17...TCCTGAGGGAAACTTCG;o=17"\\
                  --untrimmed-output {output.deconcat}\\
                  -o {output.concatamers}\\
-                 --log {log}\\
-                 {input}
+                 {input}\\
+                 &> {log}
+
         """
 
 # lima doesn't store any information about orientation when run on subreads,
