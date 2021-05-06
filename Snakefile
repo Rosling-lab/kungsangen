@@ -153,12 +153,16 @@ rule fastqstats:
         "vsearch/2.14.1"
     shell:
         """
-        vsearch --derep_fulllength {input} \\
-                --output /dev/null \\
-                --threads {threads} \\
-                --log - |
-        sed -rn '$!{{H}}; ${{H; x; s/.+nt in ([0-9]+) seqs.+\\n([0-9]+) unique sequences.+/\\1\t\\2/ ; p}}' \\
-            > {output}
+        nrow=$(zcat {input} | wc -l)
+        if [ $nrow -ge 4 ]; then
+            vsearch --derep_fulllength {input} \\
+                    --output /dev/null \\
+                    --threads {threads} \\
+                    --log - |
+            sed -rn '$!{{H}}; ${{H; x; s/.+nt in ([0-9]+) seqs.+\\n([0-9]+) unique sequences.+/\\1\t\\2/ ; p}}'
+        else
+	    echo "0\t0"
+        fi > {output}
         """
 
 rule allbamstats:
