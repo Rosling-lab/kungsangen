@@ -17,7 +17,7 @@ if (!file.exists(cm_32S_trunc_file)) {
   )
 }
 
-pre_positions_targets <-
+pre_positions_plan <-
   tar_plan(
 
     # get the path for the CM which is truncated at the LR5 primer site
@@ -45,7 +45,7 @@ pre_positions_targets <-
       tibble::deframe()
   )
 
-positions_targets <-  tar_map(
+positions_plan <-  tar_map(
   values = list(seq = rlang::syms(c("ampliseq", "seqs_sl", "seqs_vs")),
                 table = rlang::syms(c("ampliseq_table", "table_sl", "table_vs")),
                 id = c("as", "sl", "vs")),
@@ -102,4 +102,4 @@ positions_targets <-  tar_map(
   names = id
 )
 
-lsux_targets <- c(pre_positions_targets, positions_targets)
+lsux_plan <- c(pre_positions_plan, positions_plan)

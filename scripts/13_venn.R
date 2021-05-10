@@ -12,7 +12,7 @@ venn_meta <- tibble::tibble(
   only2 = paste0(sub("illaria", "", level2label), "-only")
 )
 
-venn_targets <- tar_map(
+venn_plan <- tar_map(
   values = venn_meta,
   names = group_var_name,
   venn_data = tar_fst_tbl(

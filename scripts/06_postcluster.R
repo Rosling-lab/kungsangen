@@ -1,7 +1,7 @@
 # cluster all the ITS2 extracted from the OTU representative sequences
 
 #### Cluster the ITS2 at different thresholds ####
-its2_cluster_targets <- tar_plan(
+its2_cluster_plan <- tar_plan(
   tar_file(
     its2_file,
     write_and_return_file(
@@ -62,10 +62,10 @@ its2_cluster_targets <- tar_plan(
   )
 )
 
-last_cluster_target <- dplyr::last(its2_cluster_targets)
+last_cluster_target <- dplyr::last(its2_cluster_plan)
 
-its2_cluster_targets <- c(
-  its2_cluster_targets,
+its2_cluster_plan <- c(
+  its2_cluster_plan,
   list(
     tar_combine(
       cluster_fraction_table,

@@ -11,7 +11,7 @@ taxplot_meta <- tibble::tibble(
 ) %>%
   dplyr::mutate_at(c("tree", "otu_table", "rank"), rlang::syms)
 
-taxplot_targets <- tar_map(
+taxplot_plan <- tar_map(
   values = taxplot_meta,
   names = group,
   # make phylogenetic consensus assignments for the fungi

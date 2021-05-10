@@ -33,13 +33,14 @@ source(here::here("scripts", "12_taxonomy_plots.R"))
 source(here::here("scripts", "13_venn.R"))
 c(
   otu_table_plan,
-  lsux_targets,
-  its2_cluster_targets,
-  taxonomy_targets,
-  tree_targets,
-  accumulation_targets,
-  kingdom_table_targets,
-  detection_targets,
-  taxplot_targets,
-  venn_targets
+  lsux_plan,
+  its2_cluster_plan,
+  taxonomy_plan,
+  tree_plan,
+  accumulation_plan,
+  kingdom_table_plan,
+  detection_plan,
+  taxplot_plan,
+  venn_plan,
+  NULL
 )

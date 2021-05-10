@@ -8,7 +8,7 @@ detection_meta <- tibble::tibble(
 ) %>%
   dplyr::mutate_at("clusters", rlang::syms)
 
-detection_targets <- tar_map(
+detection_plan <- tar_map(
   values = detection_meta,
   names = threshold,
   tar_target(
@@ -27,12 +27,12 @@ detection_targets <- tar_map(
   )
 )
 
-detection_targets <- c(
-  detection_targets,
+detection_plan <- c(
+  detection_plan,
   list(
     detection_plot = tar_combine(
       detection_plot,
-      detection_targets$detection_data,
+      detection_plan$detection_data,
       command = dplyr::bind_rows(!!!.x) %>%
         ggplot(aes(x = n, y = n_asvs, color = threshold, group = threshold)) +
         geom_point(alpha = 0.2) +
