@@ -17,8 +17,8 @@ realign_meta <- tibble::tibble(
 )
 
 physeq_meta <- tibble::tibble(
-  tree = rlang::syms("tree_rooted", "tree_fungi_new),
-  id = c("alleuks", "fungi")
+      id = c("alleuks", paste0("fungi_", realign_meta$aligner_name)),
+      tree = rlang::syms(paste0("tree_", id))
 )
 
 unifrac_meta <- tidyr::crossing(
@@ -134,17 +134,17 @@ concat_plan <- tar_plan(
 
   #### separate out Fungi and protist trees ####
   tree_raw = treeio::read.newick(tree_file),
-  tree_rooted = root_with_kingdoms(tree_raw, kingdoms, c("Euglenozoa", "Heterolobosa")),
+  tree_alleuks = root_with_kingdoms(tree_raw, kingdoms, c("Euglenozoa", "Heterolobosa")),
   tree_fungi = dplyr::filter(kingdoms, taxon == "Fungi")$label %>%
-    ape::getMRCA(tree_rooted, .) %>%
-    ape::extract.clade(tree_rooted, .),
+    ape::getMRCA(tree_alleuks, .) %>%
+    ape::extract.clade(tree_alleuks, .),
   tree_animals = dplyr::filter(kingdoms, taxon == "Metazoa")$label %>%
-    ape::getMRCA(tree_rooted, .) %>%
-    ape::extract.clade(tree_rooted, .),
+    ape::getMRCA(tree_alleuks, .) %>%
+    ape::extract.clade(tree_alleuks, .),
   tree_plants = dplyr::filter(phyla, taxon == "Streptophyta")$label %>%
-    ape::getMRCA(tree_rooted, .) %>%
-    ape::extract.clade(tree_rooted, .),
-  tree_protists = tree_rooted %>%
+    ape::getMRCA(tree_alleuks, .) %>%
+    ape::extract.clade(tree_alleuks, .),
+  tree_protists = tree_alleuks %>%
     ape::drop.tip(tree_fungi$tip.label) %>%
     ape::drop.tip(tree_animals$tip.label) %>%
     ape::drop.tip(tree_plants$tip.label),
@@ -170,47 +170,59 @@ concat_plan <- tar_plan(
 
   tar_map(
     values = tibble::tibble(
-      region = c("5_8S", "LSU"),
-      allseqs = paste0("allseqs_", region) %>% rlang::syms()
+      aligner_name = c(
+        "ginsi",
+        "einsi",
+        "edecipher",
+        "decipher"
+      ),
+      aligner = rlang::syms(paste0("align_", aligner_name))
     ),
-    names = region,
+    names = aligner_name,
+    tar_map(
+      values = tibble::tibble(
+        region = c("5_8S", "LSU"),
+        allseqs = paste0("allseqs_", region) %>% rlang::syms()
+      ),
+      names = region,
+      tar_file(
+        realign,
+        aligner(
+          seqs = allseqs[c(fungi_outgroup[[region]], unique(regions_fungi[[region]]))],
+          out_file = file.path(comparedir, sprintf("fungi_realign_%s_%s.fasta", aligner_name, region)),
+          ncpu = local_cpus(),
+          log = file.path("logs", sprintf("fungi_realign_%s_%s.log", aligner_name, region))
+        )
+      ),
+      tar_target(
+        realign_copies,
+        Biostrings::readRNAStringSet(realign)[
+          c(fungi_outgroup[[region]], regions_fungi[[region]])
+        ]
+      ),
+      unlist = TRUE
+    ),
     tar_file(
-      realign,
-      align_mafft_ginsi(
-        seqs = allseqs[c(fungi_outgroup[[region]], unique(regions_fungi[[region]]))],
-        out_file = file.path(comparedir, sprintf("fungi_realign_%s.fasta", region)),
-        ncpu = local_cpus(),
-        log = file.path("logs", sprintf("fungi_realign_%s.log", region))
-      )
+      reconcat,
+      paste(
+        realign_copies_5_8S,
+        trim_LSU_intron(realign_copies_LSU),
+        sep = ""
+      ) %>%
+        set_names(paste(names(realign_copies_5_8S), names(realign_copies_LSU), sep = "_")) %>%
+        chartr(old = "Uu", new = "Tt") %>%
+        Biostrings::DNAStringSet() %>%
+        write_and_return_file(file.path(comparedir, "fungi_realign.fasta"))
+    ),
+    tar_file(
+      iqtree_fungi,
+      iqtree(reconcat, local_cpus())
     ),
     tar_target(
-      realign_copies,
-      Biostrings::readRNAStringSet(realign)[
-        c(fungi_outgroup[[region]], regions_fungi[[region]])
-        ]
-    ),
-    unlist = TRUE
-  ),
-  tar_file(
-    reconcat,
-    paste(
-      realign_copies_5_8S,
-      trim_LSU_intron(realign_copies_LSU),
-      sep = ""
-    ) %>%
-    set_names(paste(names(realign_copies_5_8S), names(realign_copies_LSU), sep = "_")) %>%
-    chartr(old = "Uu", new = "Tt") %>%
-    Biostrings::DNAStringSet() %>%
-      write_and_return_file(file.path(comparedir, "fungi_realign.fasta"))
-  ),
-  tar_file(
-    iqtree_fungi,
-    iqtree(reconcat, local_cpus())
-  ),
-  tar_target(
-    tree_fungi_new,
-    ape::read.tree(iqtree_fungi[1]) %>%
-      ape::drop.tip(paste(fungi_outgroup, collapse = "_"))
+      tree_fungi,
+      ape::read.tree(iqtree_fungi[1]) %>%
+        ape::drop.tip(paste(fungi_outgroup, collapse = "_"))
+    )
   )
 )
 
@@ -280,7 +292,7 @@ phyloseq_plan <- tar_plan(
     ) %>%
     phylotax::make_taxon_labels(abbrev = taxon_abbrevs) %>%
     dplyr::rename(taxon_label = new) %>%
-    dplyr::left_join(tibble::tibble(old = tree_rooted$tip.label), by = "old") %>%
+    dplyr::left_join(tibble::tibble(old = tree_alleuks$tip.label), by = "old") %>%
     tidyr::replace_na(list(taxon_label = "")) %>%
     tibble::column_to_rownames("old") %>%
     as.matrix() %>%

@@ -241,12 +241,58 @@ fasttree <- function(aln_file, out_file, constraints = NULL) {
 }
 
 # align with MAFFT-ginsi
-align_mafft_ginsi <- function(seqs, out_file, ncpu, log = "") {
+align_ginsi <- function(seqs, out_file, ncpu, log = "") {
   seqs_file <- tempfile(fileext = ".fasta")
   Biostrings::writeXStringSet(seqs, seqs_file)
   on.exit(unlink(seqs_file))
   args <- c("--globalpair", "--maxiterate", "1000", "--thread", ncpu, seqs_file)
   stopifnot(system2("mafft", args = args, stdout = out_file, stderr = log) == 0)
+  out_file
+}
+
+# align with MAFFT-einsi
+align_einsi <- function(seqs, out_file, ncpu, log = "") {
+  seqs_file <- tempfile(fileext = ".fasta")
+  Biostrings::writeXStringSet(seqs, seqs_file)
+  on.exit(unlink(seqs_file))
+  args <- c("--genafpair", "--ep", "0", "--maxiterate", "1000", "--thread", ncpu, seqs_file)
+  stopifnot(system2("mafft", args = args, stdout = out_file, stderr = log) == 0)
+  out_file
+}
+
+# align with decipher, using 0 gap extension penalty (as in einsi)
+align_edecipher <- function(seqs, out_file, ncpu, log = "") {
+  if (nchar(log) > 0) {
+    sink(log)
+    on.exit(sink())
+  }
+  seqs <- Biostrings::RNAStringSet(seqs)
+  msa <- DECIPHER::AlignSeqs(seqs, gapExtension = 0, processors = ncpu)
+  msa <- Biostrings::DNAStringSet(msa)
+  Biostrings::writeXStringSet(msa, out_file)
+  out_file
+}
+
+# align with decipher, using defaults
+align_decipher <- function(seqs, out_file, ncpu, log = "") {
+  if (nchar(log) > 0) {
+    sink(log)
+    on.exit(sink())
+  }
+  msa <- DECIPHER::AlignSeqs(seqs, processors = ncpu)
+  Biostrings::writeXStringSet(msa, out_file)
+  out_file
+}
+
+# align to CM with inferrnal
+align_infernal <- function(seqs, out_file, ncpu, log = "") {
+  if (nchar(log) > 0) {
+    sink(log)
+    on.exit(sink())
+  }
+  msa <- inferrnal::cmalign(cm_32S_trunc_file, seqs, matchonly = TRUE, cpu = ncpu)$alignment
+  msa <- Biostrings::unmasked(msa)
+  Biostrings::writeXStringSet(msa, out_file)
   out_file
 }
 
