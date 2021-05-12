@@ -5,7 +5,7 @@ library(magrittr)
 taxplot_meta <- tibble::tibble(
   group = c("protists", "fungi"),
   rank = c("kingdom", "phylum"),
-  tree = paste0("tree_", group),
+  tree = c("tree_protists", "tree_fungi_new"),
   cutoff = c(0.015, 0.015),
   otu_table = paste0("otu_table_ampliseq_", group)
 ) %>%
