@@ -32,4 +32,4 @@ tar_map(
       )
     )
   )
-) -> kingdom_table_targets
+) -> kingdom_table_plan

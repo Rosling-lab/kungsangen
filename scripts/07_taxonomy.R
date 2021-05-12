@@ -1,6 +1,6 @@
 # Assign taxonomy
 
-taxonomy_targets <- tar_plan(
+taxonomy_plan <- tar_plan(
   tar_map(
     values = list(
       # allseqs is actually defined in 08_tree.R, but that's ok, targets will
@@ -139,11 +139,11 @@ taxonomy_targets <- tar_plan(
     dplyr::filter(dplyr::n_distinct(taxon) == 1)
 )
 
-taxonomy_targets <- c(
-  taxonomy_targets,
+taxonomy_plan <- c(
+  taxonomy_plan,
   tar_combine(
     kingdom_count,
-    taxonomy_targets[[1]]$ref_kingdoms,
+    taxonomy_plan[[1]]$ref_kingdoms,
     command = table(c(!!!.x))
   )
 )

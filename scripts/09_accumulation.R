@@ -154,14 +154,14 @@ tar_plan(
     names = clustype
   )
 ) ->
-  accumulation_targets
+  accumulation_plan
 
-accumulation_targets <- c(
-  accumulation_targets,
+accumulation_plan <- c(
+  accumulation_plan,
   tar_plan(
     tar_combine(
       seq_accum_sample,
-      accumulation_targets[[3]]$seq_accum_sample,
+      accumulation_plan[[3]]$seq_accum_sample,
       command = list(!!!.x) %>%
         lapply(ggplot2::fortify) %>%
         dplyr::bind_rows(.id = "cluster_type") %>%
@@ -171,7 +171,7 @@ accumulation_targets <- c(
     ),
     tar_combine(
       seq_accum_sample_means,
-      accumulation_targets[[3]]$seq_accum_sample_means,
+      accumulation_plan[[3]]$seq_accum_sample_means,
       command = dplyr::bind_rows(!!!.x, .id = "cluster_type") %>%
         dplyr::mutate_at("cluster_type", stringr::str_remove, "seq_accum_sample_means_") %>%
         recode_cluster_types()
@@ -209,7 +209,7 @@ accumulation_targets <- c(
     ),
     tar_combine(
       seq_accum_site,
-      accumulation_targets[[3]]$seq_accum_site,
+      accumulation_plan[[3]]$seq_accum_site,
       command = list(!!!.x) %>%
         lapply(ggplot2::fortify) %>%
         dplyr::bind_rows(.id = "cluster_type") %>%
@@ -219,7 +219,7 @@ accumulation_targets <- c(
     ),
     tar_combine(
       samp_accum_site,
-      accumulation_targets[[3]]$samp_accum_site,
+      accumulation_plan[[3]]$samp_accum_site,
       command = list(!!!.x) %>%
         lapply(ggplot2::fortify) %>%
         dplyr::bind_rows(.id = "cluster_type") %>%
@@ -229,7 +229,7 @@ accumulation_targets <- c(
     ),
     tar_combine(
       asymp_site,
-      accumulation_targets[[3]]$asymp_site,
+      accumulation_plan[[3]]$asymp_site,
       command = dplyr::bind_rows(!!!.x, .id = "cluster_type") %>%
         dplyr::mutate_at("cluster_type", stringr::str_remove, "asymp_site_") %>%
         recode_cluster_types(),

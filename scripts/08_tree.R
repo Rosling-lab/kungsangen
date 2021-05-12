@@ -7,7 +7,7 @@ library(tarchetypes)
 library(rlang)
 
 #### Combined table ####
-align_targets <- tar_map(
+align_plan <- tar_map(
   values = list(
     hash = c("5_8S_hash", "LSU_hash", "ITS2_hash", "ITS_hash"),
     region = c("5_8S", "LSU", "ITS2", "ITS")
@@ -15,7 +15,7 @@ align_targets <- tar_map(
   # get all the unique 5.8S and LSU sequences
   tar_combine(
     allseqs,
-    positions_targets$regions,
+    positions_plan$regions,
     command =
       purrr::map_dfr(list(!!!.x), dplyr::select, hash, region) %>%
       unique() %>%
@@ -42,17 +42,17 @@ align_targets <- tar_map(
 )
 
 # we don't need to align ITS
-align_targets$align <- purrr::discard(
-  align_targets$align,
+align_plan$align <- purrr::discard(
+  align_plan$align,
   ~ grepl("ITS", .$settings$name)
 )
 
 
-concat_targets <- tar_plan(
+concat_plan <- tar_plan(
 
   tar_combine(
     hash_key,
-    positions_targets$hash_key,
+    positions_plan$hash_key,
     command = dplyr::bind_rows(!!!.x) %>% unique()
   ),
 
@@ -185,7 +185,7 @@ concat_targets <- tar_plan(
 
 #### Community matrix ####
 # make a "community matrix" for the different pipelines
-reads_targets <- tar_map(
+reads_plan <- tar_map(
   tidyr::crossing(
     m = tibble::tibble(
       table = rlang::syms(c("ampliseq_table", "table_vs", "table_sl")),
@@ -220,11 +220,11 @@ reads_targets <- tar_map(
   names = c(id, id2)
 )
 
-phyloseq_targets <- tar_plan(
+phyloseq_plan <- tar_plan(
 
   tar_combine(
     reads_tab,
-    purrr::keep(reads_targets$reads, ~ endsWith(.$settings$name, "ITS2")),
+    purrr::keep(reads_plan$reads, ~ endsWith(.$settings$name, "ITS2")),
     command =
       purrr::reduce(list(!!!.x), dplyr::full_join, by = "seq_id") %>%
       dplyr::mutate_if(is.numeric, tidyr::replace_na, 0L)
@@ -232,7 +232,7 @@ phyloseq_targets <- tar_plan(
 
   tar_combine(
     otu_tab,
-    purrr::keep(reads_targets$abundance, ~ endsWith(.$settings$name, "concat")),
+    purrr::keep(reads_plan$abundance, ~ endsWith(.$settings$name, "concat")),
     command =
       purrr::reduce(list(!!!.x), dplyr::full_join, by = "seq_id") %>%
       dplyr::mutate_if(is.numeric, tidyr::replace_na, 0) %>%
@@ -390,7 +390,7 @@ phyloseq_targets <- tar_plan(
   )
 )
 
-constraint_targets <- list(
+constraint_plan <- list(
   constraint_tree_file = tar_file(
     constraint_tree_file,
     file.path("reference", "constraints.tree")
@@ -418,12 +418,12 @@ constraint_targets <- list(
   )
 )
 
-tree_targets <- c(
-  align_targets,
-  concat_targets,
-  reads_targets,
-  phyloseq_targets,
-  constraint_targets
+tree_plan <- c(
+  align_plan,
+  concat_plan,
+  reads_plan,
+  phyloseq_plan,
+  constraint_plan
 )
 
 # colSums(phyloseq::otu_table(physeq_glom) > 0)

@@ -5,13 +5,13 @@ library(magrittr)
 taxplot_meta <- tibble::tibble(
   group = c("protists", "fungi"),
   rank = c("kingdom", "phylum"),
-  tree = paste0("tree_", group),
+  tree = c("tree_protists", "tree_fungi_new"),
   cutoff = c(0.015, 0.015),
   otu_table = paste0("otu_table_ampliseq_", group)
 ) %>%
   dplyr::mutate_at(c("tree", "otu_table", "rank"), rlang::syms)
 
-taxplot_targets <- tar_map(
+taxplot_plan <- tar_map(
   values = taxplot_meta,
   names = group,
   # make phylogenetic consensus assignments for the fungi
@@ -89,6 +89,28 @@ taxplot_targets <- tar_map(
         file.path(figdir, sprintf("taxonomy_%s.%s", group, ext)),
         device = fun, width = 6.25, height = 4, dpi = 150
       )
+    )
+  ),
+  tar_qs(
+    samples_physeq,
+    phyloseq::phyloseq(
+      phyloseq::otuTable(
+        tibble::column_to_rownames(otu_table, "OTU"),
+        taxa_are_rows = TRUE
+      ),
+      phyloseq::tax_table(
+        taxplot_data %>%
+          dplyr::select(OTU, kingdom:genus) %>%
+          tibble::column_to_rownames("OTU")
+      ),
+      phyloseq::sample_data(samples_df)
+    )
+  ),
+  tar_file(
+    physeq_file,
+    write_and_return_file(
+      samples_physeq,
+      sprintf("output/data/phyloseq_%s.rds", group)
     )
   )
 )
