@@ -1,14 +1,16 @@
 # Assign taxonomy
 
+taxonomy_meta <- tibble::tibble(
+  # allseqs is actually defined in 08_tree.R, but that's ok, targets will
+  # execute them in the correct order.
+  allseqs = rlang::syms(c("allseqs_ITS", "allseqs_LSU", "allseqs_LSU")),
+  reference = c("unite_single.ITS", "rdp_train.LSU", "silva_nr99.LSU"),
+  id = c("unite", "rdp", "silva")
+)
+
 taxonomy_plan <- tar_plan(
   tar_map(
-    values = list(
-      # allseqs is actually defined in 08_tree.R, but that's ok, targets will
-      # execute them in the correct order.
-      allseqs = rlang::syms(c("allseqs_ITS", "allseqs_LSU", "allseqs_LSU")),
-      reference = c("unite_single.ITS", "rdp_train.LSU", "silva_nr99.LSU"),
-      id = c("unite", "rdp", "silva")
-    ),
+    values = taxonomy_meta,
     # files for the reference datasets
     tar_file(
       reference_file,

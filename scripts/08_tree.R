@@ -6,6 +6,37 @@ library(targets)
 library(tarchetypes)
 library(rlang)
 
+realign_meta <- tibble::tibble(
+  aligner_name = c(
+    "ginsi",
+    "einsi",
+    "edecipher",
+    "decipher"
+  ),
+  aligner = rlang::syms(paste0("align_", aligner_name))
+)
+
+physeq_meta <- tibble::tibble(
+  tree = rlang::syms("tree_rooted", "tree_fungi_new),
+  id = c("alleuks", "fungi")
+)
+
+unifrac_meta <- tidyr::crossing(
+  weight = c(TRUE, FALSE),
+  tidyr::nesting(
+    id = physeq_meta$id,
+    physeq = rlang::syms(paste0("physeq_", id)),
+  )
+) %>%
+  dplyr::mutate(id = paste0(id, "_", ifelse(weight, "", "un"), "weighted"))
+
+treefig_meta <- tibble::tibble(
+  id = physeq_meta$id,
+  physeq_obj = rlang::syms(paste0("physeq_", id)),
+  tree_height = ifelse(id == "alleuks", 150, 75),
+  tip_offset = ifelse(id == "alleuks", 0.4, 0.3)
+)
+
 #### Combined table ####
 align_plan <- tar_map(
   values = list(
@@ -255,10 +286,7 @@ phyloseq_plan <- tar_plan(
     as.matrix() %>%
     phyloseq::tax_table(),
   tar_map(
-    values = list(
-      tree = rlang::syms(c("tree_rooted", "tree_fungi_new")),
-      id = c("alleuks", "fungi")
-    ),
+    values = physeq_meta,
     tar_target(
       physeq,
       phyloseq::phyloseq(tree, otu_tab, tax_table)
@@ -268,14 +296,7 @@ phyloseq_plan <- tar_plan(
   # physeq_glom = phyloseq::tip_glom(physeq, h = 0.01),
 
   tar_map(
-    values = tidyr::crossing(
-      weight = c(TRUE, FALSE),
-      tidyr::nesting(
-        physeq = rlang::syms(c("physeq_alleuks", "physeq_fungi")),
-        id = c("alleuks", "fungi")
-      )
-    ) %>%
-      dplyr::mutate(id = paste0(id, "_", ifelse(weight, "", "un"), "weighted")),
+    values = unifrac_meta,
     tar_target(
       unifrac,
       phyloseq::UniFrac(physeq, weighted = weight)
@@ -286,12 +307,7 @@ phyloseq_plan <- tar_plan(
   #### Figure ####
   tar_map(
     # make separate figures for fungi and all eukaryotes
-    values = list(
-      physeq_obj = rlang::syms(c("physeq_alleuks", "physeq_fungi")),
-      tree_height = c(150, 75),
-      tip_offset = c(0.4, 0.3),
-      id = c("alleuks", "fungi")
-    ),
+    values = treefig_meta,
     # just the tree without the clusters
     tar_qs(
       tree_fig,

@@ -45,10 +45,14 @@ pre_positions_plan <-
       tibble::deframe()
   )
 
+positions_meta <- tibble::tibble(
+  seq = rlang::syms(c("ampliseq", "seqs_sl", "seqs_vs")),
+  table = rlang::syms(c("ampliseq_table", "table_sl", "table_vs")),
+  id = c("as", "sl", "vs")
+)
+
 positions_plan <-  tar_map(
-  values = list(seq = rlang::syms(c("ampliseq", "seqs_sl", "seqs_vs")),
-                table = rlang::syms(c("ampliseq_table", "table_sl", "table_vs")),
-                id = c("as", "sl", "vs")),
+  values = positions_meta,
   tar_target(
     positions,
     LSUx::lsux(
