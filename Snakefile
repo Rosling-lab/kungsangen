@@ -168,7 +168,7 @@ rule allbamstats:
         lima = expand("process/{movie}.subreads.demux.lima.report", movie = moviefiles),
         sieve = expand("process/{movie}.subreads.demux.sieve.bamstats", movie = moviefiles),
         ccs = expand("process/{movie}.ccs.bamstats", movie = moviefiles),
-        deconcat = expand("process/{movie}.ccs.deconcat.fastqstats", movie = moviefiles),
+        #deconcat = expand("process/{movie}.ccs.deconcat.fastqstats", movie = moviefiles),
         orient = expand("process/{movie}.ccs.orient.fastqstats", movie = moviefiles),
         tooshort = "process/pb_363.ccs.orient.tooshort.fastqstats",
         toolong = "process/pb_363.ccs.orient.toolong.fastqstats",
@@ -352,7 +352,7 @@ rule orient:
         orient = "process/{movie}.ccs.orient.fastq.gz",
         noprimer = "process/{movie}.ccs.noprimer.fastq.gz"
     input:
-        ccs = "process/{movie}.ccs.deconcat.fastq.gz"
+        ccs = "process/{movie}.ccs.fastq.gz"
     group: "movie"
     threads: moviethreads
     log: "logs/{movie}_orient.log"
