@@ -90,5 +90,27 @@ taxplot_plan <- tar_map(
         device = fun, width = 6.25, height = 4, dpi = 150
       )
     )
+  ),
+  tar_qs(
+    samples_physeq,
+    phyloseq::phyloseq(
+      phyloseq::otuTable(
+        tibble::column_to_rownames(otu_table, "OTU"),
+        taxa_are_rows = TRUE
+      ),
+      phyloseq::tax_table(
+        taxplot_data %>%
+          dplyr::select(OTU, kingdom:genus) %>%
+          tibble::column_to_rownames("OTU")
+      ),
+      phyloseq::sample_data(samples_df)
+    )
+  ),
+  tar_file(
+    physeq_file,
+    write_and_return_file(
+      samples_physeq,
+      sprintf("output/data/phyloseq_%s.rds", group)
+    )
   )
 )

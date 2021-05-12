@@ -91,6 +91,11 @@ write_and_return_file.ggplot <- function(x, file, ...) {
   file
 }
 
+write_and_return_file.phyloseq <- function(x, file, ...) {
+  ensure_directory(file)
+  saveRDS(x, file, ...)
+}
+
 #### Functions for Taxonomy assignment ####
 cumcollapse <- function(x) {
   purrr::map_chr(
