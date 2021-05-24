@@ -2,19 +2,37 @@ library(targets)
 library(tarchetypes)
 library(magrittr)
 
-taxplot_meta <- tibble::tibble(
-  group = c("protists", "fungi"),
-  rank = c("kingdom", "phylum"),
-  tree = c("tree_protists", "tree_fungi_new"),
-  cutoff = c(0.015, 0.015),
-  otutab = paste0("otu_table_ampliseq_", group)
-) %>%
-  dplyr::mutate_at(c("tree", "otutab", "rank"), rlang::syms)
+phylotax_meta <-
+  tibble::tibble(
+    group = c("protists", "fungi"),
+    rank = c("kingdom", "phylum"),
+    tree = c("tree_protists", "tree_fungi_new"),
+    cutoff = c(0.015, 0.015)
+  ) %>%
+  dplyr::mutate_at("tree", rlang::syms)
 
-taxplot_plan <- tar_map(
-  values = taxplot_meta,
+taxplot_meta <-
+  dplyr::left_join(
+    dplyr::mutate(
+      phylotax_meta,
+      tax_consensus = rlang::syms(paste0("tax_consensus_", group))
+    ),
+    tibble::tibble(
+      clust_type = c("ampliseq", "swarm", "vsearch"),
+      cl_id = c("otuA", "otuS", "otuC"),
+      regions = c("regions_as", "regions_sl", "regions_vs")
+    ),
+    by = character()
+  ) %>%
+  dplyr::mutate(
+    otutab = sprintf("otu_table_%s_%s", clust_type, group)
+  ) %>%
+  dplyr::mutate_at(c("tree", "otutab", "rank", "regions"), rlang::syms)
+
+phylotax_plan <- tar_map(
+  values = phylotax_meta,
   names = group,
-  # make phylogenetic consensus assignments for the fungi
+  # make phylogenetic consensus assignments
   tar_target(
     tax_consensus,
     phylotax::phylotax(
@@ -26,7 +44,12 @@ taxplot_plan <- tar_map(
         ) %>%
         dplyr::filter(label %in% tree$tip.label)
     )
-  ),
+  )
+)
+
+taxplot_plan <- tar_map(
+  values = taxplot_meta,
+  names = c(group, cl_id),
   # data for taxonomy plot
   tar_fst_tbl(
     taxplot_data,
@@ -41,7 +64,7 @@ taxplot_plan <- tar_map(
       dplyr::filter(reads > 0) %>%
       # add tree tip label (5.8S_LSU) for each OTU
       dplyr::left_join(
-        dplyr::select(regions_as, OTU = "seq_id", "label"),
+        dplyr::select(regions, OTU = "seq_id", "label"),
         by = "OTU"
       ) %>%
       # add taxonomy in wide format
@@ -86,7 +109,7 @@ taxplot_plan <- tar_map(
       taxplotfile,
       write_and_return_file(
         taxplot,
-        file.path(figdir, sprintf("taxonomy_%s.%s", group, ext)),
+        file.path(figdir, sprintf("taxonomy_%s_%s.%s", cl_id, group, ext)),
         device = fun, width = 6.25, height = 4, dpi = 150
       )
     )
@@ -112,7 +135,7 @@ taxplot_plan <- tar_map(
     physeq_file,
     write_and_return_file(
       samples_physeq,
-      sprintf("output/data/phyloseq_%s.rds", group)
+      sprintf("output/data/phyloseq_%s_%s.rds", cl_id, group)
     )
   )
 )

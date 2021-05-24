@@ -40,6 +40,7 @@ c(
   accumulation_plan,
   kingdom_table_plan,
   detection_plan,
+  phylotax_plan,
   taxplot_plan,
   venn_plan,
   NULL
