@@ -7,9 +7,9 @@ taxplot_meta <- tibble::tibble(
   rank = c("kingdom", "phylum"),
   tree = c("tree_protists", "tree_fungi_new"),
   cutoff = c(0.015, 0.015),
-  otu_table = paste0("otu_table_ampliseq_", group)
+  otutab = paste0("otu_table_ampliseq_", group)
 ) %>%
-  dplyr::mutate_at(c("tree", "otu_table", "rank"), rlang::syms)
+  dplyr::mutate_at(c("tree", "otutab", "rank"), rlang::syms)
 
 taxplot_plan <- tar_map(
   values = taxplot_meta,
@@ -31,7 +31,7 @@ taxplot_plan <- tar_map(
   tar_fst_tbl(
     taxplot_data,
     # convert OTU table to relative abundances
-    otu_table %>%
+    otutab %>%
       tibble::column_to_rownames("OTU") %>%
       vegan::decostand(method = "total", MARGIN = 2) %>%
       tibble::as_tibble(rownames = "OTU") %>%
@@ -94,14 +94,16 @@ taxplot_plan <- tar_map(
   tar_qs(
     samples_physeq,
     phyloseq::phyloseq(
-      phyloseq::otuTable(
-        tibble::column_to_rownames(otu_table, "OTU"),
+      phyloseq::otu_table(
+        tibble::column_to_rownames(otutab, "OTU"),
         taxa_are_rows = TRUE
       ),
       phyloseq::tax_table(
         taxplot_data %>%
           dplyr::select(OTU, kingdom:genus) %>%
-          tibble::column_to_rownames("OTU")
+          unique() %>%
+          tibble::column_to_rownames("OTU") %>%
+          as.matrix()
       ),
       phyloseq::sample_data(samples_df)
     )

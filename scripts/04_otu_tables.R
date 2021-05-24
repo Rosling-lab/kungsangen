@@ -82,7 +82,7 @@ tar_plan(
       ampliseq_tableout,
       write_and_return_file(
         ampliseq_table,
-        file.path(datadir, paste0("ampliseq_table", type)),
+        file.path(datadir, paste0("ampliseq_table.", type)),
         type = type
       )
     )
