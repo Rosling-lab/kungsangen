@@ -563,9 +563,14 @@ taxon_plot <- function(
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
           strip.background = element_blank(),
           panel.spacing = unit(3, "pt")) +
-    scale_fill_discrete(
+    hues::scale_fill_iwanthue(
+      # type = "qual",
+      # palette = 2,
+      cmin = 20, cmax = 150,
+      lmin = 10, lmax = 80,
       breaks = vals,
       labels = tidyr::replace_na(as.character(vals), "unidentified"),
+      na.value = "gray50",
       name = rank_label,
       guide = guide_legend(ncol = 4, byrow = TRUE)
     ) +
