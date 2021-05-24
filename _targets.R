@@ -42,6 +42,7 @@ c(
   detection_plan,
   phylotax_plan,
   taxplot_plan,
+  taxplot_plan2,
   venn_plan,
   NULL
 )

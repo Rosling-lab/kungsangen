@@ -29,6 +29,15 @@ taxplot_meta <-
   ) %>%
   dplyr::mutate_at(c("tree", "otutab", "rank", "regions"), rlang::syms)
 
+taxplot_meta2 <- dplyr::mutate(
+  taxplot_meta,
+  name = sprintf("taxplot_data_%s", cl_id),
+  taxplot_data = sprintf("taxplot_data_%s_%s", group, cl_id)
+) %>%
+  dplyr::select(group, rank, cutoff, name, taxplot_data) %>%
+  tidyr::pivot_wider(names_from = name, values_from = taxplot_data) %>%
+  dplyr::mutate_at(dplyr::vars(dplyr::starts_with("taxplot_data")), rlang::syms)
+
 phylotax_plan <- tar_map(
   values = phylotax_meta,
   names = group,
@@ -136,6 +145,60 @@ taxplot_plan <- tar_map(
     write_and_return_file(
       samples_physeq,
       sprintf("output/data/phyloseq_%s_%s.rds", cl_id, group)
+    )
+  )
+)
+
+taxplot_plan2 <- tar_map(
+  values = taxplot_meta2,
+  names = group,
+  # make plots for reads and OTUs
+  tar_map(
+    values = list(plottype = rlang::syms(c("reads", "OTUs"))),
+    tar_target(
+      taxplot,
+      dplyr::bind_rows(
+        "OTU_A" = taxplot_data_otuA,
+        "OTU_C" = taxplot_data_otuC,
+        "OTU_S" = taxplot_data_otuS,
+        .id = "clust_type"
+      ) %>%
+        dplyr::mutate_at("clust_type", factor,
+                         levels = c("OTU_S", "OTU_C", "OTU_A")) %>%
+        taxon_plot(
+          rank = rank,
+          y = plottype,
+          x = c(clust_type, Sites),
+          cutoff = cutoff,
+          cutoff_type = "either"
+        ) +
+        theme(strip.background = element_blank(), strip.placement = "outside"),
+      packages = "ggplot2"
+    )
+  ),
+  # combine reads plot and OTUs plot
+  tar_target(
+    taxplot,
+    ggpubr::ggarrange(
+      taxplot_reads,
+      taxplot_OTUs,
+      ncol = 1,
+      labels = "AUTO",
+      legend = "bottom",
+      common.legend = TRUE
+    ),
+    packages = "ggplot2"
+  ),
+  tar_map(
+    values = plot_type_meta,
+    names = ext,
+    tar_file(
+      taxplotfile,
+      write_and_return_file(
+        taxplot,
+        file.path(figdir, sprintf("taxonomy_%s.%s", group, ext)),
+        device = fun, width = 6.25, height = 6, dpi = 150
+      )
     )
   )
 )

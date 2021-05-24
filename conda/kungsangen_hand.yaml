@@ -26,6 +26,7 @@ dependencies:
   - r-dplyr
   - r-eulerr
   - r-fst
+  - r-ggh4x=0.1.1
   - r-ggplot2
   - r-ggpubr
   - r-ggrepel

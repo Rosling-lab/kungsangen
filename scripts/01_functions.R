@@ -472,15 +472,17 @@ taxon_plot <- function(
   cutoff_type = c("single", "either", "both"),
   data_only = FALSE # just return the data
 ) {
-  rank <- rlang::enquo(rank)
+  rank <- rlang::enexpr(rank)
   rank_label <- rlang::as_label(rank)
-  y <- rlang::enquo(y)
-  x <- rlang::enquo(x)
+  y <- rlang::enexpr(y)
+  x <- rlang::enexpr(x)
+  if (is.call(x) && x[[1]] == "c") x[[1]] <- NULL
+  x <- rlang::syms(as.list(x))
   weight <- rlang::parse_expr(weight)
   ranks <- c("kingdom", "phylum", "class", "order", "family", "genus")
   cutoff_type <- match.arg(cutoff_type)
   .data <- .data %>%
-    dplyr::group_by(!!x) %>%
+    dplyr::group_by(!!!x) %>%
     dplyr::mutate(
       OTUs = dplyr::n_distinct(OTU),
       reads = reads/sum(reads * !!weight)
@@ -512,7 +514,7 @@ taxon_plot <- function(
       )
   }
   .data <- .data %>%
-    dplyr::group_by(!!x, !!rank) %>%
+    dplyr::group_by(!!!x, !!rank) %>%
     dplyr::summarize(reads = sum(!!weight * reads), OTUs = sum(unique(data.frame(OTU, w = !!weight))$w)/max(OTUs)) %>%
     dplyr::ungroup()
 
@@ -543,7 +545,7 @@ taxon_plot <- function(
         .keep = TRUE
       ) %>%
       dplyr::bind_rows() %>%
-      dplyr::group_by(!!x, !!rank) %>%
+      dplyr::group_by(!!!x, !!rank) %>%
       dplyr::summarize(reads = sum(reads), OTUs = sum(OTUs)) %>%
       dplyr::ungroup() %>%
       dplyr::mutate(!!rank := factor(!!rank, levels = prelevels, exclude = NULL))
@@ -554,10 +556,13 @@ taxon_plot <- function(
   # if ("other" %in% vals) vals <- c("other", vals) %>% magrittr::extract(!duplicated(.))
   # if (any(is.na(vals))) vals <- c(NA, vals) %>% magrittr::extract(!duplicated(.))
 
+  x_x <- x[[1]]
+  x_facet <- purrr::map_chr(x[-1], deparse)
+
   if (rank_label == stringr::str_to_lower(rank_label)) rank_label <- stringr::str_to_title(rank_label)
   y_label <- rlang::as_label(y)
   if (y_label == stringr::str_to_lower(y_label)) y_label <- stringr::str_to_title(y_label)
-  ggplot(.data, aes(x = !!x, y = !!y, fill = !!rank)) +
+  ggplot(.data, aes(x = !!x_x, y = !!y, fill = !!rank)) +
     geom_bar(position = position_stack(reverse = TRUE),
              stat = "identity", color = "white", size = 0.2) +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
@@ -578,7 +583,10 @@ taxon_plot <- function(
     coord_flip() +
     theme_bw() +
     theme(legend.position = "bottom") +
-    xlab(NULL)
+    xlab(NULL) +
+    if (length(x_facet) > 0) {
+      facet_grid(rows = x_facet, switch = "y")
+    }
 
 }
 
