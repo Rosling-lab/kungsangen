@@ -446,6 +446,18 @@ recode_cluster_types <- function(data) {
   )
 }
 
+split_sh_cluster_types <- function(data) {
+  tidyr::extract(
+    data,
+    col = "cluster_type",
+    into = c("sh_type", "cluster_type"),
+    regex = "(OTU|GH90|SH97|SH99)_(as|vs|sl)"
+  ) %>%
+    dplyr::mutate_at("sh_type", factor,
+                     levels = c("GH90", "SH97", "SH99", "OTU")) %>%
+    recode_cluster_types()
+}
+
 
 # Save a data frame as XLSX or RDS
 write_table <- function(table, file, format = c("rds", "xlsx")) {

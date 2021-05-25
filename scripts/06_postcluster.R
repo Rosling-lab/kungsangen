@@ -1,5 +1,10 @@
 # cluster all the ITS2 extracted from the OTU representative sequences
 
+threshold_meta <- tibble::tibble(
+  threshold = c(90, 97, 99),
+  clustname = c("GH90", "SH97", "SH99")
+)
+
 #### Cluster the ITS2 at different thresholds ####
 its2_cluster_plan <- tar_plan(
   tar_file(
@@ -33,7 +38,8 @@ its2_cluster_plan <- tar_plan(
   ),
 
   tar_map(
-    values = list(threshold = c(90, 97, 99)),
+    values = threshold_meta,
+    names = threshold,
     tar_target(
       its2_cluster,
       unite_cluster(its2_precluster_clusters, allseqs_ITS2, threshold),
@@ -57,6 +63,13 @@ its2_cluster_plan <- tar_plan(
             fraction = sum(present)/dplyr::n()
           )
       ),
+      tar_target(
+        cluster_key,
+        parse_clusters(its2_cluster, its2_precluster_singletons, "ITS2_hash") %>%
+          dplyr::left_join(regions, by = "ITS2_hash") %>%
+          dplyr::select(OTU = seq_id, !!clustname := cluster),
+        tidy_eval = FALSE
+      ),
       names = type
     )
   )
@@ -67,6 +80,14 @@ last_cluster_target <- dplyr::last(its2_cluster_plan)
 its2_cluster_plan <- c(
   its2_cluster_plan,
   list(
+    tar_combine(
+      cluster_key,
+      last_cluster_target[startsWith(names(last_cluster_target), "cluster_key")],
+      command = dplyr::bind_rows(!!!.x) %>%
+        tidyr::pivot_longer(cols = -1, names_to = "SH", values_to = "clust") %>%
+        dplyr::filter(complete.cases(.)) %>%
+        tidyr::pivot_wider(names_from = "SH", values_from = "clust")
+    ),
     tar_combine(
       cluster_fraction_table,
       last_cluster_target[startsWith(names(last_cluster_target), "cluster_fraction")],
