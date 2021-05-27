@@ -11,6 +11,7 @@ accum_meta <- tibble::tibble(
 
 list(
   samples_file = tar_file(samples_file, file.path("start_files", "meta.txt")),
+  #### samples_df ####
   # read the metadata
   samples_df = tar_target(
     samples_df,
@@ -23,9 +24,11 @@ list(
       tidyr::unite("Condition", Sites, Sample_type, sep = "_", remove = FALSE)
   ),
 
-  ### Alpha diversity at each sample ####
+  ### *Alpha diversity at each sample* ####
+  #### *begin accum_map {clustype}* ####
   accum_map = tar_map(
     accum_meta,
+    #### physeq_sample_{clustype} ####
     # create a phyloseq object
     physeq_sample = tar_target(
       physeq_sample,
@@ -43,13 +46,16 @@ list(
         )
       )
     ),
+    #### *begin clustmap {accumclust}* ####
     clustmap = tar_map(
       values = list(accumclust = c("OTU", "GH90", "SH97", "SH99")),
+      #### clust_physeq_{accumclust}_{clustype} ####
       # make an accumulation curve for reads at each sample
       clust_physeq = tar_target(
         clust_physeq,
         phyloseq::tax_glom(physeq_sample, taxrank = accumclust)
       ),
+      #### seq_accum_sample_{accumclust}_{clustype} ####
       seq_accum_sample = tar_target(
         seq_accum_sample,
         # extrapolate the curves up to 5000 reads, with 100 points on each curve
@@ -58,6 +64,7 @@ list(
           iNEXT::iNEXT(endpoint = 5000, knots = 100)
       ),
 
+      #### seq_accum_sample_means_{accumclust}_{clustype} ####
       # take the mean of all the samples in each type
       seq_accum_sample_means = tar_target(
         seq_accum_sample_means,
@@ -69,6 +76,7 @@ list(
         ),
         packages = "iNEXT"
       ),
+      #### sample_accum_plot_{accumclust}_{clustype} ####
       sample_accum_plot = tar_target(
         sample_accum_plot,
         # make the plot
@@ -98,8 +106,9 @@ list(
           ylab("OTU richness"),
         packages = c("ggplot2", "iNEXT")
       ),
-      #### Alpha diversity at each condition ####
+      #### *Alpha diversity at each condition* ####
 
+      #### seq_accum_site_{accumclust}_{clustype} ####
       # Calculate for 2 conditions: Wet, Dry
       # make an accumulation curve for reads at each site
       # i.e., what would happen if we had the same samples,
@@ -112,6 +121,7 @@ list(
           t() %>%
           iNEXT::iNEXT(endpoint = 30000, knots = 100)
       ),
+      #### samp_accum_site_{accumclust}_{clustype} ####
       # make an accumulation curve for samples at each site
       # i.e., what would happen if we had the same sequencing depth per sample,
       # but got more (or less) samples per site?
@@ -126,6 +136,7 @@ list(
           iNEXT::iNEXT(datatype = "incidence_raw", endpoint = 20)
       ),
 
+      #### accum_site_{accumclust}_{clustype} ####
       # make plotting data for both types of accumulation curve at each site
       accum_site = tar_target(
         accum_site,
@@ -147,6 +158,7 @@ list(
           dplyr::mutate(label = ifelse(method == "observed", as.character(site), ""))
       ),
 
+      #### asymp_site_{accumclust}_{clustype} ####
       # Find the asymptotic species richness estimates
       asymp_site = tar_target(
         asymp_site,
@@ -163,9 +175,11 @@ list(
           purrr::pmap_dfr(tibble::add_column)
       ),
 
-      #### write graphics files ####
+      #### *write graphics files* ####
+      #### *begin map {ext}* ####
       tar_map(
         values = plot_type_meta,
+        #### accumplot1_{ext}_{accumclust}_{clustype} ####
         accumplot1 = tar_file(
           accumplot1,
           file.path(figdir, sprintf("accum1_%s_%s.%s", clustype, accumclust, ext)) %T>%
@@ -173,16 +187,18 @@ list(
                             width = 6.25, height = 3, dpi = 150)
         ),
         names = ext
-      )
-    ),
+      ) #### *end map {ext}* ####
+    ), #### *end clustmap {accumclust}* ####
+
     names = clustype
-  )
+  ) #### *end accum_map {clustype}* ####
 ) ->
   accumulation_plan
 
 accumulation_plan <- c(
   accumulation_plan,
   tar_plan(
+    #### seq_accum_sample ####
     tar_combine(
       seq_accum_sample,
       accumulation_plan$accum_map[
@@ -196,6 +212,7 @@ accumulation_plan <- c(
         split_sh_cluster_types(),
       packages = "iNEXT"
     ),
+    #### seq_accum_sample_means ####
     tar_combine(
       seq_accum_sample_means,
       accumulation_plan$accum_map[
@@ -205,6 +222,7 @@ accumulation_plan <- c(
         dplyr::mutate_at("cluster_type", stringr::str_remove, "seq_accum_sample_means_") %>%
         split_sh_cluster_types()
     ),
+    #### sample_accum_plot ####
     tar_target(
       sample_accum_plot,
       # make the plot
@@ -236,6 +254,7 @@ accumulation_plan <- c(
         theme(legend.position = "bottom"),
       packages = c("ggplot2", "iNEXT")
     ),
+    #### seq_accum_site ####
     tar_combine(
       seq_accum_site,
       accumulation_plan$accum_map[
@@ -260,6 +279,7 @@ accumulation_plan <- c(
         split_sh_cluster_types(),
       packages = "iNEXT"
     ),
+    #### asymp_site ####
     tar_combine(
       asymp_site,
       accumulation_plan$accum_map[
@@ -271,7 +291,8 @@ accumulation_plan <- c(
       packages = "iNEXT"
     ),
 
-    #### stacked plot ####
+    #### *stacked plot* ####
+    #### fig_seq_accum_site ####
     tar_target(
       fig_seq_accum_site,
       ggplot(
@@ -308,6 +329,7 @@ accumulation_plan <- c(
                            palette = 2, name = NULL),
       packages = "ggplot2"
     ),
+    #### fig_samp_accum_site ####
     tar_target(
       fig_samp_accum_site,
       ggplot(
@@ -344,14 +366,17 @@ accumulation_plan <- c(
                            palette = 2, name = NULL),
       packages = "ggplot2"
     ),
+    #### fig_accum_site ####
     tar_target(
       fig_accum_site,
       ggpubr::ggarrange(fig_seq_accum_site, fig_samp_accum_site, ncol = 2,
                         labels = "AUTO", common.legend = TRUE,
                         legend = "bottom")
     ),
+    #### *begin map {ext}* ####
     tar_map(
       values = plot_type_meta,
+      #### accumplot1_{ext} ####
       tar_file(
         accumplot1,
         write_and_return_file(
@@ -360,6 +385,7 @@ accumulation_plan <- c(
           device = fun, width = 6.25, height = 10, dpi = 150
         )
       ),
+      #### accumplot2_{ext} ####
       tar_file(
         accumplot2,
         write_and_return_file(
@@ -369,7 +395,7 @@ accumulation_plan <- c(
         )
       ),
       names = ext
-    )
+    ) #### *end map {ext}* ####
   )
 )
 

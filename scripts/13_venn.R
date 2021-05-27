@@ -15,6 +15,7 @@ venn_meta <- tibble::tibble(
 venn_plan <- tar_map(
   values = venn_meta,
   names = group_var_name,
+  #### venn_data_{group_var_name} ####
   venn_data = tar_fst_tbl(
     venn_data,
     list(
@@ -47,6 +48,7 @@ venn_plan <- tar_map(
       dplyr::summarize(OTUs = sum(reads > 0), reads = sum(reads)) %>%
       dplyr::filter(reads > 0)
   ),
+  #### venn_barplot_{group_var_name} ####
   venn_barplot = tar_target(
     venn_barplot,
     venn_data %>%
@@ -78,6 +80,7 @@ venn_plan <- tar_map(
       color = c("tomato", "cyan")
     ),
     names = g,
+    #### venn_plot_{g}_{group_var_name} ####
     tar_target(
       venn_plot,
       venn_data %>%
@@ -96,6 +99,7 @@ venn_plan <- tar_map(
       tidy_eval = TRUE
     )
   ),
+  #### venn_fullplot_{group_var_name} ####
   tar_target(
     venn_fullplot,
     ggpubr::ggarrange(
@@ -110,6 +114,7 @@ venn_plan <- tar_map(
   tar_map(
     values = plot_type_meta,
     names = ext,
+    #### vennplotfile_{ext}_{group_var_name} ####
     tar_file(
       vennplotfile,
       write_and_return_file(
@@ -119,6 +124,7 @@ venn_plan <- tar_map(
       )
     )
   ),
+  #### venn_xlsx_{group_var_name} ####
   tar_file(
     venn_xlsx,
     write_and_return_file(venn_data, "output/data/venn.xlsx", "xlsx")

@@ -41,6 +41,7 @@ taxplot_meta2 <- dplyr::mutate(
 phylotax_plan <- tar_map(
   values = phylotax_meta,
   names = group,
+  #### tax_consensus ####
   # make phylogenetic consensus assignments
   tar_target(
     tax_consensus,
@@ -59,6 +60,7 @@ phylotax_plan <- tar_map(
 taxplot_plan <- tar_map(
   values = taxplot_meta,
   names = c(group, cl_id),
+  #### taxplot_data_{group}_{cl_id} ####
   # data for taxonomy plot
   tar_fst_tbl(
     taxplot_data,
@@ -91,6 +93,7 @@ taxplot_plan <- tar_map(
   # make plots for reads and OTUs
   tar_map(
     values = list(plottype = rlang::syms(c("reads", "OTUs"))),
+    #### taxplot_{plottype}_{group}_{cl_id} ####
     tar_target(
       taxplot,
       taxon_plot(taxplot_data, rank = rank, y = plottype, x = Sites,
@@ -98,6 +101,7 @@ taxplot_plan <- tar_map(
       packages = "ggplot2"
     )
   ),
+  #### taxplot_{group}_{cl_id} ####
   # combine reads plot and OTUs plot
   tar_target(
     taxplot,
@@ -114,6 +118,7 @@ taxplot_plan <- tar_map(
   tar_map(
     values = plot_type_meta,
     names = ext,
+    #### taxplotfile_{ext}_{group}_{cl_id} ####
     tar_file(
       taxplotfile,
       write_and_return_file(
@@ -123,6 +128,7 @@ taxplot_plan <- tar_map(
       )
     )
   ),
+  #### samples_physeq_{group}_{cl_id} ####
   tar_qs(
     samples_physeq,
     phyloseq::phyloseq(
@@ -140,6 +146,7 @@ taxplot_plan <- tar_map(
       phyloseq::sample_data(samples_df)
     )
   ),
+  #### physeq_file_{group}_{cl_id} ####
   tar_file(
     physeq_file,
     write_and_return_file(
@@ -155,6 +162,7 @@ taxplot_plan2 <- tar_map(
   # make plots for reads and OTUs
   tar_map(
     values = list(plottype = rlang::syms(c("reads", "OTUs"))),
+    #### taxplot_{plottype}_{group} ####
     tar_target(
       taxplot,
       dplyr::bind_rows(
@@ -176,6 +184,7 @@ taxplot_plan2 <- tar_map(
       packages = "ggplot2"
     )
   ),
+  #### taxplot_{group} ####
   # combine reads plot and OTUs plot
   tar_target(
     taxplot,
@@ -192,6 +201,7 @@ taxplot_plan2 <- tar_map(
   tar_map(
     values = plot_type_meta,
     names = ext,
+    #### taxplotfile_{ext}_{group} ####
     tar_file(
       taxplotfile,
       write_and_return_file(

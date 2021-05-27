@@ -14,6 +14,7 @@ tar_map(
       regions = rlang::syms(c("regions_as", "regions_vs", "regions_sl"))
     ),
     names = clust_type,
+    #### otu_table_{clust_type}_{group} ####
     tar_fst_tbl(
       otu_table,
       dplyr::select(regions, OTU = seq_id, label) %>%
@@ -25,6 +26,7 @@ tar_map(
       values = list(
         ext = c("rds", "xlsx")
       ),
+      #### write_otu_table_{ext}_{clust_type}_{group} ####
       tar_file(
         write_otu_table,
         file.path(datadir, sprintf("%s_table_%s.%s", clust_type, group, ext)) %>%

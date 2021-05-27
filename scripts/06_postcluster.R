@@ -5,8 +5,9 @@ threshold_meta <- tibble::tibble(
   clustname = c("GH90", "SH97", "SH99")
 )
 
-#### Cluster the ITS2 at different thresholds ####
+#### *Cluster the ITS2 at different thresholds* ####
 its2_cluster_plan <- tar_plan(
+  #### its2_file ####
   tar_file(
     its2_file,
     write_and_return_file(
@@ -14,11 +15,12 @@ its2_cluster_plan <- tar_plan(
       file.path(comparedir, "ITS2.fasta.gz")
     )
   ),
-
+  #### its2_precluster_file ####
   tar_file(
     its2_precluster_file,
     unite_precluster(its2_file, file.path(comparedir, "ITS2_precluster"))
   ),
+  #### its2_precluster ####
   its2_precluster = readr::read_tsv(
     its2_precluster_file,
     col_names = paste0("V", 1:10),
@@ -30,7 +32,9 @@ its2_cluster_plan <- tar_plan(
     dplyr::mutate(cluster = dplyr::coalesce(cluster, seq_id)) %>%
     unique() %>%
     dplyr::group_by(cluster),
+  #### its2_precluster_singletons ####
   its2_precluster_singletons = dplyr::filter(its2_precluster, dplyr::n() == 1),
+  #### its2_precluster_clusters ####
   tar_group_by(
     its2_precluster_clusters,
     dplyr::filter(its2_precluster, dplyr::n() > 1),
@@ -40,6 +44,7 @@ its2_cluster_plan <- tar_plan(
   tar_map(
     values = threshold_meta,
     names = threshold,
+    #### its2_cluster_{threshold} ####
     tar_target(
       its2_cluster,
       unite_cluster(its2_precluster_clusters, allseqs_ITS2, threshold),
@@ -50,6 +55,7 @@ its2_cluster_plan <- tar_plan(
         regions = rlang::syms(c("regions_as", "regions_vs", "regions_sl")),
         type = c("as", "vs", "sl")
       ),
+      #### cluster_fraction_{type}_{threshold} ####
       tar_target(
         cluster_fraction,
         parse_clusters(its2_cluster, its2_precluster_singletons, "ITS2_hash") %>%
@@ -63,6 +69,7 @@ its2_cluster_plan <- tar_plan(
             fraction = sum(present)/dplyr::n()
           )
       ),
+      #### cluster_key_{type}_{threshold} ####
       tar_target(
         cluster_key,
         parse_clusters(its2_cluster, its2_precluster_singletons, "ITS2_hash") %>%
@@ -80,6 +87,7 @@ last_cluster_target <- dplyr::last(its2_cluster_plan)
 its2_cluster_plan <- c(
   its2_cluster_plan,
   list(
+    #### cluster_key ####
     tar_combine(
       cluster_key,
       last_cluster_target[startsWith(names(last_cluster_target), "cluster_key")],
@@ -88,6 +96,7 @@ its2_cluster_plan <- c(
         dplyr::filter(complete.cases(.)) %>%
         tidyr::pivot_wider(names_from = "SH", values_from = "clust")
     ),
+    #### cluster_fraction_table ####
     tar_combine(
       cluster_fraction_table,
       last_cluster_target[startsWith(names(last_cluster_target), "cluster_fraction")],
@@ -95,6 +104,7 @@ its2_cluster_plan <- c(
         recode_cluster_types() %>%
         tidyr::pivot_wider(names_from = cluster_type, values_from = fraction)
     ),
+    #### write_cluster_fraction_table ####
     tar_file(
       write_cluster_fraction_table,
       write_and_return_file(
