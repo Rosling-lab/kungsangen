@@ -22,14 +22,14 @@ hist_plan <- list(
                        old = " ", new = "\n") %>%
       dplyr::mutate_at("sh_type", factor,
                        levels = c("GH90", "SH97", "SH99", "OTU")) %>%
-      ggplot(aes(x = reads, weight = reads)) +
+      ggplot(aes(x = log10(reads), weight = reads)) +
       facet_grid(cluster_type ~ sh_type, scales = "free_y") +
       geom_histogram(bins = 20) +
-      scale_x_continuous(breaks = 2000 * 0:4,
-                         labels = c("0", paste0(2 * 1:4, "k")),
+      scale_x_continuous(breaks = 0:4,
+                         labels = c("1", "10", "100", "1k", "10k"),
                          name = "reads per cluster") +
-      scale_y_continuous(name = "total reads", breaks = 5000 * 0:4,
-                         labels = c("0", paste0(5 * 1:4, "k"))),
+      scale_y_continuous(name = "total reads", breaks = 2000 * 0:4,
+                         labels = c("0", paste0(2 * 1:4, "k"))),
     packages = "ggplot2"
   ),
   tar_map(
