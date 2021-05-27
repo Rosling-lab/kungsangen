@@ -74,7 +74,7 @@ its2_cluster_plan <- tar_plan(
         cluster_key,
         parse_clusters(its2_cluster, its2_precluster_singletons, "ITS2_hash") %>%
           dplyr::left_join(regions, by = "ITS2_hash") %>%
-          dplyr::select(OTU = seq_id, !!clustname := cluster),
+          dplyr::select(OTU = seq_id, ITS2_hash, !!clustname := cluster),
         tidy_eval = FALSE
       ),
       names = type
@@ -92,7 +92,7 @@ its2_cluster_plan <- c(
       cluster_key,
       last_cluster_target[startsWith(names(last_cluster_target), "cluster_key")],
       command = dplyr::bind_rows(!!!.x) %>%
-        tidyr::pivot_longer(cols = -1, names_to = "SH", values_to = "clust") %>%
+        tidyr::pivot_longer(cols = c("GH90", "SH97", "SH99"), names_to = "SH", values_to = "clust") %>%
         dplyr::filter(complete.cases(.)) %>%
         tidyr::pivot_wider(names_from = "SH", values_from = "clust")
     ),

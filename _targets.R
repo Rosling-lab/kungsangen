@@ -31,6 +31,7 @@ source(here::here("scripts", "10_kingdom_tables.R"))
 source(here::here("scripts", "11_detection_limits.R"))
 source(here::here("scripts", "12_taxonomy_plots.R"))
 source(here::here("scripts", "13_venn.R"))
+source(here::here("scripts", "14_histograms.R"))
 c(
   otu_table_plan,
   lsux_plan,
@@ -44,5 +45,5 @@ c(
   taxplot_plan,
   taxplot_plan2,
   venn_plan,
-  NULL
+  hist_plan
 )

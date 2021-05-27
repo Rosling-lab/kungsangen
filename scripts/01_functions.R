@@ -440,8 +440,11 @@ recode_cluster_types <- function(data) {
     data,
     "cluster_type",
     dplyr::recode,
+    ampliseq = "ASV (Ampliseq/DADA2)",
     as = "ASV (Ampliseq/DADA2)",
+    single_link = "Single-linkage (GeFaST)",
     sl = "Single-linkage (GeFaST)",
+    vsearch = "Centroid-based (VSEARCH)",
     vs = "Centroid-based (VSEARCH)"
   )
 }
