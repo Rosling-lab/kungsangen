@@ -96,13 +96,26 @@ its2_cluster_plan <- c(
         dplyr::filter(complete.cases(.)) %>%
         tidyr::pivot_wider(names_from = "SH", values_from = "clust")
     ),
+    #### cluster_detect_table ####
+    tar_fst_tbl(
+      cluster_detect_table,
+      tidyr::pivot_longer(cluster_key, cols = GH90:SH99, names_to = "SH",
+                          values_to = "clust") %>%
+        dplyr::filter(complete.cases(.)) %>%
+        dplyr::mutate(OTU = substr(OTU, 1, 3)) %>%
+        dplyr::group_by(SH, clust) %>%
+        dplyr::summarize(n = dplyr::n_distinct(OTU), .groups = "drop_last") %>%
+        dplyr::filter(n == 1) %>%
+        dplyr::summarize("Only one method" = dplyr::n())
+    ),
     #### cluster_fraction_table ####
     tar_combine(
       cluster_fraction_table,
       last_cluster_target[startsWith(names(last_cluster_target), "cluster_fraction")],
       command = dplyr::bind_rows(!!!.x) %>%
         recode_cluster_types() %>%
-        tidyr::pivot_wider(names_from = cluster_type, values_from = fraction)
+        tidyr::pivot_wider(names_from = cluster_type, values_from = fraction) %>%
+        dplyr::left_join(cluster_detect_table, by = "SH")
     ),
     #### write_cluster_fraction_table ####
     tar_file(
