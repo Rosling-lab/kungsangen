@@ -440,10 +440,13 @@ recode_cluster_types <- function(data) {
     data,
     "cluster_type",
     dplyr::recode,
+    ASV = "OTU_A",
     ampliseq = "OTU_A",
     as = "OTU_A",
+    swarm = "OTU_S",
     single_link = "OTU_S",
     sl = "OTU_S",
+    vclust = "OTU_C",
     vsearch = "OTU_C",
     vs = "OTU_C"
   )
