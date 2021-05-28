@@ -131,61 +131,112 @@ taxdata_plan <- tar_map(
   )
 )
 
-taxplot_plan <- tar_map(
-  values = taxplot_meta,
-  names = c(group, rank_name),
-  # make plots for reads and OTUs
+taxplot_plan <- list(
   tar_map(
-    values = list(plottype = rlang::syms(c("reads", "OTUs"))),
-    #### taxplot_{plottype}_{group}_{rank_name} ####
+    values = taxplot_meta,
+    names = c(group, rank_name),
+    # make plots for reads and OTUs
+    tar_map(
+      values = list(plottype = rlang::syms(c("reads", "OTUs"))),
+      #### taxplot_{plottype}_{group}_{rank_name} ####
+      tar_target(
+        taxplot,
+        dplyr::bind_rows(
+          "OTU_A" = taxplot_data_otuA,
+          "OTU_C" = taxplot_data_otuC,
+          "OTU_S" = taxplot_data_otuS,
+          .id = "clust_type"
+        ) %>%
+          dplyr::mutate_at("clust_type", factor,
+                           levels = c("OTU_S", "OTU_C", "OTU_A")) %>%
+          taxon_plot(
+            rank = rank,
+            y = plottype,
+            x = c(clust_type, Sites),
+            cutoff = cutoff,
+            parent_as_unknown = as_unknown,
+            show_parent = show_parent
+          ) +
+          theme(strip.background = element_blank(), strip.placement = "outside",
+                legend.position = "bottom", legend.direction = "vertical",
+                legend.box.spacing = unit(0, "cm"), legend.box.margin = margin()) +
+          guides(fill = guide_legend(ncol = legend_cols)),
+        packages = "ggplot2"
+      )
+    ),
+    #### taxplot_{group}_{rank} ####
+    # combine reads plot and OTUs plot
     tar_target(
       taxplot,
-      dplyr::bind_rows(
-        "OTU_A" = taxplot_data_otuA,
-        "OTU_C" = taxplot_data_otuC,
-        "OTU_S" = taxplot_data_otuS,
-        .id = "clust_type"
-      ) %>%
-        dplyr::mutate_at("clust_type", factor,
-                         levels = c("OTU_S", "OTU_C", "OTU_A")) %>%
-        taxon_plot(
-          rank = rank,
-          y = plottype,
-          x = c(clust_type, Sites),
-          cutoff = cutoff,
-          cutoff_type = "either",
-          parent_as_unknown = as_unknown,
-          show_parent = show_parent
-        ) +
-        theme(strip.background = element_blank(), strip.placement = "outside") +
-        guides(fill = guide_legend(ncol = legend_cols)),
+      ggpubr::ggarrange(
+        taxplot_reads,
+        taxplot_OTUs,
+        ncol = 1,
+        labels = "AUTO",
+        legend = "bottom",
+        common.legend = TRUE
+      ),
       packages = "ggplot2"
+    ),
+    tar_map(
+      values = plot_type_meta,
+      names = ext,
+      #### taxplotfile_{ext}_{rank}_{group} ####
+      tar_file(
+        taxplotfile,
+        write_and_return_file(
+          taxplot,
+          file.path(figdir, sprintf("taxonomy_%s_%s.%s", group, rank_name, ext)),
+          device = fun, width = 6.25, height = 6, dpi = 150
+        )
+      )
     )
   ),
-  #### taxplot_{group}_{rank} ####
-  # combine reads plot and OTUs plot
-  tar_target(
-    taxplot,
+  #### taxplot_reads ####
+  # phylum level read-based taxonomy plot for protists and fungi
+  taxplot_reads = tar_target(
+    taxplot_reads,
     ggpubr::ggarrange(
-      taxplot_reads,
-      taxplot_OTUs,
+      taxplot_reads_protists_phylum,
+      taxplot_reads_fungi_phylum,
       ncol = 1,
+      heights = c(1.05, 1),
       labels = "AUTO",
-      legend = "bottom",
-      common.legend = TRUE
-    ),
-    packages = "ggplot2"
+      common.legend = FALSE
+    )
+  ),
+  #### taxplot_OTUs ####
+  # phylum level OTU-based taxonomy plot for protists and fungi
+  taxplot_OTUs = tar_target(
+    taxplot_OTUs,
+    ggpubr::ggarrange(
+      taxplot_OTUs_protists_phylum,
+      taxplot_OTUs_fungi_phylum,
+      ncol = 1,
+      heights = c(1.15, 1),
+      labels = "AUTO",
+      common.legend = FALSE
+    )
   ),
   tar_map(
     values = plot_type_meta,
     names = ext,
-    #### taxplotfile_{ext}_{rank}_{group} ####
+    #### taxplotfile_reads_{ext} ####
     tar_file(
-      taxplotfile,
+      taxplotfile_reads,
       write_and_return_file(
-        taxplot,
-        file.path(figdir, sprintf("taxonomy_%s_%s.%s", group, rank_name, ext)),
-        device = fun, width = 6.25, height = 6, dpi = 150
+        taxplot_reads,
+        file.path(figdir, sprintf("taxonomy_reads.%s", ext)),
+        device = fun, width = 6.25, height = 7, dpi = 150
+      )
+    ),
+    #### taxplotfile_reads_{ext} ####
+    tar_file(
+      taxplotfile_OTUs,
+      write_and_return_file(
+        taxplot_OTUs,
+        file.path(figdir, sprintf("taxonomy_OTUs.%s", ext)),
+        device = fun, width = 6.25, height = 9, dpi = 150
       )
     )
   )
