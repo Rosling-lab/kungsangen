@@ -104,7 +104,9 @@ list(
           facet_wrap(facets = ~Type, nrow = 1) +
           xlab("reads") +
           scale_x_continuous() +
-          ylab("OTU richness"),
+          ylab("OTU richness") +
+          theme_bw() +
+          theme(strip.background = element_blank()),
         packages = c("ggplot2", "iNEXT")
       ),
       #### *Alpha diversity at each condition* ####
@@ -254,7 +256,8 @@ accumulation_plan <- c(
         xlab("reads") +
         scale_x_continuous() +
         ylab("OTU richness") +
-        theme(legend.position = "bottom"),
+        theme_bw() +
+        theme(strip.background = element_blank(), legend.position = "bottom"),
       packages = c("ggplot2", "iNEXT")
     ),
     #### seq_accum_site ####
@@ -333,7 +336,8 @@ accumulation_plan <- c(
         ylab("Species richness") +
         scale_color_brewer(type = "qual", aesthetics = c("color", "fill"),
                            palette = 2, name = NULL) +
-        theme(legend.position = "bottom"),
+        theme_bw() +
+        theme(strip.background = element_blank(), legend.position = "bottom"),
       packages = "ggplot2"
     ),
     #### fig_samp_accum_site ####
@@ -371,7 +375,8 @@ accumulation_plan <- c(
         # will always be hard with 8
         scale_color_brewer(type = "qual", aesthetics = c("color", "fill"),
                            palette = 2, name = NULL) +
-        theme(legend.position = "bottom"),
+        theme_bw() +
+        theme(strip.background = element_blank(), legend.position = "bottom"),
       packages = "ggplot2"
     ),
     #### fig_accum_site ####
