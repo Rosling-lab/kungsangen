@@ -40,6 +40,7 @@ list(
         phyloseq::sample_data(samples_df),
         phyloseq::tax_table(
           dplyr::left_join(dplyr::select(otutab, "OTU"), cluster_key, by = "OTU") %>%
+            dplyr::select(GH90, SH97, SH99, ITS2_hash, OTU) %>%
             tibble::column_to_rownames("OTU") %>%
             magrittr::inset2("OTU", value = row.names(.)) %>%
             as.matrix()
@@ -203,7 +204,8 @@ accumulation_plan <- c(
       seq_accum_sample,
       accumulation_plan$accum_map[
         startsWith(names(accumulation_plan$accum_map), "seq_accum_sample") &
-          !startsWith(names(accumulation_plan$accum_map), "seq_accum_sample_means")
+          !startsWith(names(accumulation_plan$accum_map), "seq_accum_sample_means") &
+          !endsWith(names(accumulation_plan$accum_map), "OTU")
       ],
       command = list(!!!.x) %>%
         lapply(ggplot2::fortify) %>%
@@ -216,7 +218,8 @@ accumulation_plan <- c(
     tar_combine(
       seq_accum_sample_means,
       accumulation_plan$accum_map[
-        startsWith(names(accumulation_plan$accum_map), "seq_accum_sample_means")
+        startsWith(names(accumulation_plan$accum_map), "seq_accum_sample_means") &
+          !endsWith(names(accumulation_plan$accum_map), "OTU")
       ],
       command = dplyr::bind_rows(!!!.x, .id = "cluster_type") %>%
         dplyr::mutate_at("cluster_type", stringr::str_remove, "seq_accum_sample_means_") %>%
@@ -258,7 +261,8 @@ accumulation_plan <- c(
     tar_combine(
       seq_accum_site,
       accumulation_plan$accum_map[
-        startsWith(names(accumulation_plan$accum_map), "seq_accum_site")
+        startsWith(names(accumulation_plan$accum_map), "seq_accum_site") &
+          !endsWith(names(accumulation_plan$accum_map), "OTU")
       ],
       command = list(!!!.x) %>%
         lapply(ggplot2::fortify) %>%
@@ -270,7 +274,8 @@ accumulation_plan <- c(
     tar_combine(
       samp_accum_site,
       accumulation_plan$accum_map[
-        startsWith(names(accumulation_plan$accum_map), "samp_accum_site")
+        startsWith(names(accumulation_plan$accum_map), "samp_accum_site") &
+          !endsWith(names(accumulation_plan$accum_map), "OTU")
       ],
       command = list(!!!.x) %>%
         lapply(ggplot2::fortify) %>%
@@ -283,7 +288,8 @@ accumulation_plan <- c(
     tar_combine(
       asymp_site,
       accumulation_plan$accum_map[
-        startsWith(names(accumulation_plan$accum_map), "asymp_site")
+        startsWith(names(accumulation_plan$accum_map), "asymp_site") &
+          !endsWith(names(accumulation_plan$accum_map), "OTU")
       ],
       command = dplyr::bind_rows(!!!.x, .id = "cluster_type") %>%
         dplyr::mutate_at("cluster_type", stringr::str_remove, "asymp_site_") %>%
@@ -326,7 +332,8 @@ accumulation_plan <- c(
                            labels = c(0, paste0(1:3 * 10, "k"))) +
         ylab("Species richness") +
         scale_color_brewer(type = "qual", aesthetics = c("color", "fill"),
-                           palette = 2, name = NULL),
+                           palette = 2, name = NULL) +
+        theme(legend.position = "bottom"),
       packages = "ggplot2"
     ),
     #### fig_samp_accum_site ####
@@ -363,7 +370,8 @@ accumulation_plan <- c(
         # color brewer has pallettes which are easier to distinguish, although it
         # will always be hard with 8
         scale_color_brewer(type = "qual", aesthetics = c("color", "fill"),
-                           palette = 2, name = NULL),
+                           palette = 2, name = NULL) +
+        theme(legend.position = "bottom"),
       packages = "ggplot2"
     ),
     #### fig_accum_site ####
@@ -392,6 +400,24 @@ accumulation_plan <- c(
           fig_accum_site,
           file.path(figdir, sprintf("accum2.%s", ext)),
           device = fun, width = 6.25, height = 5, dpi = 150
+        )
+      ),
+      #### accumplot2_seq_{ext} ####
+      tar_file(
+        accumplot2_seq,
+        write_and_return_file(
+          fig_seq_accum_site,
+          file.path(figdir, sprintf("accum2_seq.%s", ext)),
+          device = fun, width = 4, height = 5, dpi = 150
+        )
+      ),
+      #### accumplot2_samp_{ext} ####
+      tar_file(
+        accumplot2_samp,
+        write_and_return_file(
+          fig_samp_accum_site,
+          file.path(figdir, sprintf("accum2_samp.%s", ext)),
+          device = fun, width = 4, height = 5, dpi = 150
         )
       ),
       names = ext
