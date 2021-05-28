@@ -485,7 +485,9 @@ taxon_plot <- function(
   weight = if ("weight" %in% names(.data)) "weight" else "1", # column to weight the read and ASV counts by
   cutoff = NULL, # groups which represent less than this fraction in all types are grouped together as "other"
   cutoff_type = c("single", "either", "both"),
-  data_only = FALSE # just return the data
+  data_only = FALSE, # just return the data,
+  parent_as_unknown = FALSE, # if the chosen rank is not given, then show it as "unknown <Parent>"
+  show_parent = FALSE # put the name of the parent in parentheses
 ) {
   rank <- rlang::enexpr(rank)
   rank_label <- rlang::as_label(rank)
@@ -505,6 +507,37 @@ taxon_plot <- function(
     dplyr::ungroup() %>%
     dplyr::filter(...)
   if (rank_label %in% ranks) {
+    rank_index <- match(rank_label, ranks)
+    parent_ranknames <- rev(ranks[1:(rank_index - 1)])
+    parent_ranks <- rlang::syms(parent_ranknames)
+    parents <-
+      rlang::eval_tidy(rlang::quo(dplyr::coalesce(!!!parent_ranks)), .data)
+    if (rank_index != 1 && !missing(show_parent) && !isFALSE(show_parent)) {
+      if (isTRUE(show_parent)) show_parent <- parent_ranknames[1]
+      if (!show_parent %in% parent_ranknames) {
+        stop("'show_parent' should be TRUE or the name of a parent rank")
+      }
+      if (show_parent == parent_ranknames[1]) {
+        show_parents <- parents
+      } else {
+        show_parents <- tail(parent_ranks,
+                             1 - match(show_parent, parent_ranknames))
+        show_parents <-
+          rlang::eval_tidy(rlang::quo(dplyr::coalesce(!!!show_parents)), .data)
+      }
+      .data[[rank_label]] <-
+        stringr::str_c(.data[[rank_label]], " (", show_parents, ")")
+    }
+    if (rank_index != 1 && !missing(parent_as_unknown) &&
+        !isFALSE(parent_as_unknown)) {
+      if (isTRUE(parent_as_unknown)) parent_as_unknown <- "unknown"
+      if (!assertthat::is.string(parent_as_unknown)) {
+        stop("'parent_as_unknown' must be a logical value or a character string.")
+      }
+      unknown_parents <- stringr::str_c("zzz_", parent_as_unknown, " ", parents)
+      .data[[rank_label]] <-
+        dplyr::coalesce(.data[[rank_label]], unknown_parents)
+    }
     .data <- .data %>%
       dplyr::arrange_at(ranks) %>%
       dplyr::mutate_at(
@@ -514,7 +547,8 @@ taxon_plot <- function(
           levels = c(NA, "other",
                      purrr::discard(unique(as.character(.)), is.na)),
           exclude = "NULL"
-        )
+        ) %>%
+          forcats::fct_relabel(sub, pattern = "^zzz_", replacement = "")
       )
   } else if (!is.factor(dplyr::pull(.data, !!rank))) {
     .data <- .data %>%

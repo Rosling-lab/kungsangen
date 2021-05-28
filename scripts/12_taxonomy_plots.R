@@ -34,6 +34,9 @@ taxplot_meta <-
     tibble::tibble(
       group = c("protists", "protists", "fungi"),
       rank_name = c("kingdom", "phylum", "phylum"),
+      as_unknown = list(FALSE, "unidentified", FALSE),
+      show_parent = c(FALSE, TRUE, FALSE),
+      legend_cols = c(4, 3, 4),
       rank = rlang::syms(rank_name),
       cutoff = c(0.015, 0.015, 0.015)
     ),
@@ -43,7 +46,8 @@ taxplot_meta <-
   name = sprintf("taxplot_data_%s", cl_id),
   taxplot_data = sprintf("taxplot_data_%s_%s", group, cl_id)
 ) %>%
-  dplyr::select(group, rank, rank_name, cutoff, name, taxplot_data) %>%
+  dplyr::select(group, rank, rank_name, cutoff, name, taxplot_data, as_unknown,
+                legend_cols, show_parent) %>%
   tidyr::pivot_wider(names_from = name, values_from = taxplot_data) %>%
   dplyr::mutate_at(dplyr::vars(dplyr::starts_with("taxplot_data")), rlang::syms)
 
@@ -149,9 +153,12 @@ taxplot_plan <- tar_map(
           y = plottype,
           x = c(clust_type, Sites),
           cutoff = cutoff,
-          cutoff_type = "either"
+          cutoff_type = "either",
+          parent_as_unknown = as_unknown,
+          show_parent = show_parent
         ) +
-        theme(strip.background = element_blank(), strip.placement = "outside"),
+        theme(strip.background = element_blank(), strip.placement = "outside") +
+        guides(fill = guide_legend(ncol = legend_cols)),
       packages = "ggplot2"
     )
   ),
