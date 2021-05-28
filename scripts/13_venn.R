@@ -127,6 +127,10 @@ venn_plan <- tar_map(
   #### venn_xlsx_{group_var_name} ####
   tar_file(
     venn_xlsx,
-    write_and_return_file(venn_data, "output/data/venn.xlsx", "xlsx")
+    write_and_return_file(
+      venn_data,
+      sprintf("output/data/venn_%s.xlsx", group_var_name),
+      "xlsx"
+    )
   )
 )

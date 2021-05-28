@@ -131,100 +131,6 @@ taxplot_fungi_phylum|stem|9cce6144bd5eeff8|da5d3b6d9a2abe53|341ccf4a55fbafac|547
 taxplot_reads|stem|b18fdcc1b158f80c|8c6f057b34e2dc17|902afd62edd8eb40|-157126244|_targets/objects/taxplot_reads|df0c0a2c35e890dc|28025d9f0001de65|190553|rds|vector|||1.116||
 seq_accum_sample|stem|aa4ea68875e5f743|a568646a39edd95d|9add819f26ee8d05|2032341669|_targets/objects/seq_accum_sample|7a1096daa0d2cf31|2451dcd568c279dd|240019|rds|vector|||0.222||
 hist_plot|stem|b2db3909305368a8|500dddac6e90f569|c6966cbc9f89a6b7|1656870322|_targets/objects/hist_plot|c01ef373080c56f6|d11b15a064bf6331|304070|rds|vector|||0.703||
-write_cluster_fraction_table|stem|56b57ee62cf19568|456e8d71a4d3a935|8ac37b202c638498|291628250|output/data/cluster_fractions.xlsx|4b79ab358c98020f|d3220edc9dbe9f7a|6372|file|vector|||0.224||
-clust_physeq_OTU_sl|stem|6c57b3b4389b1c0e|d5623397845f92f1|0794a4f7fa0dc653|445360611|_targets/objects/clust_physeq_OTU_sl|04a4de7e6513b73c|48c541eddebac933|68903|rds|vector|||43.169||
-clust_physeq_GH90_sl|stem|1eddf0b54bc32b87|52cc04a8f9d83b0d|0794a4f7fa0dc653|-1323380872|_targets/objects/clust_physeq_GH90_sl|9566b30717129c75|668813e86f48015f|32340|rds|vector|||34.473||
-clust_physeq_SH99_sl|stem|214268fe46aa8e43|a5136c820cb009c9|0794a4f7fa0dc653|-311515876|_targets/objects/clust_physeq_SH99_sl|5583329201e693a7|75b0ae38cb25d437|55547|rds|vector|||37.973||
-clust_physeq_SH97_sl|stem|c5c2f82ede7a52fb|ac2c1950af1ebf4f|0794a4f7fa0dc653|1895043821|_targets/objects/clust_physeq_SH97_sl|6321113242901f16|f1e4264b66531548|50112|rds|vector|||36.894||
-regions_fungi|stem|737ea342e3fa28be|4d552059dd5a0087|0e171e03e101dd27|-1970474868|_targets/objects/regions_fungi|0b9cd427bb685434|9b6dee116c3a46e1|12384|rds|vector|||0.024||
-tree_protists|stem|f8d70117c721550c|cdd6433618b3e2d0|90f782499ea9e16f|-1690159041|_targets/objects/tree_protists|f76ae755cb4e4220|0899f229c486e05f|48310|rds|vector|||0.02||
-seq_accum_site_GH90_vs|stem|9ff08f3fdef12c3f|4a39730255a16a51|3c0ee6e21d77c070|497450819|_targets/objects/seq_accum_site_GH90_vs|03a7bd7499729f03|337807930cb45bb9|5006|rds|vector|||8.462|the condition has length  1 and only the first element will be used|
-seq_accum_sample_GH90_vs|stem|1687fecdcaae973e|b5eb185bc6bdeaa4|76bbf67fd8ff4b8e|412312129|_targets/objects/seq_accum_sample_GH90_vs|6118cdb4ced0ea9d|0a8b6c351670886a|39597|rds|vector|||22.283|the condition has length  1 and only the first element will be used|
-samp_accum_site_GH90_vs|stem|d85c682e5f59cfe2|b456c7aff94f46cd|668ddb1f05dbec99|436033690|_targets/objects/samp_accum_site_GH90_vs|4fc9963c0781938c|8f6f8cd693815c9f|2269|rds|vector|||15.648||
-seq_accum_site_OTU_vs|stem|bb6a75874757d167|c162cfd4a17c4acc|cd57175faf336aba|-1485021061|_targets/objects/seq_accum_site_OTU_vs|b31aa538242e2789|bdb718bb890e6ce5|5205|rds|vector|||11.566|the condition has length  1 and only the first element will be used|
-samp_accum_site_OTU_vs|stem|d59cad22a44321bb|5b706cbf43a70ded|432ad5dfc9986aaa|692267385|_targets/objects/samp_accum_site_OTU_vs|c1cd376a38fc2c45|539a9f70b6f47c4f|2321|rds|vector|||23.624||
-seq_accum_sample_OTU_vs|stem|96fdc5c483138d27|18102f6f9f08153e|48198187b5c66e95|-297845472|_targets/objects/seq_accum_sample_OTU_vs|84260b99b4f12d11|63166cbfb92243a8|40784|rds|vector|||33.426|the condition has length  1 and only the first element will be used|
-seq_accum_sample_SH99_vs|stem|93fceeb421fd49d3|fe16636b7deae6b5|b69737c170acb287|-195229678|_targets/objects/seq_accum_sample_SH99_vs|2e0881aa6f550b3d|42ee4db8f953e17d|40491|rds|vector|||30.38|the condition has length  1 and only the first element will be used|
-seq_accum_site_SH99_vs|stem|798e7d183c78623c|8ddfb2017b829eb2|4bee792993e88f79|-721345364|_targets/objects/seq_accum_site_SH99_vs|81746342224b60b1|ff0bca67131a7dcb|5155|rds|vector|||10.765|the condition has length  1 and only the first element will be used|
-samp_accum_site_SH99_vs|stem|c71138492f086aa9|33c75bf9551bea37|f41531b4a6a4dd66|-997998881|_targets/objects/samp_accum_site_SH99_vs|524fa7864bdd1f71|539a9f70b6f47c4f|2321|rds|vector|||20.806||
-seq_accum_sample_SH97_vs|stem|a4fc95aff9aac983|e7288569d3f58d9f|1cec5d68897633fe|1936456715|_targets/objects/seq_accum_sample_SH97_vs|0357fdc71ccae4bb|936e5b975bb9e1c2|40096|rds|vector|||26.708|the condition has length  1 and only the first element will be used|
-seq_accum_site_SH97_vs|stem|2be639327b3d1ceb|422f2f0ecce83a16|e84e079dfc8f0f7f|-1501686159|_targets/objects/seq_accum_site_SH97_vs|9d094fe96213b1b0|dcfc995e40b9c557|5084|rds|vector|||9.848|the condition has length  1 and only the first element will be used|
-samp_accum_site_SH97_vs|stem|9f04a54f8825ed44|fc5f90a799172df7|14f7283fa5cf4cbf|743295235|_targets/objects/samp_accum_site_SH97_vs|ea4a2cde6c94b808|1fd98625fc1bd301|2285|rds|vector|||15.726||
-samp_accum_site_OTU_sl|stem|640733555b292af1|21123cf8d86cbbe9|78de5a9afd2ee0c6|1845834184|_targets/objects/samp_accum_site_OTU_sl|0bb732dd057172b6|6878a689798d08d2|2299|rds|vector|||17.426||
-seq_accum_site_OTU_sl|stem|dc89307efe7e1898|470666f3a3c3f9f5|a32a19aa699301c3|-1725335411|_targets/objects/seq_accum_site_OTU_sl|80255043c0b92684|5c7a7f9c85d4d82d|5142|rds|vector|||10.615|the condition has length  1 and only the first element will be used|
-seq_accum_sample_OTU_sl|stem|41e4c6ad61bcd06d|113b21e273f2d91b|48a37cab9ded8d94|-577814792|_targets/objects/seq_accum_sample_OTU_sl|1ec19d89d63e2771|af0346d508505b0f|40328|rds|vector|||28.885|the condition has length  1 and only the first element will be used|
-samp_accum_site_GH90_sl|stem|cf908d51da6b58a9|36b9667466fde01d|dcef161473e32011|-246868462|_targets/objects/samp_accum_site_GH90_sl|a499a2aba8360be6|0b64553aa1b01bc1|2259|rds|vector|||13.361||
-seq_accum_site_GH90_sl|stem|c2dccc5e3390767f|b2a27ce04d50b500|ff4712ccf7998059|-1735531473|_targets/objects/seq_accum_site_GH90_sl|9a41fddca29fb747|cb2f4f0e70714fd3|4988|rds|vector|||8.085|the condition has length  1 and only the first element will be used|
-seq_accum_sample_GH90_sl|stem|1713e10046b789d4|f03b57a53c0f07d7|085c202b38362c39|-1612649602|_targets/objects/seq_accum_sample_GH90_sl|1c5a256f219fe02f|bd999b166eded111|39489|rds|vector|||24.495|the condition has length  1 and only the first element will be used|
-seq_accum_sample_SH99_sl|stem|72064d33b0a026ea|0acc46e18d327b02|7da550d5a6801110|-1948397634|_targets/objects/seq_accum_sample_SH99_sl|a089b8df5a4d16e9|ae0830aae05e710f|40021|rds|vector|||27.916|the condition has length  1 and only the first element will be used|
-seq_accum_site_SH99_sl|stem|40d574935d86f400|b96b82785c231ba3|4e88e04349bbc03e|-2045015274|_targets/objects/seq_accum_site_SH99_sl|7900375623597a73|54e3e0c83ad40907|5056|rds|vector|||10.164|the condition has length  1 and only the first element will be used|
-samp_accum_site_SH99_sl|stem|1ff647582c0c5b90|7f8d47deeb65a602|64e05d189bc29a60|-1831216508|_targets/objects/samp_accum_site_SH99_sl|f66df6bfdb81272a|575d01c0b4419233|2287|rds|vector|||17.831||
-seq_accum_sample_SH97_sl|stem|95c9d896dbee2fcd|2163bee70fcf47c2|7ba9ced89a62638d|-128941970|_targets/objects/seq_accum_sample_SH97_sl|e3ab7ef5d6768812|dd5aa4c69cb47447|39981|rds|vector|||26.951|the condition has length  1 and only the first element will be used|
-seq_accum_site_SH97_sl|stem|86596368a362931f|236613babb1a8f37|f6084dc5676c7699|-248481788|_targets/objects/seq_accum_site_SH97_sl|a219a215bd9538a5|b7d1ea60483b7ef3|5064|rds|vector|||9.485|the condition has length  1 and only the first element will be used|
-samp_accum_site_SH97_sl|stem|1e96cd91376378a2|03fcc9e3e0b5a2f8|4bf7864b58479b57|-1265280476|_targets/objects/samp_accum_site_SH97_sl|b65a03d8667843ee|7c10cefd0203d368|2260|rds|vector|||16.13||
-seq_accum_sample_OTU_as|stem|ae98c9f3a7d687b8|cd2b830a7c95e45b|5c17d2521e11e535|-1832765153|_targets/objects/seq_accum_sample_OTU_as|e9ec90b88a2ae6a0|2e23c9c0e8597ab4|42001|rds|vector|||16.721|the condition has length  1 and only the first element will be used|
-samp_accum_site_OTU_as|stem|c2b1c27bc6457bc3|7d5430572b6df53f|2d93692f8b3f054a|324102150|_targets/objects/samp_accum_site_OTU_as|9a46c9361ca94f37|0bacce6b0fd4e037|2234|rds|vector|||8.226||
-seq_accum_site_OTU_as|stem|17625c695474f22e|871dd1dd54747e4f|0ffbe8d84baf852a|-187752385|_targets/objects/seq_accum_site_OTU_as|9d60d2c884bafb93|bd6f9a207a62e5da|4970|rds|vector|||6.152|the condition has length  1 and only the first element will be used|
-seq_accum_site_SH97_as|stem|0b60ac9b3eb49a58|6fd88c3f06226ac7|91b9b341a57557fb|652834698|_targets/objects/seq_accum_site_SH97_as|a51532dbc4c96778|4630a334321279f1|4852|rds|vector|||3.869|the condition has length  1 and only the first element will be used|
-seq_accum_sample_SH97_as|stem|e7e75600f90ca8c7|5106e5e7f8cff8e4|1c4f00ec60556e43|-619554330|_targets/objects/seq_accum_sample_SH97_as|53d726088d68322f|f346798fcbbb7354|40335|rds|vector|||11.381|the condition has length  1 and only the first element will be used|
-samp_accum_site_SH97_as|stem|dab11c2e63e42880|115bcbb10775aeff|ba737eafbdfb930d|-119682432|_targets/objects/samp_accum_site_SH97_as|008a37e758c9bb03|d5163edd3232747e|2213|rds|vector|||2.284||
-seq_accum_sample_SH99_as|stem|4eabbc9993a5a2e4|008d17defc4d43bc|b469cd887799e783|1903836852|_targets/objects/seq_accum_sample_SH99_as|a6d881c145b9e5dc|bba3f519c0e6f096|40812|rds|vector|||12.095|the condition has length  1 and only the first element will be used|
-samp_accum_site_SH99_as|stem|9ecd8939657b0927|dbb58bfdb55027b4|ab6a307695cefe43|201699145|_targets/objects/samp_accum_site_SH99_as|1d914d959faf3ac8|880e983c0bb198bb|2188|rds|vector|||5.085||
-seq_accum_site_SH99_as|stem|22944d41e8c9793d|f10d8e9583c422d6|133b0a4b89c965de|-1971897757|_targets/objects/seq_accum_site_SH99_as|0e488d220c68438c|5daed2bdbe5d994f|4873|rds|vector|||4.108|the condition has length  1 and only the first element will be used|
-seq_accum_sample_GH90_as|stem|4b28806098b52748|12c81f2794d3d837|6c31cce17b4ff972|638309317|_targets/objects/seq_accum_sample_GH90_as|8654e90e081e403e|6c3aa393336df049|39860|rds|vector|||9.588|the condition has length  1 and only the first element will be used|
-samp_accum_site_GH90_as|stem|25fabd9c9efe4415|24d014ad2ee697ca|feea4cd831404fde|389817740|_targets/objects/samp_accum_site_GH90_as|28de0d1fd9762916|5fc97845fc7a775b|2186|rds|vector|||1.82||
-seq_accum_site_GH90_as|stem|dd6d18185ed373ed|764f67798f79f4a3|daa7fa25297fbac8|760412288|_targets/objects/seq_accum_site_GH90_as|f44844360d364410|16c94dd05e46fb4a|4743|rds|vector|||3.105|the condition has length  1 and only the first element will be used|
-fungi_outgroup|stem|4fb2b8c30e179644|5be53308d3d7d472|2b030395702f4d1f|-1586879086|_targets/objects/fungi_outgroup|4c467e4a912bddb4|f55bdaeb17afeaf9|102|rds|vector|||0.053||
-unifrac_alleuks_weighted|stem|e9c9d8367b088d28|77a44cd130cd961a|7f094861e199d279|-599960217|_targets/objects/unifrac_alleuks_weighted|18d2327641684507|6afa6e1fd73417a7|225|rds|vector|||0.114|data length 4277 is not a submultiple or multiple of the number of rows 2139|
-unifrac_alleuks_unweighted|stem|aae825702561d8f8|e830b5c3d75beba0|7f094861e199d279|-1019253259|_targets/objects/unifrac_alleuks_unweighted|18d2327641684507|6afa6e1fd73417a7|225|rds|vector|||0.086|data length 4277 is not a submultiple or multiple of the number of rows 2139|
-otu_table_ampliseq_protists|stem|59e73cc19a734194|9005cd9031b48ed1|7b5259d08db241ce|1261629883|_targets/objects/otu_table_ampliseq_protists|6ff5c9394ceabc78|fe25838d0e5188d9|17206|fst_tbl|vector|||0.009||
-otu_table_vsearch_protists|stem|9d64d85f4fa81000|89628b19b8d1f1c9|cea4daa6d2770193|-1017571673|_targets/objects/otu_table_vsearch_protists|34d8b1b5c54c5e40|5fbe95790711dcd5|29803|fst_tbl|vector|||0.01||
-otu_table_swarm_protists|stem|8a72b5cc313f307a|8bc7125b4ed61bf6|4426669c9f860f60|-1113158605|_targets/objects/otu_table_swarm_protists|6ff5c9394ceabc78|55935aa49c74c13f|22617|fst_tbl|vector|||0.008||
-seq_accum_sample_means_GH90_vs|stem|7bc934f5823983eb|685bee6842655774|293b2c863a6eddb5|-1516092908|_targets/objects/seq_accum_sample_means_GH90_vs|892d7a8fb8626a3e|55c79e74c848e078|2779|rds|vector|||0.044||
-accum_site_GH90_vs|stem|9e5714e4d7eda870|51b61e96701135e9|febb0cbd6fce6fea|-696376428|_targets/objects/accum_site_GH90_vs|7604f83eea02e7bb|66eb37db78e98491|4610|rds|vector|||0.017||
-asymp_site_GH90_vs|stem|081b6a504f769098|55c80536576f3883|1c8f0ee0bcbcede3|-151137631|_targets/objects/asymp_site_GH90_vs|083a0c80a05fcd74|ed0b2f97180e0b86|205|rds|vector|||0.014||
-asymp_site_OTU_vs|stem|eb70f239cd878fa6|335d87a45eceef62|6809df9d26733fe7|-1359340797|_targets/objects/asymp_site_OTU_vs|f0602d7e8ba79596|e69b513f5fd59ef6|206|rds|vector|||0.008||
-accum_site_OTU_vs|stem|9eab8bc7e6592a2e|163eea9ea355dbab|450ef7c81c85f7b9|-442423320|_targets/objects/accum_site_OTU_vs|86a336fa992c304b|77de5701376af4a3|4679|rds|vector|||0.013||
-seq_accum_sample_means_OTU_vs|stem|2bede9bec791626c|f84f8eba9eea5287|c0816ced99073a05|-671473587|_targets/objects/seq_accum_sample_means_OTU_vs|65eb8e81f78dc8a8|db2f55a69b5a92ac|2778|rds|vector|||0.036||
-seq_accum_sample_means_SH99_vs|stem|b560550b0b29d5d4|0cc109e8883a4174|48a2b682349f2cba|1030074641|_targets/objects/seq_accum_sample_means_SH99_vs|1714d099e6fb4a5c|6a6712eef6881798|2781|rds|vector|||0.041||
-accum_site_SH99_vs|stem|7aae9080b2585fbf|e5c1222fa4208a04|6d099ea939e091f9|-434056944|_targets/objects/accum_site_SH99_vs|1c3d155bcf07e3fc|5cab481a2bf2f8b0|4653|rds|vector|||0.015||
-asymp_site_SH99_vs|stem|6fe86ac5b2662b32|1529f8668e767a43|51b671a95a220a28|1359508054|_targets/objects/asymp_site_SH99_vs|39116c040657c9da|e69b513f5fd59ef6|206|rds|vector|||0.015||
-seq_accum_sample_means_SH97_vs|stem|ba7494ed901cf015|b2459d4c71f03046|baf1e316781e9593|90537860|_targets/objects/seq_accum_sample_means_SH97_vs|7b3ab5b4353eea91|f8e806d2a82649d7|2783|rds|vector|||0.04||
-asymp_site_SH97_vs|stem|418750e265e55d43|e06e59bce9401b9c|9a22ebe9320048e7|-1010789316|_targets/objects/asymp_site_SH97_vs|c994b94212111272|e69b513f5fd59ef6|206|rds|vector|||0.008||
-accum_site_SH97_vs|stem|e5464a9553747cc0|b53068826eca66c0|4d31abaa7b668256|-1453033692|_targets/objects/accum_site_SH97_vs|11579a593dcf6bbb|7c44b42543bc92d6|4632|rds|vector|||0.013||
-asymp_site_OTU_sl|stem|86173272061a2303|4805fc03b3b29c18|12754e44d8c5727e|-2082357345|_targets/objects/asymp_site_OTU_sl|7c3a2b2f31d8bf23|e69b513f5fd59ef6|206|rds|vector|||0.012||
-accum_site_OTU_sl|stem|5537e7e5db3c13c9|c3a05c82bf46cbf8|4824f047c2a15f4e|941573871|_targets/objects/accum_site_OTU_sl|7ec5162c395c5bf7|7bd8b0e3e95cf478|4664|rds|vector|||0.016||
-seq_accum_sample_means_OTU_sl|stem|c68eb7e476e5e8af|687fc2ff16dd926c|28982ae2995e7e03|-524215873|_targets/objects/seq_accum_sample_means_OTU_sl|a11cad48ee2c4d0e|bc77c18d7e7e199a|2773|rds|vector|||0.282||
-accum_site_GH90_sl|stem|f9ba5db8b2b01411|8eb9dfa8d0504acf|75e5b1225e37099b|-76445597|_targets/objects/accum_site_GH90_sl|d4b0dceb1ff057c8|0c1b4ac1fb0d82c4|4594|rds|vector|||0.013||
-asymp_site_GH90_sl|stem|4ec50bfb23a9d22d|b2a5f4f7074e0627|f3995216873d5f2b|-1826287535|_targets/objects/asymp_site_GH90_sl|c6af5154f05f00bc|e69b513f5fd59ef6|206|rds|vector|||0.013||
-seq_accum_sample_means_GH90_sl|stem|519471eb5f784368|de060461d50e4428|f22326169971d12a|1855345373|_targets/objects/seq_accum_sample_means_GH90_sl|974ca4898980d150|7e078cc05cbd549a|2777|rds|vector|||0.036||
-seq_accum_sample_means_SH99_sl|stem|97f15cd228ba03e4|e2089a7db60e6225|29a5ef54ab49441f|-267037682|_targets/objects/seq_accum_sample_means_SH99_sl|7fe72ebc26a691f7|db2f55a69b5a92ac|2778|rds|vector|||0.035||
-accum_site_SH99_sl|stem|fc780e43bcf3a3e9|bf98e7e7262281c2|00b523ac2b23edd1|180983597|_targets/objects/accum_site_SH99_sl|9296923c3e3011bc|41763babcbb0bb0a|4613|rds|vector|||0.017||
-asymp_site_SH99_sl|stem|15851271b37f02b0|b5de698f21a37d05|faf1059a551067f3|2039267398|_targets/objects/asymp_site_SH99_sl|04a1fda6c1615331|e69b513f5fd59ef6|206|rds|vector|||0.012||
-seq_accum_sample_means_SH97_sl|stem|2c90366983a54d5a|76215a85fdba9da2|a8d228afd6f1c68e|-1369812909|_targets/objects/seq_accum_sample_means_SH97_sl|488cf6d4a84c631c|38db11f45190002c|2780|rds|vector|||0.039||
-asymp_site_SH97_sl|stem|d2ebc8d1ff891a52|d2f9b32fd0f5fa91|3f5a7f1cf0d1a167|1223896411|_targets/objects/asymp_site_SH97_sl|fccd626b18f6d127|e69b513f5fd59ef6|206|rds|vector|||0.013||
-accum_site_SH97_sl|stem|51d38ec612f7d7ce|51b3c214e435ec24|fe62a9c86ac9c54c|-1785738321|_targets/objects/accum_site_SH97_sl|534d66339d780f3c|5ab57eee9c67686c|4624|rds|vector|||0.013||
-seq_accum_sample_means_OTU_as|stem|c4c0b68c04c43998|f7bdbf34657d640b|07bf04c02bb85f2a|2118934031|_targets/objects/seq_accum_sample_means_OTU_as|c21f5ebfc3400926|bc77c18d7e7e199a|2773|rds|vector|||0.051||
-accum_site_OTU_as|stem|d401f38863fab7f3|b147a8cd11d4f1dd|7d08c5179c2e192a|-1426163168|_targets/objects/accum_site_OTU_as|956876cf898eade2|31234575eaace4eb|4279|rds|vector|||0.015||
-asymp_site_OTU_as|stem|74f96dbb56505f41|bbcf8c4b8b5bf844|43b018e600eea49b|1154141794|_targets/objects/asymp_site_OTU_as|6c23b8fdf0d73468|2721c650416a264a|204|rds|vector|||0.011||
-seq_accum_sample_means_SH97_as|stem|5d889e5a9bd6a88a|7c9941b195710dbe|623ebc603e55aedb|932289423|_targets/objects/seq_accum_sample_means_SH97_as|b165737f0c31e577|0ff4ebba527fba7e|2756|rds|vector|||0.041||
-accum_site_SH97_as|stem|555d8256174ddc2e|f7e39d438bb77a43|76add8bd4939af4e|1624562597|_targets/objects/accum_site_SH97_as|b19b840f4062574f|f0d6408c04b535b6|4259|rds|vector|||0.011||
-asymp_site_SH97_as|stem|e62f08ec3a7e9bc6|4c385697bb29c7b3|1b844a9900ccc1f6|1056016052|_targets/objects/asymp_site_SH97_as|3407eee72710e94e|c3cbfe28e1565b13|202|rds|vector|||0.011||
-seq_accum_sample_means_SH99_as|stem|016c39697e1cb38b|24b3b6e49f1c78c9|c0eef606026fedb1|615981375|_targets/objects/seq_accum_sample_means_SH99_as|f9f146e52ec64f37|c36d4ea29e1ab989|2768|rds|vector|||0.046||
-asymp_site_SH99_as|stem|2c40c46415c97c0a|d0e12e7bf710c4f3|223f838878f229e0|833561268|_targets/objects/asymp_site_SH99_as|e86db05bb4e94edf|ed0b2f97180e0b86|205|rds|vector|||0.011||
-accum_site_SH99_as|stem|8c848004bd812bc2|abd0647a0a6e6520|0fc07d52f293790c|911384902|_targets/objects/accum_site_SH99_as|1984275a8b17b2de|e6bdd22493b77d30|4262|rds|vector|||0.015||
-seq_accum_sample_means_GH90_as|stem|75616c0b66ebce54|3a8f7d8bdda47d06|9da636f575d77067|1163269954|_targets/objects/seq_accum_sample_means_GH90_as|67da7ec7d19ca614|13ee19f568b1ebc1|2752|rds|vector|||0.066||
-samp_accum_site|stem|59ecee77cae377c9|892847daae4b372f|59e8cb70493af0a4|-1464422649|_targets/objects/samp_accum_site|27621ab139b0673c|0058b7775211bc27|6664|rds|vector|||0.033||
-seq_accum_site|stem|b1bc750c6a290ab6|6b957da487cf4373|9c2abae3d50c96fc|-405589690|_targets/objects/seq_accum_site|90e88ec45f54ad4a|d330e927ffdaf31e|23686|rds|vector|||0.044||
-asymp_site_GH90_as|stem|aecb66a8d22cb3c5|8e695084ade8d477|0e12966d8c3ea106|400817116|_targets/objects/asymp_site_GH90_as|0a4eb01f05a9ba61|0cf7d46830a37596|201|rds|vector|||0.012||
-accum_site_GH90_as|stem|17d3bed198c86ef5|2c219cdf66c68d1b|4a4f313c095233df|2024238653|_targets/objects/accum_site_GH90_as|ad98c9a93268f430|20db0f51e1b6a060|4256|rds|vector|||0.014||
-cluster_geoms_alleuks|stem|f900c552eac4a1ce|22c2e0175dcda168|3e729484ffe33978|-148002290|_targets/objects/cluster_geoms_alleuks|0e5fc582f268c083|179f670dc9c80bb1|6418|rds|vector|||10.817||
-write_otu_table_rds_ampliseq_protists|stem|45209b7a155a74b7|10c96d1951d8c416|d58b2dbe7a09c3a0|785575104|output/data/ampliseq_table_protists.rds|11645c612efed278|a0051e90d6e8252a|5210|file|vector|||0.025||
-write_otu_table_xlsx_ampliseq_protists|stem|02751aaac3a295a9|72984757736e4dea|d58b2dbe7a09c3a0|753149282|output/data/ampliseq_table_protists.xlsx|014d35a0474d18d0|a596f93b6b00dc9c|48630|file|vector|||0.616||
-write_otu_table_xlsx_vsearch_protists|stem|e7d067bf51455d17|99e0d1ace59461e2|9d52f729d8d62b11|-591879179|output/data/vsearch_table_protists.xlsx|52a760b7014d8ef7|79eefa715da1be4c|81717|file|vector|||0.116||
-write_otu_table_rds_vsearch_protists|stem|cd969422681db742|e69158e0f3d14530|9d52f729d8d62b11|-787567268|output/data/vsearch_table_protists.rds|a6bed9928fd89070|113e5e4c60d43491|10638|file|vector|||0.018||
-write_otu_table_xlsx_swarm_protists|stem|a723ee2f1f9dddab|0190eea54ba80c68|b48b1db1eefd556d|-1646251566|output/data/swarm_table_protists.xlsx|6746b0dd5bde02cf|b34f1d691273b2e4|66363|file|vector|||0.093||
-write_otu_table_rds_swarm_protists|stem|9dcb98f7161883e0|ab07aa2ba390a9c6|b48b1db1eefd556d|1949060731|output/data/swarm_table_protists.rds|895fb213a1056558|3c8da92f6682c65d|8921|file|vector|||0.006||
 sample_accum_plot_GH90_vs|stem|573d5b26dbabb99a|45497f4dd8129096|a2fb58d37d9e522b|1768902283|_targets/objects/sample_accum_plot_GH90_vs|a67ce78684b2f52f|963663b2c82488de|203097|rds|vector|||0.264||
 sample_accum_plot_OTU_vs|stem|bfe906aea12a3145|90e4608183dd8038|9af47cf32cabe0fd|115676124|_targets/objects/sample_accum_plot_OTU_vs|8d528e878f342843|a8140ef877b05439|205482|rds|vector|||0.023||
 sample_accum_plot_SH99_vs|stem|a117d2d2eb3db5a6|bd9bfe93ed118204|d544eed9944036ee|208161547|_targets/objects/sample_accum_plot_SH99_vs|6c0eea7e36d4b91c|67a516eacece9a64|204960|rds|vector|||0.029||
@@ -237,122 +143,13 @@ sample_accum_plot_OTU_as|stem|3ce0ff7e570a3a3b|9c33c16e84eb418b|7215303f31ed5fa2
 sample_accum_plot_SH97_as|stem|6afc07d960668c1a|62efce12ac27b73d|5d6325022846622b|887325868|_targets/objects/sample_accum_plot_SH97_as|f66df11df5334c4c|b3010f0c95f40571|202781|rds|vector|||0.02||
 sample_accum_plot_SH99_as|stem|d0439b8b4e17ad7f|32ea0f1e14a010bd|22dd406e2cf5e87d|1252941562|_targets/objects/sample_accum_plot_SH99_as|0a9701ac894228b1|5eb44544b1157875|203413|rds|vector|||0.024||
 sample_accum_plot_GH90_as|stem|9719278b3df71cd1|ca2e134194527be6|bfa063622fe95c05|-1171580938|_targets/objects/sample_accum_plot_GH90_as|051f3e68e0f29647|a49667ef34ea72a6|202682|rds|vector|||0.018||
-seq_accum_sample_means|stem|51de2c47a1919dc1|52696e1ea2cd1404|f74f6b1f9a67593a|-233499298|_targets/objects/seq_accum_sample_means|ab020210bb21c50e|6206d6d749846b2f|20214|rds|vector|||0.137||
-asymp_site|stem|a052646b5f244447|cabc816328679959|e3f14abca848c797|1181597082|_targets/objects/asymp_site|0e9f0b6c8b90a254|813a0d7697333517|548|rds|vector|||0.021||
-samples_physeq_protists_otuA|stem|e8d3e062ddeaf4e3|7c97b1efd0ffc3db|2b4e5b9e5851aa26|200104329|_targets/objects/samples_physeq_protists_otuA|3fd0017251470932|3862048467d3e152|9076|qs|vector|||3.953||
-samples_physeq_protists_otuC|stem|a117e998fac5cabd|ae437bab52e4f593|4bc5176bc800291e|-795057432|_targets/objects/samples_physeq_protists_otuC|49c4e9129137977a|769d2c13945c4162|15504|qs|vector|||0.1||
-taxplot_OTUs_protists_phylum|stem|86ed41099eeb62f7|665091008669ad6f|5a97ce47810e8f86|-519390951|_targets/objects/taxplot_OTUs_protists_phylum|c87685462025339f|8abc37bccfe66ab2|85473|rds|vector|||0.252||
-samples_physeq_protists_otuS|stem|4241a86559ab7949|30d8047885b06ab3|f421f2d014bef77b|-1900781883|_targets/objects/samples_physeq_protists_otuS|fb950f631b1dd354|3691194b646bdc14|13184|qs|vector|||0.056||
-taxplot_reads_protists_phylum|stem|e68d08decee3402b|63aaf12e872a39e9|f8c543998058e224|-890682428|_targets/objects/taxplot_reads_protists_phylum|19c3e8e2e6e8e8c6|b297fa85556f1355|84240|rds|vector|||0.3||
-accumplot1_png_GH90_vs|stem|c1df9b2c69ffd91e|c9ebd9f99e10b0c6|e023324b808737c3|-1232173918|output/figures/accum1_vs_GH90.png|d51474e9d9c51e00|6bcbba6a9764257f|32484|file|vector|||0.342||
-accumplot1_pdf_GH90_vs|stem|0286ae076f8e75a4|942e5ff36b0149ff|a2ef831259a9fcbe|992958431|output/figures/accum1_vs_GH90.pdf|1f68271859e475b7|6fcc48bff3f11442|25365|file|vector|||0.293||
-accumplot1_eps_GH90_vs|stem|1c24f503b7e54ffe|5311eaa9b56dbd70|e023324b808737c3|-1780488940|output/figures/accum1_vs_GH90.eps|dbc6b7cf0a1ca606|4458cfe9a457fff1|11723|file|vector|||0.272|semitransparency is not supported on this device reported only once per page|
-accumplot1_png_OTU_vs|stem|31f8d852add16bba|e0a35465d3cb4ea7|6c13a3a0a66cfeb3|-156886485|output/figures/accum1_vs_OTU.png|11b1035d9157863d|fb10a886bccfce61|31407|file|vector|||0.265||
-accumplot1_pdf_OTU_vs|stem|851429826ff2a041|b46c1d283af58c8c|dbbc1f485efb9d91|1660996944|output/figures/accum1_vs_OTU.pdf|474c59b7b9eb4b62|44764038506cb733|25389|file|vector|||0.275||
-accumplot1_eps_OTU_vs|stem|ffa19ae757ebec77|019cef4ac58b5b68|6c13a3a0a66cfeb3|946969102|output/figures/accum1_vs_OTU.eps|3234a8dacd3467ec|f0dea33805f9f5c2|11432|file|vector|||0.275|semitransparency is not supported on this device reported only once per page|
-accumplot1_eps_SH99_vs|stem|1f68c1160334c4bc|49d2aa96dfd1150a|26fc8ef128ed5fdf|1054876259|output/figures/accum1_vs_SH99.eps|421df819fa5f01ed|a21be1a99c3d3b87|11369|file|vector|||0.263|semitransparency is not supported on this device reported only once per page|
-accumplot1_pdf_SH99_vs|stem|b0bbab791bafc0d5|9b131eb3c1cd4b1b|802410b8249bb1c0|-47374389|output/figures/accum1_vs_SH99.pdf|93a67ddbfedae78d|add8d93687654d1d|25427|file|vector|||0.281||
-accumplot1_png_SH99_vs|stem|ad1a15c29c851c28|b08deb1f6ffec8c8|26fc8ef128ed5fdf|-1198544057|output/figures/accum1_vs_SH99.png|50bbe826ab7c4bb8|b5ab4d2bb644fb3e|31493|file|vector|||0.32||
-accumplot1_pdf_SH97_vs|stem|1762127195e7f72a|3061bbcafc4c9cdf|6dc88724caa2a90d|2020632411|output/figures/accum1_vs_SH97.pdf|bcd5e75b3cd1a29c|762c811d0697beab|25207|file|vector|||0.301||
-accumplot1_png_SH97_vs|stem|b589496eea9e1859|3db74d8817d0d7e8|53420d79780ed810|-908710239|output/figures/accum1_vs_SH97.png|000f45738da200f7|5d9c8d2b0f326014|31781|file|vector|||0.241||
-accumplot1_eps_SH97_vs|stem|0f1cc945e0fcfd84|69d3e29ba2a6c8c1|53420d79780ed810|619725920|output/figures/accum1_vs_SH97.eps|1229906edc525953|e82c2013bcdf00ff|11252|file|vector|||0.271|semitransparency is not supported on this device reported only once per page|
-accumplot1_eps_OTU_sl|stem|1fbd63cfffcae048|bed24ee7577a1fd1|d4f429c54cf456c9|-1515980911|output/figures/accum1_sl_OTU.eps|6c0e868aff184d94|a21be1a99c3d3b87|11369|file|vector|||0.256|semitransparency is not supported on this device reported only once per page|
-accumplot1_png_OTU_sl|stem|ea0200c87ce9e49d|f13ed30c206e25df|d4f429c54cf456c9|385636678|output/figures/accum1_sl_OTU.png|52b7de8d5c43501b|e32f52970ec9eefc|31625|file|vector|||0.26||
-accumplot1_pdf_OTU_sl|stem|68a35403444cb09b|431c2f9b2886bedd|c879ef96f4912c32|2081785101|output/figures/accum1_sl_OTU.pdf|5a030f17d0636f55|703f799941491f13|25407|file|vector|||0.253||
-accumplot1_png_GH90_sl|stem|842f13de4f751787|4a74b3f59ee4cc9f|95daa40198cc2109|1614302643|output/figures/accum1_sl_GH90.png|362e591616b62c85|e0f1b92bcb59a3eb|32248|file|vector|||0.305||
-accumplot1_pdf_GH90_sl|stem|e5a62b9757e20e56|5384fbb76c4bc853|0a4679b7a01aaf93|203330034|output/figures/accum1_sl_GH90.pdf|e18aad2df8f673e4|4a2ddd3592ea74a2|25321|file|vector|||0.28||
-accumplot1_eps_GH90_sl|stem|660c0bf7bf0e7962|f87ad9b3a9cdf29b|95daa40198cc2109|17844667|output/figures/accum1_sl_GH90.eps|2de3b05ca6e52b22|4458cfe9a457fff1|11723|file|vector|||0.192|semitransparency is not supported on this device reported only once per page|
-accumplot1_eps_SH99_sl|stem|b949b8656ef6317c|2f6cccf921cd7f97|f57eed568e755d4e|-1853078510|output/figures/accum1_sl_SH99.eps|a8f5541f4312956b|a21be1a99c3d3b87|11369|file|vector|||0.225|semitransparency is not supported on this device reported only once per page|
-accumplot1_pdf_SH99_sl|stem|fc5c1b100e8ba244|a0d3bb2e25f1f2e9|1476ee25f3f384f1|1789805931|output/figures/accum1_sl_SH99.pdf|24bf5d1503583734|be8e5447f662b498|25323|file|vector|||0.257||
-accumplot1_png_SH99_sl|stem|ad21dbb16f69edd2|252db40ad233db19|f57eed568e755d4e|1648883961|output/figures/accum1_sl_SH99.png|8e71482f118f863e|813ffbf847d5e700|31410|file|vector|||0.28||
-accumplot1_png_SH97_sl|stem|38079ab51a90c62a|70d29540a5b3057d|1d0ee0cf1db2a9f1|483387735|output/figures/accum1_sl_SH97.png|9b471e5e25b1156d|102ac9911d555f29|31375|file|vector|||0.248||
-accumplot1_eps_SH97_sl|stem|1bc98def662ef11c|8abe1d956e0ff306|1d0ee0cf1db2a9f1|1930484128|output/figures/accum1_sl_SH97.eps|b6896754bff2c24a|a21be1a99c3d3b87|11369|file|vector|||0.245|semitransparency is not supported on this device reported only once per page|
-accumplot1_pdf_SH97_sl|stem|cb09f5dd79a0439a|7c97bc3c58c16572|5adc814970587759|-1823857990|output/figures/accum1_sl_SH97.pdf|0c5152cfb2db191c|0a4c24d07eb4ad69|25295|file|vector|||0.246||
-accumplot1_pdf_OTU_as|stem|78f5ba29b2b6c6f9|c707681b548c20e1|d467181eab83d3d9|-62019100|output/figures/accum1_as_OTU.pdf|31f3744de414bf2c|23dbdc86095ec5a8|24580|file|vector|||0.293||
-accumplot1_eps_OTU_as|stem|1b7f9f2b3142c9f5|14ffad2f6858cc7a|5924925c06a3df16|-1568800862|output/figures/accum1_as_OTU.eps|4fc442d52a6ba89c|f0dea33805f9f5c2|11432|file|vector|||0.314|semitransparency is not supported on this device reported only once per page|
-accumplot1_png_OTU_as|stem|5a6de0bc687c4044|edc3bfc074d61c7e|5924925c06a3df16|-975317574|output/figures/accum1_as_OTU.png|fc2ce6b1bdbe0828|4e6d84d29f498a8a|29907|file|vector|||0.309||
-accumplot1_png_SH97_as|stem|7bbd2e3b11fdb6c5|c1bdf97f41282fc0|85ec4256eb710087|2117475530|output/figures/accum1_as_SH97.png|40dadd50a973cf5d|15b01e70786d7372|30067|file|vector|||0.359||
-accumplot1_eps_SH97_as|stem|3f76168c2e2a6a16|6736f77134900cb5|85ec4256eb710087|580847073|output/figures/accum1_as_SH97.eps|b30783c6b61132e8|c931312460167f59|11610|file|vector|||0.254|semitransparency is not supported on this device reported only once per page|
-accumplot1_pdf_SH97_as|stem|42726ac00cda59f7|b9429ea025ccc7bc|92d0150febfb7af3|1354435941|output/figures/accum1_as_SH97.pdf|c2104dae88cb0942|00b16d09c241cbff|24376|file|vector|||0.295||
-accumplot1_pdf_SH99_as|stem|f7e6f384f9274b39|d0b787cb9125afdb|4752bf54cf6d1426|-1232249079|output/figures/accum1_as_SH99.pdf|445b8f01ad16baf6|fa9f712df816819b|24521|file|vector|||0.318||
-accumplot1_png_SH99_as|stem|9f0c5b531a039456|3ef92cf809306c3e|c1b1cbdbfe8a6ef9|715475916|output/figures/accum1_as_SH99.png|2954d6591a810a10|fa4d51d99f21d152|31008|file|vector|||0.315||
-accumplot1_eps_SH99_as|stem|0c44e055675a7927|1c5cd11216359ed1|c1b1cbdbfe8a6ef9|-1677016565|output/figures/accum1_as_SH99.eps|139e5d49adc320c3|588857ea894e871d|11726|file|vector|||0.308|semitransparency is not supported on this device reported only once per page|
-accumplot1_pdf_GH90_as|stem|202bc7d87886aba9|c1c7af745690fe14|b76d81b4458ca9cf|-745097029|output/figures/accum1_as_GH90.pdf|14ae96c7e7cde59f|87e081ad1d9b8fef|24522|file|vector|||0.314||
-accumplot1_eps_GH90_as|stem|76b2e9cb39ad5a8d|c883183a7eab13e4|a0049b2737a215ef|1571687474|output/figures/accum1_as_GH90.eps|e7514b1bbf2f9a8d|2ef56cc439eae369|11543|file|vector|||0.272|semitransparency is not supported on this device reported only once per page|
-accumplot1_png_GH90_as|stem|10d3199b961c1ee7|5e78f05e4327075f|a0049b2737a215ef|-959816897|output/figures/accum1_as_GH90.png|6eeffc35be216028|55dde4ade7d459f8|29694|file|vector|||0.314||
 sample_accum_plot|stem|c20ba8e85d7e26dc|432d36b0ecc536c7|d8bc43e92bad6d25|293675341|_targets/objects/sample_accum_plot|e21929f823943483|90c731e77daf7786|942115|rds|vector|||0.022||
 fig_seq_accum_site|stem|10652294b83d6d40|d21d734185692d5c|c5af3970dc811eed|-1776574379|_targets/objects/fig_seq_accum_site|428d7a14fe4bc101|2d9212ee1a89a433|159367|rds|vector|||0.028||
 fig_samp_accum_site|stem|2321b6ba19105ab8|19d55b7372d544ee|ae9be162103a5c71|861945877|_targets/objects/fig_samp_accum_site|fcf6c9447421ee99|0ae66f67391f9183|117163|rds|vector|||0.017||
-physeq_file_protists_otuA|stem|1a938a1ab00c091c|d805e71b68142f11|8acb86693fc08fc0|-1853647707|output/data/phyloseq_otuA_protists.rds|7125e77949eebe8f|8c6efb355d9853aa|11436|file|vector|||0.004||
-physeq_file_protists_otuC|stem|eeb544e19815617b|253244ef6a76a76f|dae3073bdff5e210|85392330|output/data/phyloseq_otuC_protists.rds|2b73a290e6014e02|0370d62dba5af388|20852|file|vector|||0.016||
-physeq_file_protists_otuS|stem|35fe86b1b7321b44|3efc32550aa3a710|e47cfa9bfa9c1761|135528908|output/data/phyloseq_otuS_protists.rds|fc61211f00ae80a0|5d6207c23b862ad7|17016|file|vector|||0.008||
 accumplot1_png|stem|d26f376845fc612c|730901fd3096ceff|4faa2d21920a449c|-2061296150|output/figures/accum1.png|83b65908f2a575d9|f2c8a7a35c6dbcc8|358591|file|vector|||1.023||
-accumplot1_eps|stem|872e87247647e260|c70ee4b476ba091a|4faa2d21920a449c|-177096594|output/figures/accum1.eps|36b84eeaa8ee7c16|9a2a643353c17358|40476|file|vector|||0.812|semitransparency is not supported on this device reported only once per page|
 accumplot1_pdf|stem|de62e2361c804bc4|8420a5d85d11a71d|63e70a6b739ba307|1734725136|output/figures/accum1.pdf|ee1aa9a1df8b4d52|0a63175ea182ca0e|149112|file|vector|||0.804||
-accumplot2_seq_pdf|stem|da41a0ab2d5bec9b|6eb974a452720bf6|3c3dbd5771bdd48e|-1632251580|output/figures/accum2_seq.pdf|a8137d0944978857|f93fa59281379d2d|45829|file|vector|||0.684||
-accumplot2_seq_png|stem|e90851a0584c48d8|263923f77b7e67e7|bbcd81080107bedf|573646060|output/figures/accum2_seq.png|0b4230ea9cc8ccad|39c075ef24000e85|86708|file|vector|||0.654||
-accumplot2_seq_eps|stem|7ca73734a5f0f7fa|feda9573fbfc03dd|bbcd81080107bedf|1692049131|output/figures/accum2_seq.eps|3c77caa2eee6031f|6487858f3eda5991|47401|file|vector|||0.576|semitransparency is not supported on this device reported only once per page|
-accumplot2_samp_png|stem|adae95a75ca20a9f|5f1ab80532b666a2|f22bcd490c51c0f0|1959029873|output/figures/accum2_samp.png|37ee6099f329e656|9db11dc4a847000d|91859|file|vector|||0.562||
 fig_accum_site|stem|91afa7b6277b7b3b|b705d0ad5d4511a8|b7923ecbd2d5e72a|-516178736|_targets/objects/fig_accum_site|b0b0c6bfe3f89405|ae40785c833efc2d|567279|rds|vector|||1.356||
-accumplot2_samp_pdf|stem|972c4c61c9b79dce|1eefed1f1f667757|0a938b504a0f05ef|1622003644|output/figures/accum2_samp.pdf|0b36b0aeb076cef6|733485179d1a9e32|19446|file|vector|||0.452||
-accumplot2_samp_eps|stem|2e269db1b44b6049|9c9444135ce8b538|f22bcd490c51c0f0|-3421969|output/figures/accum2_samp.eps|51093a2ae9df815e|f61ea906b1664bed|29206|file|vector|||0.454|semitransparency is not supported on this device reported only once per page|
-taxplotfile_pdf_protists_phylum|stem|087f7734ab5a9a32|1643002b18c1da7e|2a621d989588016b|-953652176|output/figures/taxonomy_protists_phylum.pdf|d6e5f9e4ecc5cf26|9513134c9d3d5d10|17704|file|vector|||0.261||
-taxplotfile_eps_protists_phylum|stem|9c64ca9b604fcbbf|6183968f3511d5d0|f6bb99ae6a76bef7|221564426|output/figures/taxonomy_protists_phylum.eps|11432d5ed9938856|e18b08bc92ca589d|30521|file|vector|||0.214||
-taxplotfile_png_protists_phylum|stem|1797894a5d4426c2|ced6bb479902e397|f6bb99ae6a76bef7|1498095069|output/figures/taxonomy_protists_phylum.png|3a1ced640cd30a3c|37022e31dc909b5f|60612|file|vector|||0.264||
-taxplotfile_pdf_protists_kingdom|stem|e1927513698e9e33|57cbeea5e724d415|3f67d0185c183693|72379728|output/figures/taxonomy_protists_kingdom.pdf|53ced83859403493|1bac914aa01becd6|16613|file|vector|||0.43||
-taxplotfile_png_protists_kingdom|stem|ecd473fc42544192|af566d435860fa8d|2745311a5d361e91|-2054606431|output/figures/taxonomy_protists_kingdom.png|6b33ae7423421ed7|aaaab74079d99173|49778|file|vector|||0.288||
-taxplotfile_eps_protists_kingdom|stem|9e2daf515a3046cd|4f3933814dec4453|2745311a5d361e91|1937720169|output/figures/taxonomy_protists_kingdom.eps|7b48bfa01ded1e56|9a94bfceb6739ca9|24056|file|vector|||0.23||
 accumplot2_png|stem|dbb5e985d3f58bd1|1b4d70c8d71e2542|27fcb181ef3200bf|410283691|output/figures/accum2.png|1e55bf2c7ab4a4ff|c361f229010c3ddf|143887|file|vector|||0.387||
-accumplot2_eps|stem|78a9b3e179e0cbe4|7add99b70aedc1ed|27fcb181ef3200bf|-1404977849|output/figures/accum2.eps|c23cd2fe6eaf1616|2ccb307818e895d5|72424|file|vector|||0.253|semitransparency is not supported on this device reported only once per page|
-accumplot2_pdf|stem|cc2e28ca2b16d207|57e188d90ff9c02b|3c2590c194991363|-1998077840|output/figures/accum2.pdf|ce9c572bbf21cacc|8149bc927604b9d9|59728|file|vector|||0.388||
-tree_fungi_new|stem|998aeccb44ab5735|6ebce47c49054c4b|472da0d6ff0222dd|-1011535065|_targets/objects/tree_fungi_new|cfdb2ed101b8912c|24bfad21611771e2|44695|rds|vector|||0.168||
-physeq_fungi|stem|f1d180a7464956b6|5dec4ea2a3dc820b|327848659837fcb3|521240460|_targets/objects/physeq_fungi|075205708f092510|00cd0f691cff352f|68031|rds|vector|||0.084||
-otu_table_ampliseq_fungi|stem|5092b321dfb1070f|29c8fb13b4bb39dd|207f447677a36396|-56914905|_targets/objects/otu_table_ampliseq_fungi|624087100bda1c46|cb2ad96b0101c4e2|13689|fst_tbl|vector|||0.015||
-otu_table_swarm_fungi|stem|8fc5f26df1cb0af3|eee035927bda8197|c165ee606206f7b5|1853098435|_targets/objects/otu_table_swarm_fungi|624087100bda1c46|e4c52fe42aa253b0|19664|fst_tbl|vector|||0.008||
-otu_table_vsearch_fungi|stem|23d4518b3b9044a4|62df66ccb3b44c50|17536f9e227bf220|1659426745|_targets/objects/otu_table_vsearch_fungi|467b65480a17ad97|acab2f57ad35bb45|29338|fst_tbl|vector|||0.009||
-unifrac_fungi_unweighted|stem|96bc5471f2a9641f|9ca80fdefc4d944b|f9c45efdb874f1aa|-539568579|_targets/objects/unifrac_fungi_unweighted|5e10a2777c6aaf3a|f0ef80e5f0ea82e1|224|rds|vector|||0.037||
-unifrac_fungi_weighted|stem|9b97119bd6fefc05|69e840084651bacf|f9c45efdb874f1aa|-2039787374|_targets/objects/unifrac_fungi_weighted|01a185c5f4bedac2|6afa6e1fd73417a7|225|rds|vector|||0.044||
-venn_data_Fritillaria|stem|c440853fda903e51|1d73b409effe5015|2921ab20131a385c|-237671013|_targets/objects/venn_data_Fritillaria|4b655c62699fff92|9639526e9377fc05|937|fst_tbl|vector|||0.361||
-write_otu_table_xlsx_ampliseq_fungi|stem|741c6aeb09ae8a00|67d35560dd52c959|3cc995d80c9699ae|705134307|output/data/ampliseq_table_fungi.xlsx|38ddb2df6c4d0b17|545e975dd6f9c10f|41524|file|vector|||0.116||
-venn_data_moisture|stem|61e3f34f3cbb6c5c|adcfbb1ed6678f08|a03a79870aa9d1b9|107489573|_targets/objects/venn_data_moisture|284a12415c7d9047|fce1500f3bf36ccf|840|fst_tbl|vector|||0.346||
-write_otu_table_rds_ampliseq_fungi|stem|b2bceb3c6aef6984|bf370fe163ff8132|3cc995d80c9699ae|-1810552961|output/data/ampliseq_table_fungi.rds|47e1d64c2c176f81|9d43a3541ad72e71|4293|file|vector|||0.002||
-write_otu_table_xlsx_swarm_fungi|stem|d221a5f33565468b|1e0635e2e75df72b|8e657ff2d259807c|1588612001|output/data/swarm_table_fungi.xlsx|a0076faad6ac7488|b2c7412e11fb9e3e|56468|file|vector|||0.053||
-write_otu_table_rds_swarm_fungi|stem|dfef5a70ecebf644|a0c065e165d4a341|8e657ff2d259807c|860660840|output/data/swarm_table_fungi.rds|9cdba2fcdb4408c2|7eb702857c4c6cf5|7437|file|vector|||0.002||
-write_otu_table_rds_vsearch_fungi|stem|ea42bac5494a7ac5|b5b14bcd32e6f440|3be3461b18deca99|116335645|output/data/vsearch_table_fungi.rds|b28770c4627e6ecf|2f72d97c755957b4|8621|file|vector|||0.003||
-write_otu_table_xlsx_vsearch_fungi|stem|db1005e00c7d3ae0|3b2d3cafc733e4d8|3be3461b18deca99|1076499378|output/data/vsearch_table_fungi.xlsx|b28770c4627e6ecf|91b14d46c573d638|66562|file|vector|||0.074||
-cluster_geoms_fungi|stem|3e96d2f793cd69cb|56d9e532bfc31f8b|d0bb95358747e405|-83619004|_targets/objects/cluster_geoms_fungi|9043d521313a4455|8c2c070375e0a8d0|2841|rds|vector|||1.91||
-tree_fig_file_fungi|stem|ebaca2fb11926590|4e158f9b044cb2e1|2250226ba1218bf5|-966735314|output/figures/treemap_fungi.pdf|69700f3ce1cce294|8d8a170141d42764|87062|file|vector|||0.711||
-venn_plot_fungi_Fritillaria|stem|e72b22cc01d00d42|a56beb0e729029c9|34bdfc46f8884181|-1495122458|_targets/objects/venn_plot_fungi_Fritillaria|58783be4cc01977c|c44a1ebbafa38641|14739|rds|vector|||0.017||
-venn_barplot_Fritillaria|stem|4d149a84521436d9|e2b44012f6ad1e11|e43375f2f737a12d|1797469875|_targets/objects/venn_barplot_Fritillaria|4a81fa774f6b9c5e|728edf13f0ffe4ca|70226|rds|vector|||0.011||
-venn_plot_protists_Fritillaria|stem|7c108a1f8460cb4f|57dab5c4ead405e6|34bdfc46f8884181|-1966349912|_targets/objects/venn_plot_protists_Fritillaria|58783be4cc01977c|5a64f050b74d79b6|14765|rds|vector|||0.016||
-venn_xlsx_Fritillaria|stem|666a93a1b5185f5b|d4f9130c1cc407ee|052e3f7a2c72800c|813358003|output/data/venn.xlsx|b6769d4766877e4f|5d8e426a0d247d23|6551|file|vector|||0.064||
-venn_plot_protists_moisture|stem|349f876372aa2c22|cd4f6a39c9218272|ba1cc2722f34bd52|-961362097|_targets/objects/venn_plot_protists_moisture|58ab5b6ee8698809|961e20d6f9b481b5|14646|rds|vector|||0.016||
-venn_barplot_moisture|stem|38058af2457e7a1d|f2937780c992cbc2|6d90571769fe33f3|1221818303|_targets/objects/venn_barplot_moisture|765b6ff99cbc5875|89eb8b39ec8da949|70156|rds|vector|||0.012||
-venn_plot_fungi_moisture|stem|7f1a20b808d0666b|0a160866bcbba65e|ba1cc2722f34bd52|-1579542349|_targets/objects/venn_plot_fungi_moisture|7f9180ef68daaa79|0f051b9b7bde5ea2|14596|rds|vector|||0.052||
-venn_xlsx_moisture|stem|c918fe3e8aaba525|59fd870e62981ef1|9dba9d18a90ec31e|1553686855|output/data/venn.xlsx|9dd459edf8b6a045|9a8059a23511faf5|6529|file|vector|||0.034||
-samples_physeq_fungi_otuS|stem|9ea3829a62eca1d7|dbc778a71387d82a|f9e516f675f98294|-387714633|_targets/objects/samples_physeq_fungi_otuS|0ff796973a07c232|21df48aaa4a3911d|12327|qs|vector|||0.047||
-samples_physeq_fungi_otuA|stem|fe561ddeadeded39|c2b0b086049d5cc1|114b12d98fc875fe|801570592|_targets/objects/samples_physeq_fungi_otuA|25f9644edd0668ac|94c822c2b64963fb|8469|qs|vector|||0.439||
-samples_physeq_fungi_otuC|stem|437f010064cdca3f|333538004b9e2f12|f6eedd9e7a6eb8a0|263569150|_targets/objects/samples_physeq_fungi_otuC|35d063c9d7ec73d8|d5fd4907b3c0a4f1|14099|qs|vector|||0.046||
-taxplot_OTUs_fungi_phylum|stem|33b0c8777e841dd8|38cff2502f68717d|00baaa9464337167|1858803788|_targets/objects/taxplot_OTUs_fungi_phylum|2fdff352bc40efbb|ade9910c5d163e1a|77831|rds|vector|||0.186||
-taxplot_reads_fungi_phylum|stem|735a9961c3332443|f201aa336493e949|481102208bf7e54c|1201803701|_targets/objects/taxplot_reads_fungi_phylum|0ade6fcf043a57c3|70cb7f2c4f7a17bf|77210|rds|vector|||0.203||
-physeq_file_fungi_otuS|stem|e6480dd7eb92a7b7|359d82ad8a6eaafe|63fbc7247839d996|1897372360|output/data/phyloseq_otuS_fungi.rds|f473cd840b1b4d73|d8726e50522035b8|16679|file|vector|||0.01||
-physeq_file_fungi_otuA|stem|c9ace4cf3fc8c47f|f317770e9ba2a0ef|37c2f10694faf8d5|-1642498873|output/data/phyloseq_otuA_fungi.rds|5ce417f2d846c49c|df52f0be56843bfc|11111|file|vector|||0.005||
-physeq_file_fungi_otuC|stem|0f81f7f0d198bc94|2b88e75ee45ec78d|fa3aca8abf07cfb3|1168557027|output/data/phyloseq_otuC_fungi.rds|5f0ed17f6e69ef06|a5c564a9b07d642e|19509|file|vector|||0.009||
-vennplotfile_png_Fritillaria|stem|cc473b41cf772067|f77590fd3156420d|1add6e75e390ca77|1161745373|output/figures/venn_Fritillaria.png|81088f519574dbcb|36330816c82a3ff1|68887|file|vector|||0.229||
-vennplotfile_pdf_Fritillaria|stem|ce81e66413891eee|5f6011bd2c5fde85|b4452534c3866022|-1840736988|output/figures/venn_Fritillaria.pdf|f736d85bd822f59d|52d05ec45219a850|32318|file|vector|||0.209||
-vennplotfile_eps_Fritillaria|stem|54fe96f7b91a1584|d4ae22d783ecf328|1add6e75e390ca77|-1038596655|output/figures/venn_Fritillaria.eps|bdefe32807856e24|c1b3353715a89548|38248|file|vector|||0.156||
-vennplotfile_pdf_moisture|stem|cc095e0c398c5f6e|06636c46d44414f6|c04a66c0d0146934|-178519068|output/figures/venn_moisture.pdf|0a6e094aa56024b2|85192ff4a487d436|27322|file|vector|||0.26||
-vennplotfile_eps_moisture|stem|225ac4c0d59ec2eb|5a50d25bad1688d4|a4d0491220d189f9|-1119866963|output/figures/venn_moisture.eps|1efeab35adb71610|c73f84c2ec79cc07|37293|file|vector|||0.189||
-vennplotfile_png_moisture|stem|b8e20e31b2a25246|bb2ad919d067ecfb|a4d0491220d189f9|601260079|output/figures/venn_moisture.png|7245c438bed178b1|a1f94916ddb973a5|64517|file|vector|||0.316||
-taxplotfile_OTUs_eps|stem|76d1613708c86881|fd805d16a05a52fb|325389e4a9a06397|-2003328309|output/figures/taxonomy_OTUs.eps|ceb4ecd7196b1c35|edb65333565242ea|39402|file|vector|||0.338||
-taxplotfile_OTUs_pdf|stem|13681ff7d4329699|750573a54b96134c|240da89cc2386b84|-917189837|output/figures/taxonomy_OTUs.pdf|d37fdc254bfb270e|06c7ba94508f39c1|19733|file|vector|||0.361||
-taxplotfile_OTUs_png|stem|d1c11cd5b198c1ba|499dfa0f0cd42187|325389e4a9a06397|-452217856|output/figures/taxonomy_OTUs.png|00c338671ee78be0|6708a8509dc5a39c|87803|file|vector|||0.415||
-taxplotfile_reads_eps|stem|9ffc8288085ffc5d|f8da581b7e9ef2aa|a882737d1bdbebeb|1487475770|output/figures/taxonomy_reads.eps|2638e11b338ebc42|aa7a0447cf6fd5ab|31729|file|vector|||0.343||
-taxplotfile_reads_png|stem|e3a39df312f2f335|3900334f3f71fc07|a882737d1bdbebeb|-1393020049|output/figures/taxonomy_reads.png|92a8c095665b1712|33c2cc472a89f7f2|69959|file|vector|||0.562||
-taxplotfile_reads_pdf|stem|c0fa0ad6ed337d2d|ca0f2b983849ca09|256de61aaca8cd1e|1668948585|output/figures/taxonomy_reads.pdf|7eafbcf689e850be|9c5b96cc45638543|18219|file|vector|||0.454||
-taxplotfile_png_fungi_phylum|stem|3b33d28e08b78c62|72eb777a56319d46|5d12b34e71bd213c|-180547234|output/figures/taxonomy_fungi_phylum.png|32beb459e639355d|eddc83f5627ddea2|53467|file|vector|||0.301||
-taxplotfile_pdf_fungi_phylum|stem|d3492835ccdf9440|4d7cf375a011476c|f6b886421c691df0|-1139518668|output/figures/taxonomy_fungi_phylum.pdf|952d584598fe9ebc|c440649aa5c994ec|17349|file|vector|||0.246||
-taxplotfile_eps_fungi_phylum|stem|c4bf88efc64adbdf|398bb7685a9ee40b|5d12b34e71bd213c|110933016|output/figures/taxonomy_fungi_phylum.eps|7f9e211a47992660|7945ae3a53b41063|28146|file|vector|||0.226||
 ensure_directory|function|f2f6a90fbe9895cd||||||||||||||
 root_with_kingdoms|function|b0a7ef22b48b8444||||||||||||||
 cluster_annotation|function|a589256c9809fba2||||||||||||||
@@ -406,7 +203,7 @@ unite_cluster|function|badb123f1a1f3230||||||||||||||
 align_mafft_ginsi|function|b64de08ba06040c8||||||||||||||
 kingdom_table_plan|object|022bc45ce47285c9||||||||||||||
 accumulation_means|function|64b13e1883caa0e6||||||||||||||
-its2_cluster_plan|object|271e41e3b145da74||||||||||||||
+its2_cluster_plan|object|288b0fb2b2681afa||||||||||||||
 parse_clusters|function|0d6e0b4d0d2c0bac||||||||||||||
 taxdata_meta|object|3d7da3766766073b||||||||||||||
 pre_positions_plan|object|507fdd4d220a4c97||||||||||||||
@@ -1785,7 +1582,7 @@ cluster_key|stem|e7b6d21421ca75e3|8385b5c6b949d1df|1681b852c5505333|1170855105|_
 tree_rooted|stem|2f0bf121d4ecbaff|9491cb1b8f2891bd|66accf5d9fc87d12|-10047137|_targets/objects/tree_rooted|f76ae755cb4e4220|f00c1d160bde4c7c|95326|rds|vector|||1.664||
 physeq_sample_as|stem|d44bd88e70c07baa|cc90848846882835|0c35c751067c9bc7|-1153580651|_targets/objects/physeq_sample_as|825337fa56130922|438fef2bea83ef2d|32306|rds|vector|||4.532||
 physeq_sample_vs|stem|677a37a3f110434c|1586c23dd01dbd93|420620137df224b3|2078556159|_targets/objects/physeq_sample_vs|9b31213244e8d0cf|8ab3c7d9a4eb0ef9|93230|rds|vector|||0.049||
-cluster_detect_table|stem|17d9780b58bdfcb9|b9fe9af664c81c02|c0455ec902047e4f|-1385596164|_targets/objects/cluster_detect_table|00021b3f2bf600eb|8d0aba61fa8a9196|444|fst_tbl|vector|||0.324||
+cluster_detect_table|stem|df0d1eab83bb26df|f5d80c6f64c0ef2b|befa569a0c744777|-1385596164|_targets/objects/cluster_detect_table|e4e6e93287c20b60|bd5d7237884ef5a2|443|fst_tbl|vector|||0.289||
 physeq_sample_sl|stem|6c57b3b4389b1c0e|1759f5c0c70e2405|bad7efe52842bda7|28337569|_targets/objects/physeq_sample_sl|c48f82adc6ea7af9|48c541eddebac933|68903|rds|vector|||0.098||
 detection_plotfile_pdf|stem|62b939f66f611c8b|11f09f985fc1e19d|a0d1d050341b7544|409897844|output/figures/detection.pdf|f938d7ab10bcef48|d09d93e6f185d348|72372|file|vector|||0.852||
 detection_plotfile_png|stem|95af60e3000f502b|9dce8dbaed9c9add|d0311c01024f18aa|-954601688|output/figures/detection.png|bdb7d13912096e9e|b01dafb1c3d83539|71117|file|vector|||0.445||
@@ -1805,7 +1602,210 @@ clust_physeq_OTU_vs|stem|677a37a3f110434c|340e4230587c06f1|16df60bbae7e1237|2123
 clust_physeq_SH97_vs|stem|9d14620185e79acd|630519232556f1d7|16df60bbae7e1237|736181380|_targets/objects/clust_physeq_SH97_vs|50adaef625955306|ee290c376107182f|53770|rds|vector|||40.666||
 clust_physeq_SH99_vs|stem|c21b9f00661db5e7|e8208d1d7df874ae|16df60bbae7e1237|1977888817|_targets/objects/clust_physeq_SH99_vs|ef9f8b4c42ce8857|a911a4c07bddd904|65058|rds|vector|||47.493||
 clust_physeq_GH90_vs|stem|948190c1ad4800a3|fd53737c94a493ca|16df60bbae7e1237|361733584|_targets/objects/clust_physeq_GH90_vs|acf4ce6884456ed4|4159a7921360cae8|31989|rds|vector|||32.666||
-cluster_fraction_table|stem|8294620e03989ca4|a7a0306712c28401|56e6c867e418c63d|1141420048|_targets/objects/cluster_fraction_table|a03e91bb6e22da0e||267|rds|vector|||0.027||Join columns must be present in data. Problem with SH.
+cluster_fraction_table|stem|4da23f2507791dd7|e08c00889512de40|1e22ca39096d4847|1141420048|_targets/objects/cluster_fraction_table|e145ed41f5c8df70|11016194afa2c5c5|297|rds|vector|||0.023||
+clust_physeq_GH90_sl|stem|1eddf0b54bc32b87|52cc04a8f9d83b0d|0794a4f7fa0dc653|-1323380872|_targets/objects/clust_physeq_GH90_sl|9566b30717129c75|668813e86f48015f|32340|rds|vector|||34.473||
+clust_physeq_SH97_sl|stem|c5c2f82ede7a52fb|ac2c1950af1ebf4f|0794a4f7fa0dc653|1895043821|_targets/objects/clust_physeq_SH97_sl|6321113242901f16|f1e4264b66531548|50112|rds|vector|||36.894||
+clust_physeq_SH99_sl|stem|214268fe46aa8e43|a5136c820cb009c9|0794a4f7fa0dc653|-311515876|_targets/objects/clust_physeq_SH99_sl|5583329201e693a7|75b0ae38cb25d437|55547|rds|vector|||37.973||
+clust_physeq_OTU_sl|stem|6c57b3b4389b1c0e|d5623397845f92f1|0794a4f7fa0dc653|445360611|_targets/objects/clust_physeq_OTU_sl|04a4de7e6513b73c|48c541eddebac933|68903|rds|vector|||43.169||
+regions_fungi|stem|737ea342e3fa28be|4d552059dd5a0087|0e171e03e101dd27|-1970474868|_targets/objects/regions_fungi|0b9cd427bb685434|9b6dee116c3a46e1|12384|rds|vector|||0.024||
+tree_protists|stem|f8d70117c721550c|cdd6433618b3e2d0|90f782499ea9e16f|-1690159041|_targets/objects/tree_protists|f76ae755cb4e4220|0899f229c486e05f|48310|rds|vector|||0.02||
+seq_accum_sample_SH97_as|stem|e7e75600f90ca8c7|5106e5e7f8cff8e4|1c4f00ec60556e43|-619554330|_targets/objects/seq_accum_sample_SH97_as|53d726088d68322f|f346798fcbbb7354|40335|rds|vector|||11.381|the condition has length  1 and only the first element will be used|
+samp_accum_site_SH97_as|stem|dab11c2e63e42880|115bcbb10775aeff|ba737eafbdfb930d|-119682432|_targets/objects/samp_accum_site_SH97_as|008a37e758c9bb03|d5163edd3232747e|2213|rds|vector|||2.284||
+seq_accum_site_SH97_as|stem|0b60ac9b3eb49a58|6fd88c3f06226ac7|91b9b341a57557fb|652834698|_targets/objects/seq_accum_site_SH97_as|a51532dbc4c96778|4630a334321279f1|4852|rds|vector|||3.869|the condition has length  1 and only the first element will be used|
+samp_accum_site_GH90_as|stem|25fabd9c9efe4415|24d014ad2ee697ca|feea4cd831404fde|389817740|_targets/objects/samp_accum_site_GH90_as|28de0d1fd9762916|5fc97845fc7a775b|2186|rds|vector|||1.82||
+seq_accum_site_GH90_as|stem|dd6d18185ed373ed|764f67798f79f4a3|daa7fa25297fbac8|760412288|_targets/objects/seq_accum_site_GH90_as|f44844360d364410|16c94dd05e46fb4a|4743|rds|vector|||3.105|the condition has length  1 and only the first element will be used|
+seq_accum_sample_GH90_as|stem|4b28806098b52748|12c81f2794d3d837|6c31cce17b4ff972|638309317|_targets/objects/seq_accum_sample_GH90_as|8654e90e081e403e|6c3aa393336df049|39860|rds|vector|||9.588|the condition has length  1 and only the first element will be used|
+samp_accum_site_SH99_as|stem|9ecd8939657b0927|dbb58bfdb55027b4|ab6a307695cefe43|201699145|_targets/objects/samp_accum_site_SH99_as|1d914d959faf3ac8|880e983c0bb198bb|2188|rds|vector|||5.085||
+seq_accum_sample_SH99_as|stem|4eabbc9993a5a2e4|008d17defc4d43bc|b469cd887799e783|1903836852|_targets/objects/seq_accum_sample_SH99_as|a6d881c145b9e5dc|bba3f519c0e6f096|40812|rds|vector|||12.095|the condition has length  1 and only the first element will be used|
+seq_accum_site_SH99_as|stem|22944d41e8c9793d|f10d8e9583c422d6|133b0a4b89c965de|-1971897757|_targets/objects/seq_accum_site_SH99_as|0e488d220c68438c|5daed2bdbe5d994f|4873|rds|vector|||4.108|the condition has length  1 and only the first element will be used|
+seq_accum_sample_OTU_as|stem|ae98c9f3a7d687b8|cd2b830a7c95e45b|5c17d2521e11e535|-1832765153|_targets/objects/seq_accum_sample_OTU_as|e9ec90b88a2ae6a0|2e23c9c0e8597ab4|42001|rds|vector|||16.721|the condition has length  1 and only the first element will be used|
+samp_accum_site_OTU_as|stem|c2b1c27bc6457bc3|7d5430572b6df53f|2d93692f8b3f054a|324102150|_targets/objects/samp_accum_site_OTU_as|9a46c9361ca94f37|0bacce6b0fd4e037|2234|rds|vector|||8.226||
+seq_accum_site_OTU_as|stem|17625c695474f22e|871dd1dd54747e4f|0ffbe8d84baf852a|-187752385|_targets/objects/seq_accum_site_OTU_as|9d60d2c884bafb93|bd6f9a207a62e5da|4970|rds|vector|||6.152|the condition has length  1 and only the first element will be used|
+seq_accum_sample_OTU_vs|stem|96fdc5c483138d27|18102f6f9f08153e|48198187b5c66e95|-297845472|_targets/objects/seq_accum_sample_OTU_vs|84260b99b4f12d11|63166cbfb92243a8|40784|rds|vector|||33.426|the condition has length  1 and only the first element will be used|
+samp_accum_site_OTU_vs|stem|d59cad22a44321bb|5b706cbf43a70ded|432ad5dfc9986aaa|692267385|_targets/objects/samp_accum_site_OTU_vs|c1cd376a38fc2c45|539a9f70b6f47c4f|2321|rds|vector|||23.624||
+seq_accum_site_OTU_vs|stem|bb6a75874757d167|c162cfd4a17c4acc|cd57175faf336aba|-1485021061|_targets/objects/seq_accum_site_OTU_vs|b31aa538242e2789|bdb718bb890e6ce5|5205|rds|vector|||11.566|the condition has length  1 and only the first element will be used|
+samp_accum_site_SH97_vs|stem|9f04a54f8825ed44|fc5f90a799172df7|14f7283fa5cf4cbf|743295235|_targets/objects/samp_accum_site_SH97_vs|ea4a2cde6c94b808|1fd98625fc1bd301|2285|rds|vector|||15.726||
+seq_accum_site_SH97_vs|stem|2be639327b3d1ceb|422f2f0ecce83a16|e84e079dfc8f0f7f|-1501686159|_targets/objects/seq_accum_site_SH97_vs|9d094fe96213b1b0|dcfc995e40b9c557|5084|rds|vector|||9.848|the condition has length  1 and only the first element will be used|
+seq_accum_sample_SH97_vs|stem|a4fc95aff9aac983|e7288569d3f58d9f|1cec5d68897633fe|1936456715|_targets/objects/seq_accum_sample_SH97_vs|0357fdc71ccae4bb|936e5b975bb9e1c2|40096|rds|vector|||26.708|the condition has length  1 and only the first element will be used|
+seq_accum_sample_SH99_vs|stem|93fceeb421fd49d3|fe16636b7deae6b5|b69737c170acb287|-195229678|_targets/objects/seq_accum_sample_SH99_vs|2e0881aa6f550b3d|42ee4db8f953e17d|40491|rds|vector|||30.38|the condition has length  1 and only the first element will be used|
+seq_accum_site_SH99_vs|stem|798e7d183c78623c|8ddfb2017b829eb2|4bee792993e88f79|-721345364|_targets/objects/seq_accum_site_SH99_vs|81746342224b60b1|ff0bca67131a7dcb|5155|rds|vector|||10.765|the condition has length  1 and only the first element will be used|
+samp_accum_site_SH99_vs|stem|c71138492f086aa9|33c75bf9551bea37|f41531b4a6a4dd66|-997998881|_targets/objects/samp_accum_site_SH99_vs|524fa7864bdd1f71|539a9f70b6f47c4f|2321|rds|vector|||20.806||
+samp_accum_site_GH90_vs|stem|d85c682e5f59cfe2|b456c7aff94f46cd|668ddb1f05dbec99|436033690|_targets/objects/samp_accum_site_GH90_vs|4fc9963c0781938c|8f6f8cd693815c9f|2269|rds|vector|||15.648||
+seq_accum_site_GH90_vs|stem|9ff08f3fdef12c3f|4a39730255a16a51|3c0ee6e21d77c070|497450819|_targets/objects/seq_accum_site_GH90_vs|03a7bd7499729f03|337807930cb45bb9|5006|rds|vector|||8.462|the condition has length  1 and only the first element will be used|
+seq_accum_sample_GH90_vs|stem|1687fecdcaae973e|b5eb185bc6bdeaa4|76bbf67fd8ff4b8e|412312129|_targets/objects/seq_accum_sample_GH90_vs|6118cdb4ced0ea9d|0a8b6c351670886a|39597|rds|vector|||22.283|the condition has length  1 and only the first element will be used|
+write_cluster_fraction_table|stem|651067e7cb12d784|456e8d71a4d3a935|40e4d5f8fc1345eb|291628250|output/data/cluster_fractions.xlsx|3965a342c74c3835|81839c00b970c9ad|6407|file|vector|||0.154||
+seq_accum_sample_GH90_sl|stem|1713e10046b789d4|f03b57a53c0f07d7|085c202b38362c39|-1612649602|_targets/objects/seq_accum_sample_GH90_sl|1c5a256f219fe02f|bd999b166eded111|39489|rds|vector|||24.495|the condition has length  1 and only the first element will be used|
+samp_accum_site_GH90_sl|stem|cf908d51da6b58a9|36b9667466fde01d|dcef161473e32011|-246868462|_targets/objects/samp_accum_site_GH90_sl|a499a2aba8360be6|0b64553aa1b01bc1|2259|rds|vector|||13.361||
+seq_accum_site_GH90_sl|stem|c2dccc5e3390767f|b2a27ce04d50b500|ff4712ccf7998059|-1735531473|_targets/objects/seq_accum_site_GH90_sl|9a41fddca29fb747|cb2f4f0e70714fd3|4988|rds|vector|||8.085|the condition has length  1 and only the first element will be used|
+samp_accum_site_SH97_sl|stem|1e96cd91376378a2|03fcc9e3e0b5a2f8|4bf7864b58479b57|-1265280476|_targets/objects/samp_accum_site_SH97_sl|b65a03d8667843ee|7c10cefd0203d368|2260|rds|vector|||16.13||
+seq_accum_sample_SH97_sl|stem|95c9d896dbee2fcd|2163bee70fcf47c2|7ba9ced89a62638d|-128941970|_targets/objects/seq_accum_sample_SH97_sl|e3ab7ef5d6768812|dd5aa4c69cb47447|39981|rds|vector|||26.951|the condition has length  1 and only the first element will be used|
+seq_accum_site_SH97_sl|stem|86596368a362931f|236613babb1a8f37|f6084dc5676c7699|-248481788|_targets/objects/seq_accum_site_SH97_sl|a219a215bd9538a5|b7d1ea60483b7ef3|5064|rds|vector|||9.485|the condition has length  1 and only the first element will be used|
+seq_accum_sample_SH99_sl|stem|72064d33b0a026ea|0acc46e18d327b02|7da550d5a6801110|-1948397634|_targets/objects/seq_accum_sample_SH99_sl|a089b8df5a4d16e9|ae0830aae05e710f|40021|rds|vector|||27.916|the condition has length  1 and only the first element will be used|
+seq_accum_site_SH99_sl|stem|40d574935d86f400|b96b82785c231ba3|4e88e04349bbc03e|-2045015274|_targets/objects/seq_accum_site_SH99_sl|7900375623597a73|54e3e0c83ad40907|5056|rds|vector|||10.164|the condition has length  1 and only the first element will be used|
+samp_accum_site_SH99_sl|stem|1ff647582c0c5b90|7f8d47deeb65a602|64e05d189bc29a60|-1831216508|_targets/objects/samp_accum_site_SH99_sl|f66df6bfdb81272a|575d01c0b4419233|2287|rds|vector|||17.831||
+seq_accum_sample_OTU_sl|stem|41e4c6ad61bcd06d|113b21e273f2d91b|48a37cab9ded8d94|-577814792|_targets/objects/seq_accum_sample_OTU_sl|1ec19d89d63e2771|af0346d508505b0f|40328|rds|vector|||28.885|the condition has length  1 and only the first element will be used|
+samp_accum_site_OTU_sl|stem|640733555b292af1|21123cf8d86cbbe9|78de5a9afd2ee0c6|1845834184|_targets/objects/samp_accum_site_OTU_sl|0bb732dd057172b6|6878a689798d08d2|2299|rds|vector|||17.426||
+seq_accum_site_OTU_sl|stem|dc89307efe7e1898|470666f3a3c3f9f5|a32a19aa699301c3|-1725335411|_targets/objects/seq_accum_site_OTU_sl|80255043c0b92684|5c7a7f9c85d4d82d|5142|rds|vector|||10.615|the condition has length  1 and only the first element will be used|
+fungi_outgroup|stem|4fb2b8c30e179644|5be53308d3d7d472|2b030395702f4d1f|-1586879086|_targets/objects/fungi_outgroup|4c467e4a912bddb4|f55bdaeb17afeaf9|102|rds|vector|||0.053||
+unifrac_alleuks_unweighted|stem|aae825702561d8f8|e830b5c3d75beba0|7f094861e199d279|-1019253259|_targets/objects/unifrac_alleuks_unweighted|18d2327641684507|6afa6e1fd73417a7|225|rds|vector|||0.086|data length 4277 is not a submultiple or multiple of the number of rows 2139|
+unifrac_alleuks_weighted|stem|e9c9d8367b088d28|77a44cd130cd961a|7f094861e199d279|-599960217|_targets/objects/unifrac_alleuks_weighted|18d2327641684507|6afa6e1fd73417a7|225|rds|vector|||0.114|data length 4277 is not a submultiple or multiple of the number of rows 2139|
+otu_table_ampliseq_protists|stem|59e73cc19a734194|9005cd9031b48ed1|7b5259d08db241ce|1261629883|_targets/objects/otu_table_ampliseq_protists|6ff5c9394ceabc78|fe25838d0e5188d9|17206|fst_tbl|vector|||0.009||
+otu_table_swarm_protists|stem|8a72b5cc313f307a|8bc7125b4ed61bf6|4426669c9f860f60|-1113158605|_targets/objects/otu_table_swarm_protists|6ff5c9394ceabc78|55935aa49c74c13f|22617|fst_tbl|vector|||0.008||
+otu_table_vsearch_protists|stem|9d64d85f4fa81000|89628b19b8d1f1c9|cea4daa6d2770193|-1017571673|_targets/objects/otu_table_vsearch_protists|34d8b1b5c54c5e40|5fbe95790711dcd5|29803|fst_tbl|vector|||0.01||
+seq_accum_sample_means_SH97_as|stem|5d889e5a9bd6a88a|7c9941b195710dbe|623ebc603e55aedb|932289423|_targets/objects/seq_accum_sample_means_SH97_as|b165737f0c31e577|0ff4ebba527fba7e|2756|rds|vector|||0.041||
+accum_site_SH97_as|stem|555d8256174ddc2e|f7e39d438bb77a43|76add8bd4939af4e|1624562597|_targets/objects/accum_site_SH97_as|b19b840f4062574f|f0d6408c04b535b6|4259|rds|vector|||0.011||
+asymp_site_SH97_as|stem|e62f08ec3a7e9bc6|4c385697bb29c7b3|1b844a9900ccc1f6|1056016052|_targets/objects/asymp_site_SH97_as|3407eee72710e94e|c3cbfe28e1565b13|202|rds|vector|||0.011||
+asymp_site_GH90_as|stem|aecb66a8d22cb3c5|8e695084ade8d477|0e12966d8c3ea106|400817116|_targets/objects/asymp_site_GH90_as|0a4eb01f05a9ba61|0cf7d46830a37596|201|rds|vector|||0.012||
+accum_site_GH90_as|stem|17d3bed198c86ef5|2c219cdf66c68d1b|4a4f313c095233df|2024238653|_targets/objects/accum_site_GH90_as|ad98c9a93268f430|20db0f51e1b6a060|4256|rds|vector|||0.014||
+seq_accum_sample_means_GH90_as|stem|75616c0b66ebce54|3a8f7d8bdda47d06|9da636f575d77067|1163269954|_targets/objects/seq_accum_sample_means_GH90_as|67da7ec7d19ca614|13ee19f568b1ebc1|2752|rds|vector|||0.066||
+seq_accum_sample_means_SH99_as|stem|016c39697e1cb38b|24b3b6e49f1c78c9|c0eef606026fedb1|615981375|_targets/objects/seq_accum_sample_means_SH99_as|f9f146e52ec64f37|c36d4ea29e1ab989|2768|rds|vector|||0.046||
+asymp_site_SH99_as|stem|2c40c46415c97c0a|d0e12e7bf710c4f3|223f838878f229e0|833561268|_targets/objects/asymp_site_SH99_as|e86db05bb4e94edf|ed0b2f97180e0b86|205|rds|vector|||0.011||
+accum_site_SH99_as|stem|8c848004bd812bc2|abd0647a0a6e6520|0fc07d52f293790c|911384902|_targets/objects/accum_site_SH99_as|1984275a8b17b2de|e6bdd22493b77d30|4262|rds|vector|||0.015||
+seq_accum_sample_means_OTU_as|stem|c4c0b68c04c43998|f7bdbf34657d640b|07bf04c02bb85f2a|2118934031|_targets/objects/seq_accum_sample_means_OTU_as|c21f5ebfc3400926|bc77c18d7e7e199a|2773|rds|vector|||0.051||
+accum_site_OTU_as|stem|d401f38863fab7f3|b147a8cd11d4f1dd|7d08c5179c2e192a|-1426163168|_targets/objects/accum_site_OTU_as|956876cf898eade2|31234575eaace4eb|4279|rds|vector|||0.015||
+asymp_site_OTU_as|stem|74f96dbb56505f41|bbcf8c4b8b5bf844|43b018e600eea49b|1154141794|_targets/objects/asymp_site_OTU_as|6c23b8fdf0d73468|2721c650416a264a|204|rds|vector|||0.011||
+seq_accum_sample_means_OTU_vs|stem|2bede9bec791626c|f84f8eba9eea5287|c0816ced99073a05|-671473587|_targets/objects/seq_accum_sample_means_OTU_vs|65eb8e81f78dc8a8|db2f55a69b5a92ac|2778|rds|vector|||0.036||
+asymp_site_OTU_vs|stem|eb70f239cd878fa6|335d87a45eceef62|6809df9d26733fe7|-1359340797|_targets/objects/asymp_site_OTU_vs|f0602d7e8ba79596|e69b513f5fd59ef6|206|rds|vector|||0.008||
+accum_site_OTU_vs|stem|9eab8bc7e6592a2e|163eea9ea355dbab|450ef7c81c85f7b9|-442423320|_targets/objects/accum_site_OTU_vs|86a336fa992c304b|77de5701376af4a3|4679|rds|vector|||0.013||
+asymp_site_SH97_vs|stem|418750e265e55d43|e06e59bce9401b9c|9a22ebe9320048e7|-1010789316|_targets/objects/asymp_site_SH97_vs|c994b94212111272|e69b513f5fd59ef6|206|rds|vector|||0.008||
+accum_site_SH97_vs|stem|e5464a9553747cc0|b53068826eca66c0|4d31abaa7b668256|-1453033692|_targets/objects/accum_site_SH97_vs|11579a593dcf6bbb|7c44b42543bc92d6|4632|rds|vector|||0.013||
+seq_accum_sample_means_SH97_vs|stem|ba7494ed901cf015|b2459d4c71f03046|baf1e316781e9593|90537860|_targets/objects/seq_accum_sample_means_SH97_vs|7b3ab5b4353eea91|f8e806d2a82649d7|2783|rds|vector|||0.04||
+seq_accum_sample_means_SH99_vs|stem|b560550b0b29d5d4|0cc109e8883a4174|48a2b682349f2cba|1030074641|_targets/objects/seq_accum_sample_means_SH99_vs|1714d099e6fb4a5c|6a6712eef6881798|2781|rds|vector|||0.041||
+asymp_site_SH99_vs|stem|6fe86ac5b2662b32|1529f8668e767a43|51b671a95a220a28|1359508054|_targets/objects/asymp_site_SH99_vs|39116c040657c9da|e69b513f5fd59ef6|206|rds|vector|||0.015||
+accum_site_SH99_vs|stem|7aae9080b2585fbf|e5c1222fa4208a04|6d099ea939e091f9|-434056944|_targets/objects/accum_site_SH99_vs|1c3d155bcf07e3fc|5cab481a2bf2f8b0|4653|rds|vector|||0.015||
+accum_site_GH90_vs|stem|9e5714e4d7eda870|51b61e96701135e9|febb0cbd6fce6fea|-696376428|_targets/objects/accum_site_GH90_vs|7604f83eea02e7bb|66eb37db78e98491|4610|rds|vector|||0.017||
+asymp_site_GH90_vs|stem|081b6a504f769098|55c80536576f3883|1c8f0ee0bcbcede3|-151137631|_targets/objects/asymp_site_GH90_vs|083a0c80a05fcd74|ed0b2f97180e0b86|205|rds|vector|||0.014||
+seq_accum_sample_means_GH90_vs|stem|7bc934f5823983eb|685bee6842655774|293b2c863a6eddb5|-1516092908|_targets/objects/seq_accum_sample_means_GH90_vs|892d7a8fb8626a3e|55c79e74c848e078|2779|rds|vector|||0.044||
+seq_accum_sample_means_GH90_sl|stem|519471eb5f784368|de060461d50e4428|f22326169971d12a|1855345373|_targets/objects/seq_accum_sample_means_GH90_sl|974ca4898980d150|7e078cc05cbd549a|2777|rds|vector|||0.036||
+asymp_site_GH90_sl|stem|4ec50bfb23a9d22d|b2a5f4f7074e0627|f3995216873d5f2b|-1826287535|_targets/objects/asymp_site_GH90_sl|c6af5154f05f00bc|e69b513f5fd59ef6|206|rds|vector|||0.013||
+accum_site_GH90_sl|stem|f9ba5db8b2b01411|8eb9dfa8d0504acf|75e5b1225e37099b|-76445597|_targets/objects/accum_site_GH90_sl|d4b0dceb1ff057c8|0c1b4ac1fb0d82c4|4594|rds|vector|||0.013||
+seq_accum_sample_means_SH97_sl|stem|2c90366983a54d5a|76215a85fdba9da2|a8d228afd6f1c68e|-1369812909|_targets/objects/seq_accum_sample_means_SH97_sl|488cf6d4a84c631c|38db11f45190002c|2780|rds|vector|||0.039||
+asymp_site_SH97_sl|stem|d2ebc8d1ff891a52|d2f9b32fd0f5fa91|3f5a7f1cf0d1a167|1223896411|_targets/objects/asymp_site_SH97_sl|fccd626b18f6d127|e69b513f5fd59ef6|206|rds|vector|||0.013||
+accum_site_SH97_sl|stem|51d38ec612f7d7ce|51b3c214e435ec24|fe62a9c86ac9c54c|-1785738321|_targets/objects/accum_site_SH97_sl|534d66339d780f3c|5ab57eee9c67686c|4624|rds|vector|||0.013||
+seq_accum_sample_means_SH99_sl|stem|97f15cd228ba03e4|e2089a7db60e6225|29a5ef54ab49441f|-267037682|_targets/objects/seq_accum_sample_means_SH99_sl|7fe72ebc26a691f7|db2f55a69b5a92ac|2778|rds|vector|||0.035||
+seq_accum_site|stem|b1bc750c6a290ab6|6b957da487cf4373|9c2abae3d50c96fc|-405589690|_targets/objects/seq_accum_site|90e88ec45f54ad4a|d330e927ffdaf31e|23686|rds|vector|||0.044||
+samp_accum_site|stem|59ecee77cae377c9|892847daae4b372f|59e8cb70493af0a4|-1464422649|_targets/objects/samp_accum_site|27621ab139b0673c|0058b7775211bc27|6664|rds|vector|||0.033||
+asymp_site_SH99_sl|stem|15851271b37f02b0|b5de698f21a37d05|faf1059a551067f3|2039267398|_targets/objects/asymp_site_SH99_sl|04a1fda6c1615331|e69b513f5fd59ef6|206|rds|vector|||0.012||
+accum_site_SH99_sl|stem|fc780e43bcf3a3e9|bf98e7e7262281c2|00b523ac2b23edd1|180983597|_targets/objects/accum_site_SH99_sl|9296923c3e3011bc|41763babcbb0bb0a|4613|rds|vector|||0.017||
+seq_accum_sample_means_OTU_sl|stem|c68eb7e476e5e8af|687fc2ff16dd926c|28982ae2995e7e03|-524215873|_targets/objects/seq_accum_sample_means_OTU_sl|a11cad48ee2c4d0e|bc77c18d7e7e199a|2773|rds|vector|||0.282||
+asymp_site_OTU_sl|stem|86173272061a2303|4805fc03b3b29c18|12754e44d8c5727e|-2082357345|_targets/objects/asymp_site_OTU_sl|7c3a2b2f31d8bf23|e69b513f5fd59ef6|206|rds|vector|||0.012||
+accum_site_OTU_sl|stem|5537e7e5db3c13c9|c3a05c82bf46cbf8|4824f047c2a15f4e|941573871|_targets/objects/accum_site_OTU_sl|7ec5162c395c5bf7|7bd8b0e3e95cf478|4664|rds|vector|||0.016||
+cluster_geoms_alleuks|stem|f900c552eac4a1ce|22c2e0175dcda168|3e729484ffe33978|-148002290|_targets/objects/cluster_geoms_alleuks|0e5fc582f268c083|179f670dc9c80bb1|6418|rds|vector|||10.817||
+write_otu_table_xlsx_ampliseq_protists|stem|02751aaac3a295a9|72984757736e4dea|d58b2dbe7a09c3a0|753149282|output/data/ampliseq_table_protists.xlsx|014d35a0474d18d0|a596f93b6b00dc9c|48630|file|vector|||0.616||
+write_otu_table_rds_ampliseq_protists|stem|45209b7a155a74b7|10c96d1951d8c416|d58b2dbe7a09c3a0|785575104|output/data/ampliseq_table_protists.rds|11645c612efed278|a0051e90d6e8252a|5210|file|vector|||0.025||
+write_otu_table_rds_swarm_protists|stem|9dcb98f7161883e0|ab07aa2ba390a9c6|b48b1db1eefd556d|1949060731|output/data/swarm_table_protists.rds|895fb213a1056558|3c8da92f6682c65d|8921|file|vector|||0.006||
+write_otu_table_xlsx_swarm_protists|stem|a723ee2f1f9dddab|0190eea54ba80c68|b48b1db1eefd556d|-1646251566|output/data/swarm_table_protists.xlsx|6746b0dd5bde02cf|b34f1d691273b2e4|66363|file|vector|||0.093||
+write_otu_table_xlsx_vsearch_protists|stem|e7d067bf51455d17|99e0d1ace59461e2|9d52f729d8d62b11|-591879179|output/data/vsearch_table_protists.xlsx|52a760b7014d8ef7|79eefa715da1be4c|81717|file|vector|||0.116||
+write_otu_table_rds_vsearch_protists|stem|cd969422681db742|e69158e0f3d14530|9d52f729d8d62b11|-787567268|output/data/vsearch_table_protists.rds|a6bed9928fd89070|113e5e4c60d43491|10638|file|vector|||0.018||
+seq_accum_sample_means|stem|51de2c47a1919dc1|52696e1ea2cd1404|f74f6b1f9a67593a|-233499298|_targets/objects/seq_accum_sample_means|ab020210bb21c50e|6206d6d749846b2f|20214|rds|vector|||0.137||
+asymp_site|stem|a052646b5f244447|cabc816328679959|e3f14abca848c797|1181597082|_targets/objects/asymp_site|0e9f0b6c8b90a254|813a0d7697333517|548|rds|vector|||0.021||
+samples_physeq_protists_otuA|stem|e8d3e062ddeaf4e3|7c97b1efd0ffc3db|2b4e5b9e5851aa26|200104329|_targets/objects/samples_physeq_protists_otuA|3fd0017251470932|3862048467d3e152|9076|qs|vector|||3.953||
+samples_physeq_protists_otuS|stem|4241a86559ab7949|30d8047885b06ab3|f421f2d014bef77b|-1900781883|_targets/objects/samples_physeq_protists_otuS|fb950f631b1dd354|3691194b646bdc14|13184|qs|vector|||0.056||
+taxplot_reads_protists_phylum|stem|e68d08decee3402b|63aaf12e872a39e9|f8c543998058e224|-890682428|_targets/objects/taxplot_reads_protists_phylum|19c3e8e2e6e8e8c6|b297fa85556f1355|84240|rds|vector|||0.3||
+samples_physeq_protists_otuC|stem|a117e998fac5cabd|ae437bab52e4f593|4bc5176bc800291e|-795057432|_targets/objects/samples_physeq_protists_otuC|49c4e9129137977a|769d2c13945c4162|15504|qs|vector|||0.1||
+taxplot_OTUs_protists_phylum|stem|86ed41099eeb62f7|665091008669ad6f|5a97ce47810e8f86|-519390951|_targets/objects/taxplot_OTUs_protists_phylum|c87685462025339f|8abc37bccfe66ab2|85473|rds|vector|||0.252||
+accumplot1_png_SH97_as|stem|7bbd2e3b11fdb6c5|c1bdf97f41282fc0|85ec4256eb710087|2117475530|output/figures/accum1_as_SH97.png|40dadd50a973cf5d|15b01e70786d7372|30067|file|vector|||0.359||
+accumplot1_eps_SH97_as|stem|3f76168c2e2a6a16|6736f77134900cb5|85ec4256eb710087|580847073|output/figures/accum1_as_SH97.eps|b30783c6b61132e8|c931312460167f59|11610|file|vector|||0.254|semitransparency is not supported on this device reported only once per page|
+accumplot1_pdf_SH97_as|stem|42726ac00cda59f7|b9429ea025ccc7bc|92d0150febfb7af3|1354435941|output/figures/accum1_as_SH97.pdf|c2104dae88cb0942|00b16d09c241cbff|24376|file|vector|||0.295||
+accumplot1_eps_GH90_as|stem|76b2e9cb39ad5a8d|c883183a7eab13e4|a0049b2737a215ef|1571687474|output/figures/accum1_as_GH90.eps|e7514b1bbf2f9a8d|2ef56cc439eae369|11543|file|vector|||0.272|semitransparency is not supported on this device reported only once per page|
+accumplot1_png_GH90_as|stem|10d3199b961c1ee7|5e78f05e4327075f|a0049b2737a215ef|-959816897|output/figures/accum1_as_GH90.png|6eeffc35be216028|55dde4ade7d459f8|29694|file|vector|||0.314||
+accumplot1_pdf_GH90_as|stem|202bc7d87886aba9|c1c7af745690fe14|b76d81b4458ca9cf|-745097029|output/figures/accum1_as_GH90.pdf|14ae96c7e7cde59f|87e081ad1d9b8fef|24522|file|vector|||0.314||
+accumplot1_png_SH99_as|stem|9f0c5b531a039456|3ef92cf809306c3e|c1b1cbdbfe8a6ef9|715475916|output/figures/accum1_as_SH99.png|2954d6591a810a10|fa4d51d99f21d152|31008|file|vector|||0.315||
+accumplot1_eps_SH99_as|stem|0c44e055675a7927|1c5cd11216359ed1|c1b1cbdbfe8a6ef9|-1677016565|output/figures/accum1_as_SH99.eps|139e5d49adc320c3|588857ea894e871d|11726|file|vector|||0.308|semitransparency is not supported on this device reported only once per page|
+accumplot1_pdf_SH99_as|stem|f7e6f384f9274b39|d0b787cb9125afdb|4752bf54cf6d1426|-1232249079|output/figures/accum1_as_SH99.pdf|445b8f01ad16baf6|fa9f712df816819b|24521|file|vector|||0.318||
+accumplot1_eps_OTU_as|stem|1b7f9f2b3142c9f5|14ffad2f6858cc7a|5924925c06a3df16|-1568800862|output/figures/accum1_as_OTU.eps|4fc442d52a6ba89c|f0dea33805f9f5c2|11432|file|vector|||0.314|semitransparency is not supported on this device reported only once per page|
+accumplot1_png_OTU_as|stem|5a6de0bc687c4044|edc3bfc074d61c7e|5924925c06a3df16|-975317574|output/figures/accum1_as_OTU.png|fc2ce6b1bdbe0828|4e6d84d29f498a8a|29907|file|vector|||0.309||
+accumplot1_pdf_OTU_as|stem|78f5ba29b2b6c6f9|c707681b548c20e1|d467181eab83d3d9|-62019100|output/figures/accum1_as_OTU.pdf|31f3744de414bf2c|23dbdc86095ec5a8|24580|file|vector|||0.293||
+accumplot1_eps_OTU_vs|stem|ffa19ae757ebec77|019cef4ac58b5b68|6c13a3a0a66cfeb3|946969102|output/figures/accum1_vs_OTU.eps|3234a8dacd3467ec|f0dea33805f9f5c2|11432|file|vector|||0.275|semitransparency is not supported on this device reported only once per page|
+accumplot1_png_OTU_vs|stem|31f8d852add16bba|e0a35465d3cb4ea7|6c13a3a0a66cfeb3|-156886485|output/figures/accum1_vs_OTU.png|11b1035d9157863d|fb10a886bccfce61|31407|file|vector|||0.265||
+accumplot1_pdf_OTU_vs|stem|851429826ff2a041|b46c1d283af58c8c|dbbc1f485efb9d91|1660996944|output/figures/accum1_vs_OTU.pdf|474c59b7b9eb4b62|44764038506cb733|25389|file|vector|||0.275||
+accumplot1_eps_SH97_vs|stem|0f1cc945e0fcfd84|69d3e29ba2a6c8c1|53420d79780ed810|619725920|output/figures/accum1_vs_SH97.eps|1229906edc525953|e82c2013bcdf00ff|11252|file|vector|||0.271|semitransparency is not supported on this device reported only once per page|
+accumplot1_pdf_SH97_vs|stem|1762127195e7f72a|3061bbcafc4c9cdf|6dc88724caa2a90d|2020632411|output/figures/accum1_vs_SH97.pdf|bcd5e75b3cd1a29c|762c811d0697beab|25207|file|vector|||0.301||
+accumplot1_png_SH97_vs|stem|b589496eea9e1859|3db74d8817d0d7e8|53420d79780ed810|-908710239|output/figures/accum1_vs_SH97.png|000f45738da200f7|5d9c8d2b0f326014|31781|file|vector|||0.241||
+accumplot1_eps_SH99_vs|stem|1f68c1160334c4bc|49d2aa96dfd1150a|26fc8ef128ed5fdf|1054876259|output/figures/accum1_vs_SH99.eps|421df819fa5f01ed|a21be1a99c3d3b87|11369|file|vector|||0.263|semitransparency is not supported on this device reported only once per page|
+accumplot1_pdf_SH99_vs|stem|b0bbab791bafc0d5|9b131eb3c1cd4b1b|802410b8249bb1c0|-47374389|output/figures/accum1_vs_SH99.pdf|93a67ddbfedae78d|add8d93687654d1d|25427|file|vector|||0.281||
+accumplot1_png_SH99_vs|stem|ad1a15c29c851c28|b08deb1f6ffec8c8|26fc8ef128ed5fdf|-1198544057|output/figures/accum1_vs_SH99.png|50bbe826ab7c4bb8|b5ab4d2bb644fb3e|31493|file|vector|||0.32||
+accumplot1_pdf_GH90_vs|stem|0286ae076f8e75a4|942e5ff36b0149ff|a2ef831259a9fcbe|992958431|output/figures/accum1_vs_GH90.pdf|1f68271859e475b7|6fcc48bff3f11442|25365|file|vector|||0.293||
+accumplot1_eps_GH90_vs|stem|1c24f503b7e54ffe|5311eaa9b56dbd70|e023324b808737c3|-1780488940|output/figures/accum1_vs_GH90.eps|dbc6b7cf0a1ca606|4458cfe9a457fff1|11723|file|vector|||0.272|semitransparency is not supported on this device reported only once per page|
+accumplot1_png_GH90_vs|stem|c1df9b2c69ffd91e|c9ebd9f99e10b0c6|e023324b808737c3|-1232173918|output/figures/accum1_vs_GH90.png|d51474e9d9c51e00|6bcbba6a9764257f|32484|file|vector|||0.342||
+accumplot1_pdf_GH90_sl|stem|e5a62b9757e20e56|5384fbb76c4bc853|0a4679b7a01aaf93|203330034|output/figures/accum1_sl_GH90.pdf|e18aad2df8f673e4|4a2ddd3592ea74a2|25321|file|vector|||0.28||
+accumplot1_eps_GH90_sl|stem|660c0bf7bf0e7962|f87ad9b3a9cdf29b|95daa40198cc2109|17844667|output/figures/accum1_sl_GH90.eps|2de3b05ca6e52b22|4458cfe9a457fff1|11723|file|vector|||0.192|semitransparency is not supported on this device reported only once per page|
+accumplot1_png_GH90_sl|stem|842f13de4f751787|4a74b3f59ee4cc9f|95daa40198cc2109|1614302643|output/figures/accum1_sl_GH90.png|362e591616b62c85|e0f1b92bcb59a3eb|32248|file|vector|||0.305||
+accumplot1_eps_SH97_sl|stem|1bc98def662ef11c|8abe1d956e0ff306|1d0ee0cf1db2a9f1|1930484128|output/figures/accum1_sl_SH97.eps|b6896754bff2c24a|a21be1a99c3d3b87|11369|file|vector|||0.245|semitransparency is not supported on this device reported only once per page|
+accumplot1_pdf_SH97_sl|stem|cb09f5dd79a0439a|7c97bc3c58c16572|5adc814970587759|-1823857990|output/figures/accum1_sl_SH97.pdf|0c5152cfb2db191c|0a4c24d07eb4ad69|25295|file|vector|||0.246||
+accumplot1_png_SH97_sl|stem|38079ab51a90c62a|70d29540a5b3057d|1d0ee0cf1db2a9f1|483387735|output/figures/accum1_sl_SH97.png|9b471e5e25b1156d|102ac9911d555f29|31375|file|vector|||0.248||
+accumplot1_pdf_SH99_sl|stem|fc5c1b100e8ba244|a0d3bb2e25f1f2e9|1476ee25f3f384f1|1789805931|output/figures/accum1_sl_SH99.pdf|24bf5d1503583734|be8e5447f662b498|25323|file|vector|||0.257||
+accumplot1_png_SH99_sl|stem|ad21dbb16f69edd2|252db40ad233db19|f57eed568e755d4e|1648883961|output/figures/accum1_sl_SH99.png|8e71482f118f863e|813ffbf847d5e700|31410|file|vector|||0.28||
+accumplot1_eps_SH99_sl|stem|b949b8656ef6317c|2f6cccf921cd7f97|f57eed568e755d4e|-1853078510|output/figures/accum1_sl_SH99.eps|a8f5541f4312956b|a21be1a99c3d3b87|11369|file|vector|||0.225|semitransparency is not supported on this device reported only once per page|
+accumplot1_eps_OTU_sl|stem|1fbd63cfffcae048|bed24ee7577a1fd1|d4f429c54cf456c9|-1515980911|output/figures/accum1_sl_OTU.eps|6c0e868aff184d94|a21be1a99c3d3b87|11369|file|vector|||0.256|semitransparency is not supported on this device reported only once per page|
+accumplot1_png_OTU_sl|stem|ea0200c87ce9e49d|f13ed30c206e25df|d4f429c54cf456c9|385636678|output/figures/accum1_sl_OTU.png|52b7de8d5c43501b|e32f52970ec9eefc|31625|file|vector|||0.26||
+accumplot1_pdf_OTU_sl|stem|68a35403444cb09b|431c2f9b2886bedd|c879ef96f4912c32|2081785101|output/figures/accum1_sl_OTU.pdf|5a030f17d0636f55|703f799941491f13|25407|file|vector|||0.253||
+physeq_file_protists_otuA|stem|1a938a1ab00c091c|d805e71b68142f11|8acb86693fc08fc0|-1853647707|output/data/phyloseq_otuA_protists.rds|7125e77949eebe8f|8c6efb355d9853aa|11436|file|vector|||0.004||
+physeq_file_protists_otuS|stem|35fe86b1b7321b44|3efc32550aa3a710|e47cfa9bfa9c1761|135528908|output/data/phyloseq_otuS_protists.rds|fc61211f00ae80a0|5d6207c23b862ad7|17016|file|vector|||0.008||
+physeq_file_protists_otuC|stem|eeb544e19815617b|253244ef6a76a76f|dae3073bdff5e210|85392330|output/data/phyloseq_otuC_protists.rds|2b73a290e6014e02|0370d62dba5af388|20852|file|vector|||0.016||
+accumplot1_eps|stem|872e87247647e260|c70ee4b476ba091a|4faa2d21920a449c|-177096594|output/figures/accum1.eps|36b84eeaa8ee7c16|9a2a643353c17358|40476|file|vector|||0.812|semitransparency is not supported on this device reported only once per page|
+accumplot2_samp_png|stem|adae95a75ca20a9f|5f1ab80532b666a2|f22bcd490c51c0f0|1959029873|output/figures/accum2_samp.png|37ee6099f329e656|9db11dc4a847000d|91859|file|vector|||0.562||
+accumplot2_samp_pdf|stem|972c4c61c9b79dce|1eefed1f1f667757|0a938b504a0f05ef|1622003644|output/figures/accum2_samp.pdf|0b36b0aeb076cef6|733485179d1a9e32|19446|file|vector|||0.452||
+accumplot2_samp_eps|stem|2e269db1b44b6049|9c9444135ce8b538|f22bcd490c51c0f0|-3421969|output/figures/accum2_samp.eps|51093a2ae9df815e|f61ea906b1664bed|29206|file|vector|||0.454|semitransparency is not supported on this device reported only once per page|
+accumplot2_seq_pdf|stem|da41a0ab2d5bec9b|6eb974a452720bf6|3c3dbd5771bdd48e|-1632251580|output/figures/accum2_seq.pdf|a8137d0944978857|f93fa59281379d2d|45829|file|vector|||0.684||
+accumplot2_seq_png|stem|e90851a0584c48d8|263923f77b7e67e7|bbcd81080107bedf|573646060|output/figures/accum2_seq.png|0b4230ea9cc8ccad|39c075ef24000e85|86708|file|vector|||0.654||
+accumplot2_seq_eps|stem|7ca73734a5f0f7fa|feda9573fbfc03dd|bbcd81080107bedf|1692049131|output/figures/accum2_seq.eps|3c77caa2eee6031f|6487858f3eda5991|47401|file|vector|||0.576|semitransparency is not supported on this device reported only once per page|
+taxplotfile_eps_protists_phylum|stem|9c64ca9b604fcbbf|6183968f3511d5d0|f6bb99ae6a76bef7|221564426|output/figures/taxonomy_protists_phylum.eps|11432d5ed9938856|e18b08bc92ca589d|30521|file|vector|||0.214||
+taxplotfile_png_protists_phylum|stem|1797894a5d4426c2|ced6bb479902e397|f6bb99ae6a76bef7|1498095069|output/figures/taxonomy_protists_phylum.png|3a1ced640cd30a3c|37022e31dc909b5f|60612|file|vector|||0.264||
+taxplotfile_pdf_protists_phylum|stem|087f7734ab5a9a32|1643002b18c1da7e|2a621d989588016b|-953652176|output/figures/taxonomy_protists_phylum.pdf|d6e5f9e4ecc5cf26|9513134c9d3d5d10|17704|file|vector|||0.261||
+taxplotfile_eps_protists_kingdom|stem|9e2daf515a3046cd|4f3933814dec4453|2745311a5d361e91|1937720169|output/figures/taxonomy_protists_kingdom.eps|7b48bfa01ded1e56|9a94bfceb6739ca9|24056|file|vector|||0.23||
+taxplotfile_pdf_protists_kingdom|stem|e1927513698e9e33|57cbeea5e724d415|3f67d0185c183693|72379728|output/figures/taxonomy_protists_kingdom.pdf|53ced83859403493|1bac914aa01becd6|16613|file|vector|||0.43||
+taxplotfile_png_protists_kingdom|stem|ecd473fc42544192|af566d435860fa8d|2745311a5d361e91|-2054606431|output/figures/taxonomy_protists_kingdom.png|6b33ae7423421ed7|aaaab74079d99173|49778|file|vector|||0.288||
+accumplot2_pdf|stem|cc2e28ca2b16d207|57e188d90ff9c02b|3c2590c194991363|-1998077840|output/figures/accum2.pdf|ce9c572bbf21cacc|8149bc927604b9d9|59728|file|vector|||0.388||
+accumplot2_eps|stem|78a9b3e179e0cbe4|7add99b70aedc1ed|27fcb181ef3200bf|-1404977849|output/figures/accum2.eps|c23cd2fe6eaf1616|2ccb307818e895d5|72424|file|vector|||0.253|semitransparency is not supported on this device reported only once per page|
+tree_fungi_new|stem|998aeccb44ab5735|6ebce47c49054c4b|472da0d6ff0222dd|-1011535065|_targets/objects/tree_fungi_new|cfdb2ed101b8912c|24bfad21611771e2|44695|rds|vector|||0.168||
+otu_table_vsearch_fungi|stem|23d4518b3b9044a4|62df66ccb3b44c50|17536f9e227bf220|1659426745|_targets/objects/otu_table_vsearch_fungi|467b65480a17ad97|acab2f57ad35bb45|29338|fst_tbl|vector|||0.009||
+otu_table_ampliseq_fungi|stem|5092b321dfb1070f|29c8fb13b4bb39dd|207f447677a36396|-56914905|_targets/objects/otu_table_ampliseq_fungi|624087100bda1c46|cb2ad96b0101c4e2|13689|fst_tbl|vector|||0.015||
+otu_table_swarm_fungi|stem|8fc5f26df1cb0af3|eee035927bda8197|c165ee606206f7b5|1853098435|_targets/objects/otu_table_swarm_fungi|624087100bda1c46|e4c52fe42aa253b0|19664|fst_tbl|vector|||0.008||
+physeq_fungi|stem|f1d180a7464956b6|5dec4ea2a3dc820b|327848659837fcb3|521240460|_targets/objects/physeq_fungi|075205708f092510|00cd0f691cff352f|68031|rds|vector|||0.084||
+write_otu_table_xlsx_vsearch_fungi|stem|db1005e00c7d3ae0|3b2d3cafc733e4d8|3be3461b18deca99|1076499378|output/data/vsearch_table_fungi.xlsx|b28770c4627e6ecf|91b14d46c573d638|66562|file|vector|||0.074||
+write_otu_table_rds_vsearch_fungi|stem|ea42bac5494a7ac5|b5b14bcd32e6f440|3be3461b18deca99|116335645|output/data/vsearch_table_fungi.rds|b28770c4627e6ecf|2f72d97c755957b4|8621|file|vector|||0.003||
+venn_data_Fritillaria|stem|c440853fda903e51|1d73b409effe5015|2921ab20131a385c|-237671013|_targets/objects/venn_data_Fritillaria|4b655c62699fff92|9639526e9377fc05|937|fst_tbl|vector|||0.361||
+write_otu_table_rds_ampliseq_fungi|stem|b2bceb3c6aef6984|bf370fe163ff8132|3cc995d80c9699ae|-1810552961|output/data/ampliseq_table_fungi.rds|47e1d64c2c176f81|9d43a3541ad72e71|4293|file|vector|||0.002||
+write_otu_table_xlsx_ampliseq_fungi|stem|741c6aeb09ae8a00|67d35560dd52c959|3cc995d80c9699ae|705134307|output/data/ampliseq_table_fungi.xlsx|38ddb2df6c4d0b17|545e975dd6f9c10f|41524|file|vector|||0.116||
+venn_data_moisture|stem|61e3f34f3cbb6c5c|adcfbb1ed6678f08|a03a79870aa9d1b9|107489573|_targets/objects/venn_data_moisture|284a12415c7d9047|fce1500f3bf36ccf|840|fst_tbl|vector|||0.346||
+write_otu_table_xlsx_swarm_fungi|stem|d221a5f33565468b|1e0635e2e75df72b|8e657ff2d259807c|1588612001|output/data/swarm_table_fungi.xlsx|a0076faad6ac7488|b2c7412e11fb9e3e|56468|file|vector|||0.053||
+write_otu_table_rds_swarm_fungi|stem|dfef5a70ecebf644|a0c065e165d4a341|8e657ff2d259807c|860660840|output/data/swarm_table_fungi.rds|9cdba2fcdb4408c2|7eb702857c4c6cf5|7437|file|vector|||0.002||
+unifrac_fungi_weighted|stem|9b97119bd6fefc05|69e840084651bacf|f9c45efdb874f1aa|-2039787374|_targets/objects/unifrac_fungi_weighted|01a185c5f4bedac2|6afa6e1fd73417a7|225|rds|vector|||0.044||
+unifrac_fungi_unweighted|stem|96bc5471f2a9641f|9ca80fdefc4d944b|f9c45efdb874f1aa|-539568579|_targets/objects/unifrac_fungi_unweighted|5e10a2777c6aaf3a|f0ef80e5f0ea82e1|224|rds|vector|||0.037||
+venn_plot_fungi_Fritillaria|stem|e72b22cc01d00d42|a56beb0e729029c9|34bdfc46f8884181|-1495122458|_targets/objects/venn_plot_fungi_Fritillaria|58783be4cc01977c|c44a1ebbafa38641|14739|rds|vector|||0.017||
+venn_plot_protists_Fritillaria|stem|7c108a1f8460cb4f|57dab5c4ead405e6|34bdfc46f8884181|-1966349912|_targets/objects/venn_plot_protists_Fritillaria|58783be4cc01977c|5a64f050b74d79b6|14765|rds|vector|||0.016||
+venn_xlsx_Fritillaria|stem|8bfeba0ec6338e5d|d4f9130c1cc407ee|052e3f7a2c72800c|813358003|output/data/venn.xlsx|2d19382b33613741|5d8e426a0d247d23|6551|file|vector|||0.035||
+venn_barplot_Fritillaria|stem|4d149a84521436d9|e2b44012f6ad1e11|e43375f2f737a12d|1797469875|_targets/objects/venn_barplot_Fritillaria|4a81fa774f6b9c5e|728edf13f0ffe4ca|70226|rds|vector|||0.011||
+venn_plot_fungi_moisture|stem|7f1a20b808d0666b|0a160866bcbba65e|ba1cc2722f34bd52|-1579542349|_targets/objects/venn_plot_fungi_moisture|7f9180ef68daaa79|0f051b9b7bde5ea2|14596|rds|vector|||0.052||
+venn_xlsx_moisture|stem|a46dc886522ee7aa|59fd870e62981ef1|9dba9d18a90ec31e|1553686855|output/data/venn.xlsx|de4402f8c26f5104|9a8059a23511faf5|6529|file|vector|||0.023||
+venn_plot_protists_moisture|stem|349f876372aa2c22|cd4f6a39c9218272|ba1cc2722f34bd52|-961362097|_targets/objects/venn_plot_protists_moisture|58ab5b6ee8698809|961e20d6f9b481b5|14646|rds|vector|||0.016||
+venn_barplot_moisture|stem|38058af2457e7a1d|f2937780c992cbc2|6d90571769fe33f3|1221818303|_targets/objects/venn_barplot_moisture|765b6ff99cbc5875|89eb8b39ec8da949|70156|rds|vector|||0.012||
+tree_fig_file_fungi|stem|ebaca2fb11926590|4e158f9b044cb2e1|2250226ba1218bf5|-966735314|output/figures/treemap_fungi.pdf|69700f3ce1cce294|8d8a170141d42764|87062|file|vector|||0.711||
+cluster_geoms_fungi|stem|3e96d2f793cd69cb|56d9e532bfc31f8b|d0bb95358747e405|-83619004|_targets/objects/cluster_geoms_fungi|9043d521313a4455|8c2c070375e0a8d0|2841|rds|vector|||1.91||
+samples_physeq_fungi_otuS|stem|9ea3829a62eca1d7|dbc778a71387d82a|f9e516f675f98294|-387714633|_targets/objects/samples_physeq_fungi_otuS|0ff796973a07c232|21df48aaa4a3911d|12327|qs|vector|||0.047||
+samples_physeq_fungi_otuA|stem|fe561ddeadeded39|c2b0b086049d5cc1|114b12d98fc875fe|801570592|_targets/objects/samples_physeq_fungi_otuA|25f9644edd0668ac|94c822c2b64963fb|8469|qs|vector|||0.439||
+taxplot_reads_fungi_phylum|stem|735a9961c3332443|f201aa336493e949|481102208bf7e54c|1201803701|_targets/objects/taxplot_reads_fungi_phylum|0ade6fcf043a57c3|70cb7f2c4f7a17bf|77210|rds|vector|||0.203||
+samples_physeq_fungi_otuC|stem|437f010064cdca3f|333538004b9e2f12|f6eedd9e7a6eb8a0|263569150|_targets/objects/samples_physeq_fungi_otuC|35d063c9d7ec73d8|d5fd4907b3c0a4f1|14099|qs|vector|||0.046||
+taxplot_OTUs_fungi_phylum|stem|33b0c8777e841dd8|38cff2502f68717d|00baaa9464337167|1858803788|_targets/objects/taxplot_OTUs_fungi_phylum|2fdff352bc40efbb|ade9910c5d163e1a|77831|rds|vector|||0.186||
+physeq_file_fungi_otuS|stem|e6480dd7eb92a7b7|359d82ad8a6eaafe|63fbc7247839d996|1897372360|output/data/phyloseq_otuS_fungi.rds|f473cd840b1b4d73|d8726e50522035b8|16679|file|vector|||0.01||
+physeq_file_fungi_otuA|stem|c9ace4cf3fc8c47f|f317770e9ba2a0ef|37c2f10694faf8d5|-1642498873|output/data/phyloseq_otuA_fungi.rds|5ce417f2d846c49c|df52f0be56843bfc|11111|file|vector|||0.005||
+physeq_file_fungi_otuC|stem|0f81f7f0d198bc94|2b88e75ee45ec78d|fa3aca8abf07cfb3|1168557027|output/data/phyloseq_otuC_fungi.rds|5f0ed17f6e69ef06|a5c564a9b07d642e|19509|file|vector|||0.009||
+vennplotfile_eps_Fritillaria|stem|54fe96f7b91a1584|d4ae22d783ecf328|1add6e75e390ca77|-1038596655|output/figures/venn_Fritillaria.eps|bdefe32807856e24|c1b3353715a89548|38248|file|vector|||0.156||
+vennplotfile_pdf_Fritillaria|stem|ce81e66413891eee|5f6011bd2c5fde85|b4452534c3866022|-1840736988|output/figures/venn_Fritillaria.pdf|f736d85bd822f59d|52d05ec45219a850|32318|file|vector|||0.209||
+vennplotfile_png_Fritillaria|stem|cc473b41cf772067|f77590fd3156420d|1add6e75e390ca77|1161745373|output/figures/venn_Fritillaria.png|81088f519574dbcb|36330816c82a3ff1|68887|file|vector|||0.229||
+vennplotfile_eps_moisture|stem|225ac4c0d59ec2eb|5a50d25bad1688d4|a4d0491220d189f9|-1119866963|output/figures/venn_moisture.eps|1efeab35adb71610|c73f84c2ec79cc07|37293|file|vector|||0.189||
+vennplotfile_png_moisture|stem|b8e20e31b2a25246|bb2ad919d067ecfb|a4d0491220d189f9|601260079|output/figures/venn_moisture.png|7245c438bed178b1|a1f94916ddb973a5|64517|file|vector|||0.316||
+vennplotfile_pdf_moisture|stem|cc095e0c398c5f6e|06636c46d44414f6|c04a66c0d0146934|-178519068|output/figures/venn_moisture.pdf|0a6e094aa56024b2|85192ff4a487d436|27322|file|vector|||0.26||
+taxplotfile_reads_png|stem|e3a39df312f2f335|3900334f3f71fc07|a882737d1bdbebeb|-1393020049|output/figures/taxonomy_reads.png|92a8c095665b1712|33c2cc472a89f7f2|69959|file|vector|||0.562||
+taxplotfile_reads_pdf|stem|c0fa0ad6ed337d2d|ca0f2b983849ca09|256de61aaca8cd1e|1668948585|output/figures/taxonomy_reads.pdf|7eafbcf689e850be|9c5b96cc45638543|18219|file|vector|||0.454||
+taxplotfile_reads_eps|stem|9ffc8288085ffc5d|f8da581b7e9ef2aa|a882737d1bdbebeb|1487475770|output/figures/taxonomy_reads.eps|2638e11b338ebc42|aa7a0447cf6fd5ab|31729|file|vector|||0.343||
+taxplotfile_OTUs_pdf|stem|13681ff7d4329699|750573a54b96134c|240da89cc2386b84|-917189837|output/figures/taxonomy_OTUs.pdf|d37fdc254bfb270e|06c7ba94508f39c1|19733|file|vector|||0.361||
+taxplotfile_OTUs_png|stem|d1c11cd5b198c1ba|499dfa0f0cd42187|325389e4a9a06397|-452217856|output/figures/taxonomy_OTUs.png|00c338671ee78be0|6708a8509dc5a39c|87803|file|vector|||0.415||
+taxplotfile_OTUs_eps|stem|76d1613708c86881|fd805d16a05a52fb|325389e4a9a06397|-2003328309|output/figures/taxonomy_OTUs.eps|ceb4ecd7196b1c35|edb65333565242ea|39402|file|vector|||0.338||
+taxplotfile_png_fungi_phylum|stem|3b33d28e08b78c62|72eb777a56319d46|5d12b34e71bd213c|-180547234|output/figures/taxonomy_fungi_phylum.png|32beb459e639355d|eddc83f5627ddea2|53467|file|vector|||0.301||
+taxplotfile_pdf_fungi_phylum|stem|d3492835ccdf9440|4d7cf375a011476c|f6b886421c691df0|-1139518668|output/figures/taxonomy_fungi_phylum.pdf|952d584598fe9ebc|c440649aa5c994ec|17349|file|vector|||0.246||
+taxplotfile_eps_fungi_phylum|stem|c4bf88efc64adbdf|398bb7685a9ee40b|5d12b34e71bd213c|110933016|output/figures/taxonomy_fungi_phylum.eps|7f9e211a47992660|7945ae3a53b41063|28146|file|vector|||0.226||
 ensure_directory|function|f2f6a90fbe9895cd
 root_with_kingdoms|function|b0a7ef22b48b8444
 cluster_annotation|function|a589256c9809fba2
@@ -1839,7 +1839,7 @@ reads_plan|object|b2c29e140a434b1b
 detection_plan|object|2eda5968085f635a
 extract_fungi|function|036cbcd68fed75c9
 taxon_abbrevs|object|bb13bbf4c632dcd5
-venn_plan|object|2ba8b5e224713ec4
+venn_plan|object|88bbf61cd7649cd9
 detection_meta|object|20f755097c981b62
 fasttree|function|d2e0642ecf8b93fa
 outdir|object|2e9a821b215d23cb
@@ -3431,10 +3431,10 @@ unifrac_fungi_weighted|stem|9b97119bd6fefc05|69e840084651bacf|f9c45efdb874f1aa|-
 unifrac_fungi_unweighted|stem|96bc5471f2a9641f|9ca80fdefc4d944b|f9c45efdb874f1aa|-539568579|_targets/objects/unifrac_fungi_unweighted|5e10a2777c6aaf3a|f0ef80e5f0ea82e1|224|rds|vector|||0.037||
 venn_plot_fungi_Fritillaria|stem|e72b22cc01d00d42|a56beb0e729029c9|34bdfc46f8884181|-1495122458|_targets/objects/venn_plot_fungi_Fritillaria|58783be4cc01977c|c44a1ebbafa38641|14739|rds|vector|||0.017||
 venn_plot_protists_Fritillaria|stem|7c108a1f8460cb4f|57dab5c4ead405e6|34bdfc46f8884181|-1966349912|_targets/objects/venn_plot_protists_Fritillaria|58783be4cc01977c|5a64f050b74d79b6|14765|rds|vector|||0.016||
-venn_xlsx_Fritillaria|stem|8bfeba0ec6338e5d|d4f9130c1cc407ee|052e3f7a2c72800c|813358003|output/data/venn.xlsx|2d19382b33613741|5d8e426a0d247d23|6551|file|vector|||0.035||
+venn_xlsx_Fritillaria|stem|450a43808884d152|d51566ecd43dc12b|77eb5d97d832d509|813358003|output/data/venn_Fritillaria.xlsx|adea252e85869811|5d8e426a0d247d23|6551|file|vector|||0.145||
 venn_barplot_Fritillaria|stem|4d149a84521436d9|e2b44012f6ad1e11|e43375f2f737a12d|1797469875|_targets/objects/venn_barplot_Fritillaria|4a81fa774f6b9c5e|728edf13f0ffe4ca|70226|rds|vector|||0.011||
 venn_plot_fungi_moisture|stem|7f1a20b808d0666b|0a160866bcbba65e|ba1cc2722f34bd52|-1579542349|_targets/objects/venn_plot_fungi_moisture|7f9180ef68daaa79|0f051b9b7bde5ea2|14596|rds|vector|||0.052||
-venn_xlsx_moisture|stem|a46dc886522ee7aa|59fd870e62981ef1|9dba9d18a90ec31e|1553686855|output/data/venn.xlsx|de4402f8c26f5104|9a8059a23511faf5|6529|file|vector|||0.023||
+venn_xlsx_moisture|stem|08472b549b8e86b1|2b0419ad30e9ee21|f39744cadccd445a|1553686855|output/data/venn_moisture.xlsx|973e53b17e8848fe|9a8059a23511faf5|6529|file|vector|||0.031||
 venn_plot_protists_moisture|stem|349f876372aa2c22|cd4f6a39c9218272|ba1cc2722f34bd52|-961362097|_targets/objects/venn_plot_protists_moisture|58ab5b6ee8698809|961e20d6f9b481b5|14646|rds|vector|||0.016||
 venn_barplot_moisture|stem|38058af2457e7a1d|f2937780c992cbc2|6d90571769fe33f3|1221818303|_targets/objects/venn_barplot_moisture|765b6ff99cbc5875|89eb8b39ec8da949|70156|rds|vector|||0.012||
 tree_fig_file_fungi|stem|ebaca2fb11926590|4e158f9b044cb2e1|2250226ba1218bf5|-966735314|output/figures/treemap_fungi.pdf|69700f3ce1cce294|8d8a170141d42764|87062|file|vector|||0.711||
