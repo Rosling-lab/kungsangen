@@ -5,18 +5,13 @@ library(magrittr)
 phylotax_meta <-
   tibble::tibble(
     group = c("protists", "fungi"),
-    rank = c("kingdom", "phylum"),
-    tree = c("tree_protists", "tree_fungi_new"),
-    cutoff = c(0.015, 0.015)
+    tree = c("tree_protists", "tree_fungi_new")
   ) %>%
   dplyr::mutate_at("tree", rlang::syms)
 
-taxplot_meta <-
+taxdata_meta <-
   dplyr::left_join(
-    dplyr::mutate(
-      phylotax_meta,
-      tax_consensus = rlang::syms(paste0("tax_consensus_", group))
-    ),
+    phylotax_meta,
     tibble::tibble(
       clust_type = c("ampliseq", "swarm", "vsearch"),
       cl_id = c("otuA", "otuS", "otuC"),
@@ -25,23 +20,37 @@ taxplot_meta <-
     by = character()
   ) %>%
   dplyr::mutate(
-    otutab = sprintf("otu_table_%s_%s", clust_type, group)
+    otutab = sprintf("otu_table_%s_%s", clust_type, group),
+    tax_consensus = sprintf("tax_consensus_%s", group)
   ) %>%
-  dplyr::mutate_at(c("tree", "otutab", "rank", "regions"), rlang::syms)
+  dplyr::mutate_at(
+    c("tree", "otutab", "regions", "tax_consensus"),
+    rlang::syms
+  )
 
-taxplot_meta2 <- dplyr::mutate(
-  taxplot_meta,
+taxplot_meta <-
+  dplyr::left_join(
+    taxdata_meta,
+    tibble::tibble(
+      group = c("protists", "protists", "fungi"),
+      rank_name = c("kingdom", "phylum", "phylum"),
+      rank = rlang::syms(rank_name),
+      cutoff = c(0.015, 0.015, 0.015)
+    ),
+    by = "group"
+  ) %>%
+  dplyr::mutate(
   name = sprintf("taxplot_data_%s", cl_id),
   taxplot_data = sprintf("taxplot_data_%s_%s", group, cl_id)
 ) %>%
-  dplyr::select(group, rank, cutoff, name, taxplot_data) %>%
+  dplyr::select(group, rank, rank_name, cutoff, name, taxplot_data) %>%
   tidyr::pivot_wider(names_from = name, values_from = taxplot_data) %>%
   dplyr::mutate_at(dplyr::vars(dplyr::starts_with("taxplot_data")), rlang::syms)
 
 phylotax_plan <- tar_map(
   values = phylotax_meta,
   names = group,
-  #### tax_consensus ####
+  #### tax_consensus_{group} ####
   # make phylogenetic consensus assignments
   tar_target(
     tax_consensus,
@@ -57,8 +66,8 @@ phylotax_plan <- tar_map(
   )
 )
 
-taxplot_plan <- tar_map(
-  values = taxplot_meta,
+taxdata_plan <- tar_map(
+  values = taxdata_meta,
   names = c(group, cl_id),
   #### taxplot_data_{group}_{cl_id} ####
   # data for taxonomy plot
@@ -90,44 +99,6 @@ taxplot_plan <- tar_map(
         by = "sample"
       )
   ),
-  # make plots for reads and OTUs
-  tar_map(
-    values = list(plottype = rlang::syms(c("reads", "OTUs"))),
-    #### taxplot_{plottype}_{group}_{cl_id} ####
-    tar_target(
-      taxplot,
-      taxon_plot(taxplot_data, rank = rank, y = plottype, x = Sites,
-                 cutoff = cutoff, cutoff_type = "either"),
-      packages = "ggplot2"
-    )
-  ),
-  #### taxplot_{group}_{cl_id} ####
-  # combine reads plot and OTUs plot
-  tar_target(
-    taxplot,
-    ggpubr::ggarrange(
-      taxplot_reads,
-      taxplot_OTUs,
-      ncol = 1,
-      labels = "AUTO",
-      legend = "bottom",
-      common.legend = TRUE
-    ),
-    packages = "ggplot2"
-  ),
-  tar_map(
-    values = plot_type_meta,
-    names = ext,
-    #### taxplotfile_{ext}_{group}_{cl_id} ####
-    tar_file(
-      taxplotfile,
-      write_and_return_file(
-        taxplot,
-        file.path(figdir, sprintf("taxonomy_%s_%s.%s", cl_id, group, ext)),
-        device = fun, width = 6.25, height = 4, dpi = 150
-      )
-    )
-  ),
   #### samples_physeq_{group}_{cl_id} ####
   tar_qs(
     samples_physeq,
@@ -156,13 +127,13 @@ taxplot_plan <- tar_map(
   )
 )
 
-taxplot_plan2 <- tar_map(
-  values = taxplot_meta2,
-  names = group,
+taxplot_plan <- tar_map(
+  values = taxplot_meta,
+  names = c(group, rank_name),
   # make plots for reads and OTUs
   tar_map(
     values = list(plottype = rlang::syms(c("reads", "OTUs"))),
-    #### taxplot_{plottype}_{group} ####
+    #### taxplot_{plottype}_{group}_{rank_name} ####
     tar_target(
       taxplot,
       dplyr::bind_rows(
@@ -184,7 +155,7 @@ taxplot_plan2 <- tar_map(
       packages = "ggplot2"
     )
   ),
-  #### taxplot_{group} ####
+  #### taxplot_{group}_{rank} ####
   # combine reads plot and OTUs plot
   tar_target(
     taxplot,
@@ -201,12 +172,12 @@ taxplot_plan2 <- tar_map(
   tar_map(
     values = plot_type_meta,
     names = ext,
-    #### taxplotfile_{ext}_{group} ####
+    #### taxplotfile_{ext}_{rank}_{group} ####
     tar_file(
       taxplotfile,
       write_and_return_file(
         taxplot,
-        file.path(figdir, sprintf("taxonomy_%s.%s", group, ext)),
+        file.path(figdir, sprintf("taxonomy_%s_%s.%s", group, rank_name, ext)),
         device = fun, width = 6.25, height = 6, dpi = 150
       )
     )

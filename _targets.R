@@ -42,8 +42,8 @@ c(
   kingdom_table_plan,
   detection_plan,
   phylotax_plan,
+  taxdata_plan,
   taxplot_plan,
-  taxplot_plan2,
   venn_plan,
   hist_plan
 )
