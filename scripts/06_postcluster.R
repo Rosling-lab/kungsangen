@@ -96,6 +96,15 @@ its2_cluster_plan <- c(
         dplyr::filter(complete.cases(.)) %>%
         tidyr::pivot_wider(names_from = "SH", values_from = "clust")
     ),
+    #### cluster_key_file ####
+    tar_file(
+      cluster_key_file,
+      write_and_return_file(
+        cluster_key,
+        file.path(datadir, "cluster_key.xlsx"),
+        "xlsx"
+      )
+    ),
     #### cluster_detect_table ####
     tar_fst_tbl(
       cluster_detect_table,
