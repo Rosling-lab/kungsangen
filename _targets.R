@@ -32,6 +32,7 @@ source(here::here("scripts", "11_detection_limits.R"))
 source(here::here("scripts", "12_taxonomy_plots.R"))
 source(here::here("scripts", "13_venn.R"))
 source(here::here("scripts", "14_histograms.R"))
+source(here::here("scripts", "15_phyloseq_to_deseq.R"))
 c(
   otu_table_plan,
   lsux_plan,
@@ -45,5 +46,6 @@ c(
   taxdata_plan,
   taxplot_plan,
   venn_plan,
-  hist_plan
+  hist_plan,
+  deseq_plan
 )

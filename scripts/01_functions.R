@@ -654,3 +654,25 @@ tree_depth <- function(phylo) {
   }
   max(depth)
 }
+
+# plot function for deseq results
+deseq_plot <- function(sigtab, title) {
+  library("ggplot2")
+  theme_set(theme_bw())
+  scale_fill_discrete <- function(palname = "Set1", ...) {
+    scale_fill_brewer(palette = palname, ...)
+  }
+  # Phylum order
+  x = tapply(sigtab$log2FoldChange, sigtab$phylum, function(x) max(x))
+  x = sort(x, TRUE)
+  sigtab$phylum = factor(as.character(sigtab$phylum), levels=names(x))
+  # Genus order
+  x = tapply(sigtab$log2FoldChange, sigtab$order, function(x) max(x))
+  x = sort(x, TRUE)
+  sigtab$order = factor(as.character(sigtab$order), levels=names(x))
+  ggplot(sigtab, aes(x=order, y=log2FoldChange, color=phylum)) +
+    geom_point(size=6) +
+    theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust=0.5))+
+    # theme(text = element_text(size = 30))+
+    labs(title = title)
+}
