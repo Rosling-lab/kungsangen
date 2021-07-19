@@ -8,6 +8,7 @@ dependencies:
   - bioconductor-biostrings
   - bioconductor-dada2
   - bioconductor-decipher
+  - bioconductor-deseq2
   - 'bioconductor-ggtree>=2.4.0'
   - bioconductor-phyloseq
   - blast-legacy
