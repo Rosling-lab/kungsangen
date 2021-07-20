@@ -43,6 +43,7 @@ align_plan <- tar_map(
     hash = c("5_8S_hash", "LSU_hash", "ITS2_hash", "ITS_hash"),
     region = c("5_8S", "LSU", "ITS2", "ITS")
   ),
+  #### allseqs_{region} ####
   # get all the unique 5.8S and LSU sequences
   tar_combine(
     allseqs,
@@ -55,10 +56,11 @@ align_plan <- tar_map(
       chartr(old = "T", new = "U") %>%
       Biostrings::RNAStringSet()
   ),
-  #### Alignment ####
+  #### *Alignment* ####
   # align them independently
   # these are pretty quick alignments (~1 hour)
   # they are a bit faster because we are only aligning the unique sequences
+  #### align_{region} ####
   tar_target(
     name = align,
     DECIPHER::AlignSeqs(allseqs, processors = 8) %>%
@@ -80,17 +82,19 @@ align_plan$align <- purrr::discard(
 
 
 concat_plan <- tar_plan(
-
+  #### hash_key ####
   tar_combine(
     hash_key,
     positions_plan$hash_key,
     command = dplyr::bind_rows(!!!.x) %>% unique()
   ),
 
-  #### Concatenation ####
+  #### *Concatenation* ####
+  #### align_key ####
   # now find all unique pairs of 5.8S and LSU
   align_key = dplyr::select(hash_key, "label", "5_8S_hash", "LSU_hash") %>%
     unique(),
+  #### align_both ####
   # paste together the 5.8S and LSU sequences for each.
   align_both = paste(
     align_5_8S[align_key$`5_8S_hash`],
@@ -102,6 +106,7 @@ concat_plan <- tar_plan(
     chartr(old = "U", new = "T") %>%
     Biostrings::DNAStringSet(),
 
+  #### align_degap ####
   # remove columns with at least 90% gaps
   align_degap = Biostrings::DNAMultipleAlignment(align_both) %>%
     Biostrings::maskGaps(min.fraction = 0.9, min.block.width = 1) %>%
@@ -111,16 +116,18 @@ concat_plan <- tar_plan(
     values = list(
       aln = rlang::syms(c("align_both", "align_degap")),
       file = c("comparealn", "comparealn.degap"),
-      id = c("both", "degap")
+      degap_id = c("both", "degap")
     ),
+    #### write_aln_{degap_id} ####
     tar_file(
       write_aln,
       write_and_return_file(aln, file.path(comparedir, sprintf("%s.fasta", file)))
     ),
-    names = id
+    names = degap_id
   ),
 
-  #### ML Tree ####
+  #### *ML Tree* ####
+  #### tree_file ####
   # make a tree with fasttree
   # takes about 5 min
   tar_file(
@@ -132,25 +139,32 @@ concat_plan <- tar_plan(
     )
   ),
 
-  #### separate out Fungi and protist trees ####
+  #### *separate out Fungi and protist trees* ####
+  #### tree_raw ####
   tree_raw = treeio::read.newick(tree_file),
+  #### tree_alleuks ####
   tree_alleuks = root_with_kingdoms(tree_raw, kingdoms, c("Euglenozoa", "Heterolobosa")),
+  #### tree_fungi ####
   tree_fungi = dplyr::filter(kingdoms, taxon == "Fungi")$label %>%
     ape::getMRCA(tree_alleuks, .) %>%
     ape::extract.clade(tree_alleuks, .),
+  #### tree_animals ####
   tree_animals = dplyr::filter(kingdoms, taxon == "Metazoa")$label %>%
     ape::getMRCA(tree_alleuks, .) %>%
     ape::extract.clade(tree_alleuks, .),
+  #### tree_plants ####
   tree_plants = dplyr::filter(phyla, taxon == "Streptophyta")$label %>%
     ape::getMRCA(tree_alleuks, .) %>%
     ape::extract.clade(tree_alleuks, .),
+  #### tree_protists ####
   tree_protists = tree_alleuks %>%
     ape::drop.tip(tree_fungi$tip.label) %>%
     ape::drop.tip(tree_animals$tip.label) %>%
     ape::drop.tip(tree_plants$tip.label),
 
-  #### Realign and retree for Fungi ####
+  #### *Realign and retree for Fungi* ####
   # pick the most abundant nonfungal obazoan to use as an outgroup for Fungi
+  #### fungi_outgroup ####
   fungi_outgroup = phyloseq::subset_taxa(
     physeq_alleuks,
     grepl("Ichthyosporia|Choanoflagello|Meta-", taxon_label)
@@ -163,7 +177,8 @@ concat_plan <- tar_plan(
     unlist() %>%
     set_names(c("5_8S", "LSU")),
 
-  # pick out the
+  #### regions_fungi ####
+  # pick out the fungi
   regions_fungi = tibble::tibble(label = tree_fungi$tip.label) %>%
     tidyr::separate(label, c("5_8S", "LSU")) %>%
     as.list(),
@@ -179,67 +194,73 @@ concat_plan <- tar_plan(
       aligner = rlang::syms(paste0("align_", aligner_name))
     ),
     names = aligner_name,
-    tar_map(
-      values = tibble::tibble(
-        region = c("5_8S", "LSU"),
-        allseqs = paste0("allseqs_", region) %>% rlang::syms()
-      ),
-      names = region,
-      tar_file(
-        realign,
+  tar_map(
+    values = tibble::tibble(
+      region = c("5_8S", "LSU"),
+      allseqs = paste0("allseqs_", region) %>% rlang::syms()
+    ),
+    names = region,
+    #### realign_{region}_{aligner_name} ####
+    tar_file(
+      realign,
         aligner(
-          seqs = allseqs[c(fungi_outgroup[[region]], unique(regions_fungi[[region]]))],
+        seqs = allseqs[c(fungi_outgroup[[region]], unique(regions_fungi[[region]]))],
           out_file = file.path(comparedir, sprintf("fungi_realign_%s_%s.fasta", aligner_name, region)),
-          ncpu = local_cpus(),
+        ncpu = local_cpus(),
           log = file.path("logs", sprintf("fungi_realign_%s_%s.log", aligner_name, region))
-        )
-      ),
-      tar_target(
-        realign_copies,
-        Biostrings::readRNAStringSet(realign)[
-          c(fungi_outgroup[[region]], regions_fungi[[region]])
-        ]
-      ),
-      unlist = TRUE
+      )
     ),
-    tar_file(
-      reconcat,
-      paste(
-        realign_copies_5_8S,
-        trim_LSU_intron(realign_copies_LSU),
-        sep = ""
-      ) %>%
-        set_names(paste(names(realign_copies_5_8S), names(realign_copies_LSU), sep = "_")) %>%
-        chartr(old = "Uu", new = "Tt") %>%
-        Biostrings::DNAStringSet() %>%
-        write_and_return_file(file.path(comparedir, "fungi_realign.fasta"))
-    ),
-    tar_file(
-      iqtree_fungi,
-      iqtree(reconcat, local_cpus())
-    ),
+    #### realign_copies_{region}_{aligner_name} ####
     tar_target(
+      realign_copies,
+      Biostrings::readRNAStringSet(realign)[
+        c(fungi_outgroup[[region]], regions_fungi[[region]])
+        ]
+    ),
+    unlist = TRUE
+  ),
+  #### reconcat_{aligner_name} ####
+  tar_file(
+    reconcat,
+    paste(
+      realign_copies_5_8S,
+      trim_LSU_intron(realign_copies_LSU),
+      sep = ""
+    ) %>%
+    set_names(paste(names(realign_copies_5_8S), names(realign_copies_LSU), sep = "_")) %>%
+    chartr(old = "Uu", new = "Tt") %>%
+    Biostrings::DNAStringSet() %>%
+      write_and_return_file(file.path(comparedir, sprintf("fungi_realign_%s.fasta", aligner_name)))
+  ),
+  #### iqtree_fungi_{aligner_name} ####
+  tar_file(
+    iqtree_fungi,
+    iqtree(reconcat, local_cpus())
+  ),
+  #### tree_fungi_{aligner_name} ####
+  tar_target(
       tree_fungi,
-      ape::read.tree(iqtree_fungi[1]) %>%
-        ape::drop.tip(paste(fungi_outgroup, collapse = "_"))
+    ape::read.tree(iqtree_fungi[1]) %>%
+      ape::drop.tip(paste(fungi_outgroup, collapse = "_"))
     )
   )
 )
 
-#### Community matrix ####
+#### *Community matrix* ####
 # make a "community matrix" for the different pipelines
 reads_plan <- tar_map(
   tidyr::crossing(
     m = tibble::tibble(
       table = rlang::syms(c("ampliseq_table", "table_vs", "table_sl")),
       regions = rlang::syms(c("regions_as", "regions_vs", "regions_sl")),
-      id = c("ampliseq", "vsearch", "single_link")
+      otuid = c("ampliseq", "vsearch", "single_link")
     ),
     r = tibble::tibble(
       hashcols = list(c("5_8S_hash", "LSU_hash"), "ITS2_hash", "ITS_hash", "full_hash"),
-      id2 = c("concat", "ITS2", "ITS", "full")
+      regionid = c("concat", "ITS2", "ITS", "full")
     )
   ) %>% tidyr::unpack(c("m", "r")),
+  #### reads_{otuid}_{regionid} ####
   tar_fst_tbl(
     reads,
     tibble::column_to_rownames(table, "OTU") %>%
@@ -251,20 +272,21 @@ reads_plan <- tar_map(
         seq_id = glue::glue(paste0("{`", hashcols, "`}", collapse = "_")),
         n = n
       ) %>%
-      dplyr::rename(!!id := n) %>%
+      dplyr::rename(!!otuid := n) %>%
       dplyr::group_by(seq_id) %>%
       dplyr::summarize_all(sum),
     tidy_eval = FALSE
   ),
+  #### abundance_{otuid}_{regionid} ####
   tar_fst_tbl(
     abundance,
     dplyr::mutate_if(reads, is.numeric, ~./sum(.))
   ),
-  names = c(id, id2)
+  names = c(otuid, regionid)
 )
 
 phyloseq_plan <- tar_plan(
-
+  #### reads_tab ####
   tar_combine(
     reads_tab,
     purrr::keep(reads_plan$reads, ~ endsWith(.$settings$name, "ITS2")),
@@ -273,6 +295,7 @@ phyloseq_plan <- tar_plan(
       dplyr::mutate_if(is.numeric, tidyr::replace_na, 0L)
   ),
 
+  #### otu_tab ####
   tar_combine(
     otu_tab,
     purrr::keep(reads_plan$abundance, ~ endsWith(.$settings$name, "concat")),
@@ -283,7 +306,8 @@ phyloseq_plan <- tar_plan(
       phyloseq::otu_table(taxa_are_rows = TRUE)
   ),
 
-  #### phyloseq object and UniFrac distances ####
+  #### *phyloseq object and UniFrac distances* ####
+  #### tax_table ####
   tax_table =
     dplyr::select(tax_all, full_hash, rank, taxon) %>%
     dplyr::left_join(
@@ -299,27 +323,30 @@ phyloseq_plan <- tar_plan(
     phyloseq::tax_table(),
   tar_map(
     values = physeq_meta,
+    #### physeq_{group} ####
     tar_target(
       physeq,
       phyloseq::phyloseq(tree, otu_tab, tax_table)
     ),
-    names = id
+    names = group
   ),
   # physeq_glom = phyloseq::tip_glom(physeq, h = 0.01),
 
   tar_map(
     values = unifrac_meta,
+    #### unifrac_{group}_{weighted} ####
     tar_target(
       unifrac,
       phyloseq::UniFrac(physeq, weighted = weight)
     ),
-    names = id
+    names = group
   ),
 
   #### Figure ####
   tar_map(
     # make separate figures for fungi and all eukaryotes
     values = treefig_meta,
+    #### tree_fig_{group} ####
     # just the tree without the clusters
     tar_qs(
       tree_fig,
@@ -359,15 +386,17 @@ phyloseq_plan <- tar_plan(
       packages = c("ggplot2", "ggtree", "rlang"),
       error = "workspace"
     ),
+    #### tree_fig_file_{group} ####
     tar_file(
       tree_fig_file,
       write_and_return_file(
         tree_fig,
-        sprintf("%s/treemap_%s.pdf", figdir, id),
+        sprintf("%s/treemap_%s.pdf", figdir, group),
         device = "pdf", width = 12,
         height = tree_height, limitsize = FALSE
       )
     ),
+    #### cluster_geoms_{group} ####
     # clusters
     tar_target(
       cluster_geoms,
@@ -396,6 +425,7 @@ phyloseq_plan <- tar_plan(
       ),
       packages = c("rlang", "ggtree")
     ),
+    #### tree_cluster_fig_file_{group} ####
     tar_file(
       tree_cluster_fig_file,
       write_and_return_file(
@@ -410,19 +440,21 @@ phyloseq_plan <- tar_plan(
         # cluster_annotation(label = "SH 0.90", x = max(tree_fig$data$x) * 1.12) +
         # cluster_annotation(label = "SH 0.97", x = max(tree_fig$data$x) * 1.14) +
         # cluster_annotation(label = "SH 0.99", x = max(tree_fig$data$x) * 1.16),
-        sprintf("%s/tree_clusters_%s.pdf", figdir, id),
+        sprintf("%s/tree_clusters_%s.pdf", figdir, group),
         device = "pdf", width = 12, height = tree_height, limitsize = FALSE
       )
     ),
-    names = id
+    names = group
   )
 )
 
 constraint_plan <- list(
+  #### constraint_tree_file ####
   constraint_tree_file = tar_file(
     constraint_tree_file,
     file.path("reference", "constraints.tree")
   ),
+  #### constraint_tree_plot ####
   constraint_tree_plot = tar_target(
     constraint_tree_plot,
     ape::read.tree(constraint_tree_file) %>%
@@ -435,6 +467,7 @@ constraint_plan <- list(
   constraint_tree_write = tar_map(
     values = plot_type_meta,
     names = ext,
+    #### constraint_tree_{ext} ####
     tar_file(
       constraint_tree,
       write_and_return_file(

@@ -27,10 +27,11 @@ pre_positions_plan <-
       cm_32S_trunc_file
     ),
 
-    #### Ampliseq clusters ####
+    #### *Ampliseq clusters* ####
+    #### ampliseq_file ####
     # First load the ampliseq results and use LSUx to cut out subregions
     tar_file(ampliseq_file, "processReads/ampliseq/qiime2_ASV_table.tsv"),
-
+    #### ampliseq ####
     ampliseq =
       readr::read_tsv(
         ampliseq_file,
@@ -53,6 +54,7 @@ positions_meta <- tibble::tibble(
 
 positions_plan <-  tar_map(
   values = positions_meta,
+  #### positions_{id} ####
   tar_target(
     positions,
     LSUx::lsux(
@@ -64,7 +66,7 @@ positions_plan <-  tar_map(
       mxsize = 2048
     )
   ),
-
+  #### regions_{id} ####
   # Just cut out 5.8S, LSU, ITS2, and ITS
   tar_target(
     regions,
@@ -72,14 +74,14 @@ positions_plan <-  tar_map(
       .x = c("5_8S", "LSU1", "ITS2", "ITS1"),
       .y = c("5_8S", "LSU4", "ITS2", "ITS2"),
       tzara::extract_region,
-      seq = seq,
+      seq = seq[table$OTU],
       positions = positions
     ) %>%
       purrr::map2(c("5_8S", "LSU", "ITS2", "ITS"),
                   tibble::enframe, name = "seq_id") %>%
       purrr::reduce(dplyr::full_join, by = "seq_id") %>%
       dplyr::full_join(
-        tibble::enframe(seq, name = "seq_id", value = "full"),
+        tibble::enframe(seq[table$OTU], name = "seq_id", value = "full"),
         by = "seq_id"
       ) %>%
       dplyr::mutate(
@@ -96,6 +98,7 @@ positions_plan <-  tar_map(
       ) %>%
       tidyr::unite("label", "5_8S_hash", "LSU_hash", remove = FALSE)
   ),
+  #### hash_key_{id} ####
   tar_target(
     hash_key,
     dplyr::select(regions, seq_id, label, dplyr::ends_with("hash")) %>%

@@ -8,6 +8,7 @@ dependencies:
   - bioconductor-biostrings
   - bioconductor-dada2
   - bioconductor-decipher
+  - bioconductor-deseq2
   - 'bioconductor-ggtree>=2.4.0'
   - bioconductor-phyloseq
   - blast-legacy
@@ -26,6 +27,7 @@ dependencies:
   - r-dplyr
   - r-eulerr
   - r-fst
+  - r-ggh4x=0.1.1
   - r-ggplot2
   - r-ggpubr
   - r-ggrepel
@@ -34,6 +36,7 @@ dependencies:
   - r-glue
   - r-gt
   - r-here
+  - r-hues=0.2.0
   - r-inext
   - r-inferrnal=0.99.5
   - r-knitr
@@ -42,6 +45,7 @@ dependencies:
   - r-openxlsx=
   - r-phangorn
   - r-phylotax=0.0.4
+  - r-phytools
   - r-pingr
   - r-purrr
   - r-qs

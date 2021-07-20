@@ -11,6 +11,7 @@ detection_meta <- tibble::tibble(
 detection_plan <- tar_map(
   values = detection_meta,
   names = threshold,
+  #### detection_data_{threshold} ####
   tar_target(
     detection_data,
     parse_clusters(clusters, its2_precluster_singletons) %>%
@@ -30,6 +31,7 @@ detection_plan <- tar_map(
 detection_plan <- c(
   detection_plan,
   list(
+    #### detection_plot ####
     detection_plot = tar_combine(
       detection_plot,
       detection_plan$detection_data,
@@ -47,6 +49,7 @@ detection_plan <- c(
     detection_plotfile = tar_map(
       values = plot_type_meta,
       names = ext,
+      #### detection_plotfile_{ext} ####
       tar_file(
         detection_plotfile,
         write_and_return_file(

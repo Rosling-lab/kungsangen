@@ -11,11 +11,13 @@ taxonomy_meta <- tibble::tibble(
 taxonomy_plan <- tar_plan(
   tar_map(
     values = taxonomy_meta,
+    #### reference_file_{id} ####
     # files for the reference datasets
     tar_file(
       reference_file,
       sprintf("reference/%s.sintax.fasta.gz", reference)
     ),
+    #### ref_kingdoms_{id} ####
     # unique kingdoms in each reference dataset
     tar_qs(
       ref_kingdoms,
@@ -24,6 +26,7 @@ taxonomy_plan <- tar_plan(
         intern = TRUE
       )
     ),
+    #### tax_{id} ####
     # assign taxonomy using sintax
     tar_fst_tbl(
       tax,
@@ -37,6 +40,7 @@ taxonomy_plan <- tar_plan(
     ),
     names = id
   ),
+  #### tax_all ####
   # combine all the taxonomy results into one table
   tax_all = dplyr::bind_rows(
     tibble::add_column(tax_unite, method = "unite") %>%
@@ -53,6 +57,7 @@ taxonomy_plan <- tar_plan(
                        by = "LSU_hash")
   ) %>%
     dplyr::filter(confidence >= 0.8),
+  #### tax_both ####
   # for each taxonomic level, when there are multiple assignments, do they match?
   tax_both =
     dplyr::filter(
@@ -68,6 +73,7 @@ taxonomy_plan <- tar_plan(
     dplyr::filter(match) %>%
     dplyr::group_by(rank, n) %>%
     dplyr::summarize(frac = dplyr::n() / unique(n)),
+  #### tax_compare ####
   # what are the disagreements between the different methods?
   tax_compare =
     tax_all %>%
@@ -86,6 +92,7 @@ taxonomy_plan <- tar_plan(
     dplyr::count(rank, taxon_unite, taxon_rdp, taxon_silva, c12n_unite,
                   c12n_rdp, c12n_silva),
 
+  #### kingdoms ####
   # get the kingdom assignments where there are no conflicts
   # these will be used to constrain the tree.
   kingdoms = tax_all %>%
@@ -103,12 +110,14 @@ taxonomy_plan <- tar_plan(
     dplyr::group_by(label) %>%
     # require unanimity among identifications
     dplyr::filter(dplyr::n_distinct(taxon) == 1),
+  #### constraint_file ####
   # constraints for the kingdoms
   # enforces monophyly of each kingdom, as well as supergroups
   tar_file(
     constraint_file,
     file.path("reference", "constraints.fasta")
   ),
+  #### tax_constraints####
   # copy the constraints for each kingdom onto the sequences which
   # belong to that kingdom
   tax_constraints = Biostrings::readBStringSet(constraint_file) %>%
@@ -119,6 +128,7 @@ taxonomy_plan <- tar_plan(
     dplyr::filter(complete.cases(.)) %>%
     tibble::deframe() %>%
     Biostrings::BStringSet(),
+  #### phyla ####
   # get the plylum assignments where there are no conflicts
   # these are only used to pick out the vascular plants
   phyla = tax_all %>%

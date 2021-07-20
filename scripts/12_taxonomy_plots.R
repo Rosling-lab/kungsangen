@@ -2,19 +2,60 @@ library(targets)
 library(tarchetypes)
 library(magrittr)
 
-taxplot_meta <- tibble::tibble(
-  group = c("protists", "fungi"),
-  rank = c("kingdom", "phylum"),
-  tree = paste0("tree_", group),
-  cutoff = c(0.015, 0.015),
-  otu_table = paste0("otu_table_ampliseq_", group)
-) %>%
-  dplyr::mutate_at(c("tree", "otu_table", "rank"), rlang::syms)
+phylotax_meta <-
+  tibble::tibble(
+    group = c("protists", "fungi"),
+    tree = c("tree_protists", "tree_fungi_new")
+  ) %>%
+  dplyr::mutate_at("tree", rlang::syms)
 
-taxplot_plan <- tar_map(
-  values = taxplot_meta,
+taxdata_meta <-
+  dplyr::left_join(
+    phylotax_meta,
+    tibble::tibble(
+      clust_type = c("ampliseq", "swarm", "vsearch"),
+      cl_id = c("otuA", "otuS", "otuC"),
+      regions = c("regions_as", "regions_sl", "regions_vs")
+    ),
+    by = character()
+  ) %>%
+  dplyr::mutate(
+    otutab = sprintf("otu_table_%s_%s", clust_type, group),
+    tax_consensus = sprintf("tax_consensus_%s", group)
+  ) %>%
+  dplyr::mutate_at(
+    c("tree", "otutab", "regions", "tax_consensus"),
+    rlang::syms
+  )
+
+taxplot_meta <-
+  dplyr::left_join(
+    taxdata_meta,
+    tibble::tibble(
+      group = c("protists", "protists", "fungi"),
+      rank_name = c("kingdom", "phylum", "phylum"),
+      as_unknown = list(FALSE, "unidentified", FALSE),
+      show_parent = c(FALSE, TRUE, FALSE),
+      legend_cols = c(4, 3, 4),
+      rank = rlang::syms(rank_name),
+      cutoff = c(0.015, 0.015, 0.015)
+    ),
+    by = "group"
+  ) %>%
+  dplyr::mutate(
+  name = sprintf("taxplot_data_%s", cl_id),
+  taxplot_data = sprintf("taxplot_data_%s_%s", group, cl_id)
+) %>%
+  dplyr::select(group, rank, rank_name, cutoff, name, taxplot_data, as_unknown,
+                legend_cols, show_parent) %>%
+  tidyr::pivot_wider(names_from = name, values_from = taxplot_data) %>%
+  dplyr::mutate_at(dplyr::vars(dplyr::starts_with("taxplot_data")), rlang::syms)
+
+phylotax_plan <- tar_map(
+  values = phylotax_meta,
   names = group,
-  # make phylogenetic consensus assignments for the fungi
+  #### tax_consensus_{group} ####
+  # make phylogenetic consensus assignments
   tar_target(
     tax_consensus,
     phylotax::phylotax(
@@ -26,12 +67,18 @@ taxplot_plan <- tar_map(
         ) %>%
         dplyr::filter(label %in% tree$tip.label)
     )
-  ),
+  )
+)
+
+taxdata_plan <- tar_map(
+  values = taxdata_meta,
+  names = c(group, cl_id),
+  #### taxplot_data_{group}_{cl_id} ####
   # data for taxonomy plot
   tar_fst_tbl(
     taxplot_data,
     # convert OTU table to relative abundances
-    otu_table %>%
+    otutab %>%
       tibble::column_to_rownames("OTU") %>%
       vegan::decostand(method = "total", MARGIN = 2) %>%
       tibble::as_tibble(rownames = "OTU") %>%
@@ -41,7 +88,7 @@ taxplot_plan <- tar_map(
       dplyr::filter(reads > 0) %>%
       # add tree tip label (5.8S_LSU) for each OTU
       dplyr::left_join(
-        dplyr::select(regions_as, OTU = "seq_id", "label"),
+        dplyr::select(regions, OTU = "seq_id", "label"),
         by = "OTU"
       ) %>%
       # add taxonomy in wide format
@@ -56,38 +103,140 @@ taxplot_plan <- tar_map(
         by = "sample"
       )
   ),
-  # make plots for reads and OTUs
-  tar_map(
-    values = list(plottype = rlang::syms(c("reads", "OTUs"))),
-    tar_target(
-      taxplot,
-      taxon_plot(taxplot_data, rank = rank, y = plottype, x = Sites,
-                 cutoff = cutoff, cutoff_type = "either"),
-      packages = "ggplot2"
+  #### samples_physeq_{group}_{cl_id} ####
+  tar_qs(
+    samples_physeq,
+    phyloseq::phyloseq(
+      phyloseq::otu_table(
+        tibble::column_to_rownames(otutab, "OTU"),
+        taxa_are_rows = TRUE
+      ),
+      phyloseq::tax_table(
+        taxplot_data %>%
+          dplyr::select(OTU, kingdom:genus) %>%
+          unique() %>%
+          tibble::column_to_rownames("OTU") %>%
+          as.matrix()
+      ),
+      phyloseq::sample_data(samples_df)
     )
   ),
-  # combine reads plot and OTUs plot
-  tar_target(
-    taxplot,
-    ggpubr::ggarrange(
-      taxplot_reads,
-      taxplot_OTUs,
-      ncol = 1,
-      labels = "AUTO",
-      legend = "bottom",
-      common.legend = TRUE
+  #### physeq_file_{group}_{cl_id} ####
+  tar_file(
+    physeq_file,
+    write_and_return_file(
+      samples_physeq,
+      sprintf("output/data/phyloseq_%s_%s.rds", cl_id, group)
+    )
+  )
+)
+
+taxplot_plan <- list(
+  tar_map(
+    values = taxplot_meta,
+    names = c(group, rank_name),
+    # make plots for reads and OTUs
+    tar_map(
+      values = list(plottype = rlang::syms(c("reads", "OTUs"))),
+      #### taxplot_{plottype}_{group}_{rank_name} ####
+      tar_target(
+        taxplot,
+        dplyr::bind_rows(
+          "OTU_A" = taxplot_data_otuA,
+          "OTU_C" = taxplot_data_otuC,
+          "OTU_S" = taxplot_data_otuS,
+          .id = "clust_type"
+        ) %>%
+          dplyr::mutate_at("clust_type", factor,
+                           levels = c("OTU_S", "OTU_C", "OTU_A")) %>%
+          taxon_plot(
+            rank = rank,
+            y = plottype,
+            x = c(clust_type, Sites),
+            cutoff = cutoff,
+            parent_as_unknown = as_unknown,
+            show_parent = show_parent
+          ) +
+          theme(strip.background = element_blank(), strip.placement = "outside",
+                legend.position = "bottom", legend.direction = "vertical",
+                legend.box.spacing = unit(0, "cm"), legend.box.margin = margin()) +
+          guides(fill = guide_legend(ncol = legend_cols)),
+        packages = "ggplot2"
+      )
     ),
-    packages = "ggplot2"
+    #### taxplot_{group}_{rank} ####
+    # combine reads plot and OTUs plot
+    tar_target(
+      taxplot,
+      ggpubr::ggarrange(
+        taxplot_reads,
+        taxplot_OTUs,
+        ncol = 1,
+        labels = "AUTO",
+        legend = "bottom",
+        common.legend = TRUE
+      ),
+      packages = "ggplot2"
+    ),
+    tar_map(
+      values = plot_type_meta,
+      names = ext,
+      #### taxplotfile_{ext}_{rank}_{group} ####
+      tar_file(
+        taxplotfile,
+        write_and_return_file(
+          taxplot,
+          file.path(figdir, sprintf("taxonomy_%s_%s.%s", group, rank_name, ext)),
+          device = fun, width = 6.25, height = 6, dpi = 150
+        )
+      )
+    )
+  ),
+  #### taxplot_reads ####
+  # phylum level read-based taxonomy plot for protists and fungi
+  taxplot_reads = tar_target(
+    taxplot_reads,
+    ggpubr::ggarrange(
+      taxplot_reads_protists_phylum,
+      taxplot_reads_fungi_phylum,
+      ncol = 1,
+      heights = c(1.05, 1),
+      labels = "AUTO",
+      common.legend = FALSE
+    )
+  ),
+  #### taxplot_OTUs ####
+  # phylum level OTU-based taxonomy plot for protists and fungi
+  taxplot_OTUs = tar_target(
+    taxplot_OTUs,
+    ggpubr::ggarrange(
+      taxplot_OTUs_protists_phylum,
+      taxplot_OTUs_fungi_phylum,
+      ncol = 1,
+      heights = c(1.15, 1),
+      labels = "AUTO",
+      common.legend = FALSE
+    )
   ),
   tar_map(
     values = plot_type_meta,
     names = ext,
+    #### taxplotfile_reads_{ext} ####
     tar_file(
-      taxplotfile,
+      taxplotfile_reads,
       write_and_return_file(
-        taxplot,
-        file.path(figdir, sprintf("taxonomy_%s.%s", group, ext)),
-        device = fun, width = 6.25, height = 4, dpi = 150
+        taxplot_reads,
+        file.path(figdir, sprintf("taxonomy_reads.%s", ext)),
+        device = fun, width = 6.25, height = 7, dpi = 150
+      )
+    ),
+    #### taxplotfile_reads_{ext} ####
+    tar_file(
+      taxplotfile_OTUs,
+      write_and_return_file(
+        taxplot_OTUs,
+        file.path(figdir, sprintf("taxonomy_OTUs.%s", ext)),
+        device = fun, width = 6.25, height = 9, dpi = 150
       )
     )
   )

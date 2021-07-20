@@ -9,12 +9,17 @@ tar_plan(
       cluster_prefix = c("swarm_", "vclust_"),
       id = c("sl", "vs")
     ),
+    #### seq_file_{id} ####
     # load consensus sequences
     tar_file(seq_file, paste0("process/pb_363.", cluster_type, ".cons.fasta")),
+    #### seqs_{id} ####
     tar_target(seqs, load_cons_seqs(seq_file, cluster_prefix)),
+    #### table_file_{id} ####
     # load OTU table
     tar_file(table_file, paste0("process/pb_363_ccs.", cluster_type, ".table")),
+    #### rawtable_{id} ####
     tar_target(rawtable, load_rawtable(table_file, seqs)),
+    #### seqtab_{id} ####
     # format OTU table for dada2
     tar_target(
       seqtab,
@@ -25,13 +30,16 @@ tar_plan(
         as.matrix() %>%
         t()
     ),
+    #### nochim_{id} ####
     # remove chimeras
     tar_target(
       nochim,
       dada2::removeBimeraDenovo(seqtab, verbose = TRUE, multithread = TRUE)
     ),
+    #### nosingle_{id} ####
     # remove singletons
     tar_target(nosingle, nochim[,colSums(nochim) > 1L]),
+    #### table_{id} ####
     # output OTU table
     tar_target(
       table,
@@ -44,6 +52,7 @@ tar_plan(
     ),
     tar_map(
       values = list(type = c("rds", "xlsx")),
+      #### tableout_{type}_{id} ####
       tar_file(
         tableout,
         write_and_return_file(
@@ -56,8 +65,10 @@ tar_plan(
     names = id
   ),
 
-  #### Ampliseq ####
+  #### *Ampliseq* ####
+  #### ampliseq_rawtable_file ####
   tar_file(ampliseq_rawtable_file, "processReads/ampliseq/feature-table.tsv"),
+  #### ampliseq_table ####
   ampliseq_table = readr::read_tsv(
     ampliseq_rawtable_file,
     skip = 1,
@@ -78,16 +89,17 @@ tar_plan(
     dplyr::rename(OTU = "#ASV_ID"),
   tar_map(
     values = list(type = c("rds", "xlsx")),
+    #### ampliseq_tableout ####
     tar_file(
       ampliseq_tableout,
       write_and_return_file(
         ampliseq_table,
-        file.path(datadir, paste0("ampliseq_table", type)),
+        file.path(datadir, paste0("ampliseq_table.", type)),
         type = type
       )
     )
   ),
-   #### log file
+  #### otu_log ####
   tar_file(
       otu_log,
       write_and_return_file(

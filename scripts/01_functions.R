@@ -73,7 +73,7 @@ write_and_return_file.data.frame <- function(x, file, type = c("rds", "xlsx"), .
   switch(
     type,
     rds = saveRDS(x, file, ...),
-    xlsx = openxlsx::write.xlsx(x, file, ...),
+    xlsx = openxlsx::write.xlsx(x, file, overwrite = TRUE, ...),
     stop("Unknown file type: ", type)
   )
   file
@@ -88,6 +88,12 @@ write_and_return_file.character <- function(x, file, ...) {
 write_and_return_file.ggplot <- function(x, file, ...) {
   ensure_directory(file)
   ggplot2::ggsave(file, plot = x, ...)
+  file
+}
+
+write_and_return_file.phyloseq <- function(x, file, ...) {
+  ensure_directory(file)
+  saveRDS(x, file, ...)
   file
 }
 
@@ -480,10 +486,28 @@ recode_cluster_types <- function(data) {
     data,
     "cluster_type",
     dplyr::recode,
-    as = "ASV (Ampliseq/DADA2)",
-    sl = "Single-linkage (GeFaST)",
-    vs = "Centroid-based (VSEARCH)"
+    ASV = "OTU_A",
+    ampliseq = "OTU_A",
+    as = "OTU_A",
+    swarm = "OTU_S",
+    single_link = "OTU_S",
+    sl = "OTU_S",
+    vclust = "OTU_C",
+    vsearch = "OTU_C",
+    vs = "OTU_C"
   )
+}
+
+split_sh_cluster_types <- function(data) {
+  tidyr::extract(
+    data,
+    col = "cluster_type",
+    into = c("sh_type", "cluster_type"),
+    regex = "(OTU|GH90|SH97|SH99)_(as|vs|sl)"
+  ) %>%
+    dplyr::mutate_at("sh_type", factor,
+                     levels = c("GH90", "SH97", "SH99", "OTU")) %>%
+    recode_cluster_types()
 }
 
 
@@ -510,17 +534,21 @@ taxon_plot <- function(
   weight = if ("weight" %in% names(.data)) "weight" else "1", # column to weight the read and ASV counts by
   cutoff = NULL, # groups which represent less than this fraction in all types are grouped together as "other"
   cutoff_type = c("single", "either", "both"),
-  data_only = FALSE # just return the data
+  data_only = FALSE, # just return the data,
+  parent_as_unknown = FALSE, # if the chosen rank is not given, then show it as "unknown <Parent>"
+  show_parent = FALSE # put the name of the parent in parentheses
 ) {
-  rank <- rlang::enquo(rank)
+  rank <- rlang::enexpr(rank)
   rank_label <- rlang::as_label(rank)
-  y <- rlang::enquo(y)
-  x <- rlang::enquo(x)
+  y <- rlang::enexpr(y)
+  x <- rlang::enexpr(x)
+  if (is.call(x) && x[[1]] == "c") x[[1]] <- NULL
+  x <- rlang::syms(as.list(x))
   weight <- rlang::parse_expr(weight)
   ranks <- c("kingdom", "phylum", "class", "order", "family", "genus")
   cutoff_type <- match.arg(cutoff_type)
   .data <- .data %>%
-    dplyr::group_by(!!x) %>%
+    dplyr::group_by(!!!x) %>%
     dplyr::mutate(
       OTUs = dplyr::n_distinct(OTU),
       reads = reads/sum(reads * !!weight)
@@ -528,6 +556,37 @@ taxon_plot <- function(
     dplyr::ungroup() %>%
     dplyr::filter(...)
   if (rank_label %in% ranks) {
+    rank_index <- match(rank_label, ranks)
+    parent_ranknames <- rev(ranks[1:(rank_index - 1)])
+    parent_ranks <- rlang::syms(parent_ranknames)
+    parents <-
+      rlang::eval_tidy(rlang::quo(dplyr::coalesce(!!!parent_ranks)), .data)
+    if (rank_index != 1 && !missing(show_parent) && !isFALSE(show_parent)) {
+      if (isTRUE(show_parent)) show_parent <- parent_ranknames[1]
+      if (!show_parent %in% parent_ranknames) {
+        stop("'show_parent' should be TRUE or the name of a parent rank")
+      }
+      if (show_parent == parent_ranknames[1]) {
+        show_parents <- parents
+      } else {
+        show_parents <- tail(parent_ranks,
+                             1 - match(show_parent, parent_ranknames))
+        show_parents <-
+          rlang::eval_tidy(rlang::quo(dplyr::coalesce(!!!show_parents)), .data)
+      }
+      .data[[rank_label]] <-
+        stringr::str_c(.data[[rank_label]], " (", show_parents, ")")
+    }
+    if (rank_index != 1 && !missing(parent_as_unknown) &&
+        !isFALSE(parent_as_unknown)) {
+      if (isTRUE(parent_as_unknown)) parent_as_unknown <- "unknown"
+      if (!assertthat::is.string(parent_as_unknown)) {
+        stop("'parent_as_unknown' must be a logical value or a character string.")
+      }
+      unknown_parents <- stringr::str_c("zzz_", parent_as_unknown, " ", parents)
+      .data[[rank_label]] <-
+        dplyr::coalesce(.data[[rank_label]], unknown_parents)
+    }
     .data <- .data %>%
       dplyr::arrange_at(ranks) %>%
       dplyr::mutate_at(
@@ -537,7 +596,8 @@ taxon_plot <- function(
           levels = c(NA, "other",
                      purrr::discard(unique(as.character(.)), is.na)),
           exclude = "NULL"
-        )
+        ) %>%
+          forcats::fct_relabel(sub, pattern = "^zzz_", replacement = "")
       )
   } else if (!is.factor(dplyr::pull(.data, !!rank))) {
     .data <- .data %>%
@@ -552,7 +612,7 @@ taxon_plot <- function(
       )
   }
   .data <- .data %>%
-    dplyr::group_by(!!x, !!rank) %>%
+    dplyr::group_by(!!!x, !!rank) %>%
     dplyr::summarize(reads = sum(!!weight * reads), OTUs = sum(unique(data.frame(OTU, w = !!weight))$w)/max(OTUs)) %>%
     dplyr::ungroup()
 
@@ -583,7 +643,7 @@ taxon_plot <- function(
         .keep = TRUE
       ) %>%
       dplyr::bind_rows() %>%
-      dplyr::group_by(!!x, !!rank) %>%
+      dplyr::group_by(!!!x, !!rank) %>%
       dplyr::summarize(reads = sum(reads), OTUs = sum(OTUs)) %>%
       dplyr::ungroup() %>%
       dplyr::mutate(!!rank := factor(!!rank, levels = prelevels, exclude = NULL))
@@ -594,18 +654,26 @@ taxon_plot <- function(
   # if ("other" %in% vals) vals <- c("other", vals) %>% magrittr::extract(!duplicated(.))
   # if (any(is.na(vals))) vals <- c(NA, vals) %>% magrittr::extract(!duplicated(.))
 
+  x_x <- x[[1]]
+  x_facet <- purrr::map_chr(x[-1], deparse)
+
   if (rank_label == stringr::str_to_lower(rank_label)) rank_label <- stringr::str_to_title(rank_label)
   y_label <- rlang::as_label(y)
   if (y_label == stringr::str_to_lower(y_label)) y_label <- stringr::str_to_title(y_label)
-  ggplot(.data, aes(x = !!x, y = !!y, fill = !!rank)) +
+  ggplot(.data, aes(x = !!x_x, y = !!y, fill = !!rank)) +
     geom_bar(position = position_stack(reverse = TRUE),
              stat = "identity", color = "white", size = 0.2) +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
           strip.background = element_blank(),
           panel.spacing = unit(3, "pt")) +
-    scale_fill_discrete(
+    hues::scale_fill_iwanthue(
+      # type = "qual",
+      # palette = 2,
+      cmin = 20, cmax = 150,
+      lmin = 10, lmax = 80,
       breaks = vals,
       labels = tidyr::replace_na(as.character(vals), "unidentified"),
+      na.value = "gray50",
       name = rank_label,
       guide = guide_legend(ncol = 4, byrow = TRUE)
     ) +
@@ -613,7 +681,10 @@ taxon_plot <- function(
     coord_flip() +
     theme_bw() +
     theme(legend.position = "bottom") +
-    xlab(NULL)
+    xlab(NULL) +
+    if (length(x_facet) > 0) {
+      facet_grid(rows = x_facet, switch = "y")
+    }
 
 }
 
@@ -628,4 +699,26 @@ tree_depth <- function(phylo) {
     depth[i] <- phylo$edge.length[i] + depth[match(phylo$edge[i, 1], phylo$edge[,2])] %||% 0
   }
   max(depth)
+}
+
+# plot function for deseq results
+deseq_plot <- function(sigtab, title) {
+  library("ggplot2")
+  theme_set(theme_bw())
+  scale_fill_discrete <- function(palname = "Set1", ...) {
+    scale_fill_brewer(palette = palname, ...)
+  }
+  # Phylum order
+  x = tapply(sigtab$log2FoldChange, sigtab$phylum, function(x) max(x))
+  x = sort(x, TRUE)
+  sigtab$phylum = factor(as.character(sigtab$phylum), levels=names(x))
+  # Genus order
+  x = tapply(sigtab$log2FoldChange, sigtab$order, function(x) max(x))
+  x = sort(x, TRUE)
+  sigtab$order = factor(as.character(sigtab$order), levels=names(x))
+  ggplot(sigtab, aes(x=order, y=log2FoldChange, color=phylum)) +
+    geom_point(size=6) +
+    theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust=0.5))+
+    # theme(text = element_text(size = 30))+
+    labs(title = title)
 }
