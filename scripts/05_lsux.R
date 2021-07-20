@@ -70,14 +70,14 @@ positions_plan <-  tar_map(
       .x = c("5_8S", "LSU1", "ITS2", "ITS1"),
       .y = c("5_8S", "LSU4", "ITS2", "ITS2"),
       tzara::extract_region,
-      seq = seq,
+      seq = seq[table$OTU],
       positions = positions
     ) %>%
       purrr::map2(c("5_8S", "LSU", "ITS2", "ITS"),
                   tibble::enframe, name = "seq_id") %>%
       purrr::reduce(dplyr::full_join, by = "seq_id") %>%
       dplyr::full_join(
-        tibble::enframe(seq, name = "seq_id", value = "full"),
+        tibble::enframe(seq[table$OTU], name = "seq_id", value = "full"),
         by = "seq_id"
       ) %>%
       dplyr::mutate(
