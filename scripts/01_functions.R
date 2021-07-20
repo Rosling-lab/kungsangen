@@ -73,7 +73,7 @@ write_and_return_file.data.frame <- function(x, file, type = c("rds", "xlsx"), .
   switch(
     type,
     rds = saveRDS(x, file, ...),
-    xlsx = openxlsx::write.xlsx(x, file, ...),
+    xlsx = openxlsx::write.xlsx(x, file, overwrite = TRUE, ...),
     stop("Unknown file type: ", type)
   )
   file
