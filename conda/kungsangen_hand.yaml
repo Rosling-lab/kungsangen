@@ -45,6 +45,7 @@ dependencies:
   - r-openxlsx=
   - r-phangorn
   - r-phylotax=0.0.4
+  - r-phytools
   - r-pingr
   - r-purrr
   - r-qs
