@@ -101,7 +101,7 @@ wildcard_constraints:
 # in the headers for each sequence
 rule lima:
     output:
-        expand("process/{{movie}}.subreads.demux.lima.{ext}", ext = ["clips", "counts", "guess", "report", "summary"]),
+        expand("process/{{movie}}.subreads.demux.lima.{ext}", ext = ["counts", "guess", "report", "summary"]),
         bam = temp("process/{movie}.subreads.demux.bam")
     input:
         bam = "process/{movie}.subreads.bam",
@@ -153,12 +153,16 @@ rule fastqstats:
         "vsearch/2.14.1"
     shell:
         """
-        vsearch --derep_fulllength {input} \\
-                --output /dev/null \\
-                --threads {threads} \\
-                --log - |
-        sed -rn '$!{{H}}; ${{H; x; s/.+nt in ([0-9]+) seqs.+\\n([0-9]+) unique sequences.+/\\1\t\\2/ ; p}}' \\
-            > {output}
+        nrow=$(zcat {input} | wc -l)
+        if [ $nrow -ge 4 ]; then
+            vsearch --derep_fulllength {input} \\
+                    --output /dev/null \\
+                    --threads {threads} \\
+                    --log - |
+            sed -rn '$!{{H}}; ${{H; x; s/.+nt in ([0-9]+) seqs.+\\n([0-9]+) unique sequences.+/\\1\t\\2/ ; p}}'
+        else
+	    echo "0\t0"
+        fi > {output}
         """
 
 rule allbamstats:
@@ -244,7 +248,7 @@ rule sieve:
             grep -f {params.samples}
         }} |
         samtools view -@{params.samthreads} - -o {output} 2>>{log}
-        rm {params}
+        rm {params.samples}
         """
 
 # endpoint target: demultiplex and sieve all movies
@@ -327,22 +331,17 @@ rule deconcatamer:
         """
         cutadapt --action=none\\
                  -e 0.15\\
-                 # ITS1...rcITS2
                  -g "TCCGTAGGTGAACCTGC;o=17...GCAGGTTCACCTACGGA;o=17"\\
-                 # ITS1...ITS1
                  -g "TCCGTAGGTGAACCTGC;o=17...TCCGTAGGTGAACCTGC;o=17"\\
-                 # rcITS1...ITS1
                  -g "GCAGGTTCACCTACGGA;o=17...TCCGTAGGTGAACCTGC;o=17"\\
-                 # LR5...rcLR5
                  -g "TCCTGAGGGAAACTTCG;o=17...CGAAGTTTCCCTCAGGA;o=17"\\
-                 # LR5...LR5
                  -g "TCCTGAGGGAAACTTCG;o=17...TCCTGAGGGAAACTTCG;o=17"\\
-                 # rcLR5...LR5
                  -g "CGAAGTTTCCCTCAGGA;o=17...TCCTGAGGGAAACTTCG;o=17"\\
                  --untrimmed-output {output.deconcat}\\
                  -o {output.concatamers}\\
-                 --log {log}\\
-                 {input}
+                 {input}\\
+                 &> {log}
+
         """
 
 # lima doesn't store any information about orientation when run on subreads,
