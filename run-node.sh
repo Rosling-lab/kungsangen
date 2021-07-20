@@ -3,7 +3,7 @@
 # runs pacbio RSII demultiplexing and base calling on a
 # single node
 
-#SBATCH -A snic2020-5-142
+#SBATCH -A snic2021-5-44
 #SBATCH -p node
 #SBATCH -N 1
 #SBATCH -t 4-00:00:00
@@ -31,5 +31,7 @@ snakemake -pr --jobs $SLURM_JOB_CPUS_PER_NODE\
   --use-envmodules\
   --use-conda\
   --shadow-prefix /scratch\
+  --rerun-incomplete\
   r_targets \
-  all
+  all \
+  allbamstats
